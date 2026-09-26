@@ -9,17 +9,25 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Shah Noori",
-  description: "Shah Noori Website",
+  title: {
+    default: "Shah Noori Interior & Fit-out | Doha, Qatar",
+    template: "%s | Shah Noori",
+  },
+  description:
+    "Civil construction, interior fit-out and MEP works in Doha, Qatar. Explore Shah Noori's projects and services.",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+// Site chrome (header, footer, WhatsApp button, smooth scroll) lives in (site)/layout.tsx
+// so that the embedded Sanity Studio at /studio renders without it.
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
       lang="en"
       className={`${poppins.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col font-sans">{children}</body>
+      <body className="min-h-full flex flex-col font-sans">
+        {children}
+      </body>
     </html>
   );
 }

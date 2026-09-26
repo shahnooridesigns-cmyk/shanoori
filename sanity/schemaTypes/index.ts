@@ -3,7 +3,8 @@ import { type SchemaTypeDefinition } from 'sanity';
 import project from './project';
 import client from './client';
 import siteSettings from './siteSettings';
+import review from './review';
 
 export const schema: { types: SchemaTypeDefinition[] } = {
-  types: [project, client, siteSettings],
+  types: [project, client, siteSettings, review],
 };

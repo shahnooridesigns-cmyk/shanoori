@@ -39,7 +39,9 @@ export default defineType({
     defineField({
       name: 'client',
       title: 'Client',
-      type: 'string',
+      type: 'reference',
+      to: [{ type: 'client' }],
+      description: 'Select an existing client from the list, or create a new Client document first if they are not listed yet.',
     }),
     defineField({
       name: 'year',
@@ -64,8 +66,14 @@ export default defineType({
     defineField({
       name: 'description',
       title: 'Description',
-      type: 'array',
-      of: [{ type: 'block' }],
+      type: 'text',
+    }),
+    defineField({
+      name: 'featured',
+      title: 'Featured',
+      type: 'boolean',
+      description: 'Display this project on the homepage?',
+      initialValue: false,
     }),
   ],
   preview: {

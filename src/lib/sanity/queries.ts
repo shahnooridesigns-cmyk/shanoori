@@ -1,46 +1,64 @@
 import { groq } from 'next-sanity';
 
-export const getSiteSettingsQuery = groq`
-  *[_type == "siteSettings"][0] {
-    phoneNumbers,
-    whatsappNumber,
-    email,
-    address
+const projectSummaryFields = groq`
+  _id,
+  title,
+  "slug": slug.current,
+  category,
+  year,
+  "imageUrl": coverImage.asset->url
+`;
+
+export const getAllProjects = groq`
+  *[_type == "project" && defined(slug.current)] | order(year desc) {
+    ${projectSummaryFields}
   }
 `;
 
-export const getProjectsQuery = groq`
-  *[_type == "project"] | order(year desc) {
-    _id,
-    title,
-    slug,
-    category,
-    client,
-    year,
-    coverImage,
-    gallery,
-    description
+export const getFeaturedProjects = groq`
+  *[_type == "project" && featured == true && defined(slug.current)] | order(year desc) {
+    ${projectSummaryFields}
   }
 `;
 
-export const getProjectBySlugQuery = groq`
+export const getProjectBySlug = groq`
   *[_type == "project" && slug.current == $slug][0] {
-    _id,
-    title,
-    slug,
-    category,
-    client,
-    year,
-    coverImage,
-    gallery,
-    description
+    ${projectSummaryFields},
+    client->{name},
+    description,
+    gallery[] {
+      "url": asset->url
+    }
   }
 `;
 
-export const getClientsQuery = groq`
-  *[_type == "client"] | order(name asc) {
+export const getAllClients = groq`
+  *[_type == "client"] | order(_createdAt asc) {
     _id,
     name,
-    logo
+    "logoUrl": logo.asset->url
+  }
+`;
+
+export const getSiteSettings = groq`
+  *[_type == "siteSettings"][0] {
+    whatsappNumber,
+    phoneNumbers,
+    address,
+    email,
+    serviceContacts
+  }
+`;
+
+export const getFeaturedReviews = groq`
+  *[_type == "review" && featured == true] | order(_createdAt desc) {
+    _id,
+    clientName,
+    clientCompany,
+    rating,
+    reviewText,
+    "photoUrl": clientPhoto.asset->url,
+    "projectSlug": relatedProject->slug.current,
+    "projectName": relatedProject->title
   }
 `;

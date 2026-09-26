@@ -15,7 +15,9 @@ export default defineType({
       name: 'whatsappNumber',
       title: 'WhatsApp Number',
       type: 'string',
-      description: 'Include country code, e.g., 971501234567',
+      description: 'Include country code, digits only, e.g., 97433494880',
+      validation: (Rule) =>
+        Rule.regex(/^\+?[\d\s-]{8,20}$/, { name: 'phone number' }).warning('Use digits with country code, e.g. 97433494880'),
     }),
     defineField({
       name: 'email',
@@ -27,6 +29,19 @@ export default defineType({
       name: 'address',
       title: 'Physical Address',
       type: 'text',
+    }),
+    defineField({
+      name: 'serviceContacts',
+      title: 'Service-Specific WhatsApp Numbers (Optional)',
+      description: 'Leave blank to use the main WhatsApp number above for that service. Only fill in if a specific service should route to a different number.',
+      type: 'object',
+      fields: [
+        defineField({ name: 'civil', title: 'Civil Construction WhatsApp', type: 'string' }),
+        defineField({ name: 'interior', title: 'Interior & Fit-out WhatsApp', type: 'string' }),
+        defineField({ name: 'mechanical', title: 'Mechanical Works WhatsApp', type: 'string' }),
+        defineField({ name: 'electrical', title: 'Electrical Works WhatsApp', type: 'string' }),
+        defineField({ name: 'plumbing', title: 'Plumbing Works WhatsApp', type: 'string' }),
+      ],
     }),
   ],
 });
