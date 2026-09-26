@@ -1,6 +1,7 @@
 import { createClient } from 'next-sanity';
 
-export const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
+// Public identifier (not a secret); the fallback keeps builds working when the env var isn't set.
+export const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'ewurok0d';
 export const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || 'production';
 export const apiVersion = '2026-09-10';
 
