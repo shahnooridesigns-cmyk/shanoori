@@ -7,7 +7,8 @@ const projectSummaryFields = groq`
   category,
   location,
   year,
-  "imageUrl": coverImage.asset->url
+  "imageUrl": coverImage.asset->url,
+  "clientName": client->name
 `;
 
 export const getAllProjects = groq`

@@ -8,6 +8,7 @@ export interface ProjectSummary {
   location?: string;
   year?: number;
   imageUrl?: string;
+  clientName?: string;
 }
 
 export interface ProjectDetail extends ProjectSummary {

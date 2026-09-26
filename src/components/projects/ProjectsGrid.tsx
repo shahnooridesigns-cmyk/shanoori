@@ -1,30 +1,35 @@
 "use client";
 
 import React, { Suspense } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSearchParams } from 'next/navigation';
-import type { ProjectSummary } from "@/lib/sanity/types";
-import { ArrowUpRight } from "../shared/ui";
-
-const categories = [
-  { label: 'All', value: 'all' },
-  { label: 'Civil', value: 'civil' },
-  { label: 'Interior', value: 'interior' },
-  { label: 'Mechanical', value: 'mechanical' },
-  { label: 'Electrical', value: 'electrical' },
-  { label: 'Plumbing', value: 'plumbing' }
-];
+import type { ProjectSummary } from '@/lib/sanity/types';
+import { categories } from '@/lib/categories';
+import { ProjectCard } from './ProjectCard';
 
 interface ProjectsGridProps {
   initialProjects: ProjectSummary[];
 }
 
+/**
+ * Mixed-size ("bento") layout that repeats every 6 cards on large screens:
+ * a big feature tile, a tall tile and regular tiles, so the grid never looks uniform.
+ */
+const tileClass = (i: number) => {
+  switch (i % 6) {
+    case 0:
+      return 'md:col-span-2 lg:row-span-2';
+    case 4:
+      return 'lg:row-span-2';
+    default:
+      return '';
+  }
+};
+
 function ProjectsGridInner({ initialProjects }: ProjectsGridProps) {
   const searchParams = useSearchParams();
   const categoryParam = searchParams.get('category');
-  const activeFilter = categories.some(c => c.value === categoryParam) ? categoryParam! : 'all';
+  const activeFilter = categories.some((c) => c.value === categoryParam) ? categoryParam! : 'all';
 
   const handleFilterChange = (category: string) => {
     // Native history updates useSearchParams without a server round trip or scroll jump,
@@ -32,86 +37,89 @@ function ProjectsGridInner({ initialProjects }: ProjectsGridProps) {
     window.history.pushState(null, '', category === 'all' ? '/projects' : `/projects?category=${category}`);
   };
 
-  const filteredProjects = activeFilter === 'all' 
-    ? initialProjects 
-    : initialProjects.filter(p => p.category === activeFilter);
+  const counts = initialProjects.reduce<Record<string, number>>((acc, p) => {
+    acc[p.category] = (acc[p.category] ?? 0) + 1;
+    return acc;
+  }, {});
+  const filters = [{ label: 'All', value: 'all', count: initialProjects.length }].concat(
+    categories.map((c) => ({ ...c, count: counts[c.value] ?? 0 }))
+  );
+
+  const filteredProjects =
+    activeFilter === 'all' ? initialProjects : initialProjects.filter((p) => p.category === activeFilter);
 
   return (
     <div className="w-full">
-      {/* Filter Buttons - Flex wrap handles mobile cleanly */}
-      <div className="flex flex-wrap justify-center gap-3 md:gap-4 mb-16">
-        {categories.map((cat) => {
-          const isActive = activeFilter === cat.value;
-          return (
-            <button
-              type="button"
-              key={cat.value}
-              onClick={() => handleFilterChange(cat.value)}
-              aria-pressed={isActive}
-              className={`px-6 py-2 rounded-full font-medium transition-colors whitespace-nowrap ${
-                isActive 
-                  ? "bg-maroon text-white shadow-md"
-                  : "bg-cream text-maroon hover:bg-white"
-              }`}
-            >
-              {cat.label}
-            </button>
-          );
-        })}
+      {/* Sticky filter bar, sits just under the fixed header */}
+      <div className="sticky top-20 z-20 -mx-5 mb-12 px-5 py-4 md:-mx-10 md:px-10 lg:-mx-[60px] lg:px-[60px]">
+        <div className="absolute inset-0 bg-beige/85 backdrop-blur-md [mask-image:linear-gradient(to_bottom,black_70%,transparent)]" aria-hidden="true" />
+        <div className="relative flex items-center justify-between gap-6">
+          <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none]" role="group" aria-label="Filter projects by category">
+            {filters.map((f) => {
+              const isActive = activeFilter === f.value;
+              return (
+                <button
+                  type="button"
+                  key={f.value}
+                  onClick={() => handleFilterChange(f.value)}
+                  aria-pressed={isActive}
+                  disabled={f.count === 0 && !isActive}
+                  className={`relative shrink-0 rounded-full px-5 py-2.5 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${
+                    isActive ? 'text-gold' : 'text-maroon hover:bg-white/60'
+                  }`}
+                >
+                  {isActive && (
+                    <motion.span
+                      layoutId="active-filter"
+                      className="absolute inset-0 rounded-full bg-maroon shadow-md"
+                      transition={{ type: 'spring', stiffness: 400, damping: 32 }}
+                    />
+                  )}
+                  <span className="relative flex items-center gap-2">
+                    {f.label}
+                    <span className={`text-xs ${isActive ? 'text-gold/70' : 'text-maroon/50'}`}>{f.count}</span>
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+          <p className="hidden shrink-0 text-sm text-ink/60 md:block" aria-live="polite">
+            Showing {filteredProjects.length} {filteredProjects.length === 1 ? 'project' : 'projects'}
+          </p>
+        </div>
       </div>
 
-      {/* Grid */}
       {filteredProjects.length > 0 ? (
-        <motion.div 
-          layout
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-        >
+        <motion.ul layout className="grid grid-flow-dense auto-rows-[300px] gap-6 md:grid-cols-2 lg:auto-rows-[280px] lg:grid-cols-3">
           <AnimatePresence mode="popLayout" initial={false}>
-            {filteredProjects.map((project) => (
-              <motion.div
+            {filteredProjects.map((project, i) => (
+              <motion.li
                 key={project._id}
                 layout
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.25 }}
+                className={tileClass(i)}
+                initial={{ opacity: 0, y: 32 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-60px' }}
+                exit={{ opacity: 0, scale: 0.94 }}
+                transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: (i % 3) * 0.06 }}
               >
-                <Link 
-                  href={`/projects/${encodeURIComponent(project.slug)}`} 
-                  className="group relative block aspect-[4/3] overflow-hidden rounded-2xl shadow-[0_20px_40px_-15px_rgba(60,40,10,0.5)] transition-transform hover:-translate-y-1"
-                >
-                  <Image
-                    src={project.imageUrl || "/placeholder.svg"}
-                    alt={project.title}
-                    fill
-                    sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 bg-gradient-to-t from-maroon/95 via-maroon/60 to-transparent p-5 pt-20">
-                    <div>
-                      <p className="text-xs font-semibold uppercase tracking-wider text-gold">
-                        {categories.find(c => c.value === project.category)?.label}
-                        {project.year ? ` · ${project.year}` : ''}
-                      </p>
-                      <h3 className="mt-1 text-xl text-white">{[project.title, project.location].filter(Boolean).join(' - ')}</h3>
-                    </div>
-                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white/90 text-ink">
-                      <ArrowUpRight className="h-4 w-4" />
-                    </span>
-                  </div>
-                </Link>
-              </motion.div>
+                <ProjectCard
+                  project={project}
+                  index={i}
+                  large={i % 6 === 0}
+                  sizes={i % 6 === 0 ? '(min-width: 768px) 66vw, 100vw' : '(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw'}
+                />
+              </motion.li>
             ))}
           </AnimatePresence>
-        </motion.div>
+        </motion.ul>
       ) : (
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="py-20 text-center"
-        >
-          <p className="text-xl text-ink/60">No projects in this category yet &mdash; check back soon.</p>
-        </motion.div>
+        <div className="rounded-[28px] border border-dashed border-maroon/30 py-24 text-center">
+          <p className="text-2xl text-maroon">No projects in this category yet</p>
+          <button type="button" onClick={() => handleFilterChange('all')} className="mt-4 text-maroon underline underline-offset-4 hover:opacity-75">
+            View all projects
+          </button>
+        </div>
       )}
     </div>
   );
@@ -119,7 +127,7 @@ function ProjectsGridInner({ initialProjects }: ProjectsGridProps) {
 
 export function ProjectsGrid(props: ProjectsGridProps) {
   return (
-    <Suspense fallback={<div className="py-20 text-center text-ink/60">Loading projects...</div>}>
+    <Suspense fallback={<div className="py-20 text-center text-ink/60">Loading projects…</div>}>
       <ProjectsGridInner {...props} />
     </Suspense>
   );
