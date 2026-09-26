@@ -28,6 +28,7 @@ export const getProjectBySlug = groq`
     client->{name},
     description,
     gallery[] {
+      _key,
       "url": asset->url
     }
   }

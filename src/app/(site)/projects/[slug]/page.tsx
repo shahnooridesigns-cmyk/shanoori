@@ -50,7 +50,7 @@ export default async function ProjectDetailPage({ params }: Props) {
 
   const phoneNumber = resolveWhatsAppNumber(settings, project.category);
   const description = descriptionToText(project.description);
-  const gallery = (project.gallery ?? []).filter((img): img is { url: string } => Boolean(img?.url));
+  const gallery = (project.gallery ?? []).filter((img): img is { _key?: string; url: string } => Boolean(img?.url));
 
   const categoryLabel = project.category?.charAt(0).toUpperCase() + project.category?.slice(1);
   const facts = [
@@ -111,7 +111,7 @@ export default async function ProjectDetailPage({ params }: Props) {
             <h2 className="text-brand-gradient w-fit text-4xl md:text-5xl font-medium">Project Gallery</h2>
             <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {gallery.map((img, idx) => (
-                <div key={img.url} className="relative aspect-[4/3] overflow-hidden rounded-2xl shadow-[0_16px_32px_-16px_rgba(0,0,0,0.4)]">
+                <div key={img._key ?? `${idx}-${img.url}`} className="relative aspect-[4/3] overflow-hidden rounded-2xl shadow-[0_16px_32px_-16px_rgba(0,0,0,0.4)]">
                   <Image
                     src={img.url}
                     alt={`${project.title} gallery image ${idx + 1}`}

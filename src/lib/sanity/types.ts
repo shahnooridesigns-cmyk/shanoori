@@ -14,7 +14,7 @@ export interface ProjectDetail extends ProjectSummary {
   client?: { name?: string } | null;
   /** Plain text per the schema; older imported documents may still hold Portable Text blocks. */
   description?: string | PortableTextBlock[] | null;
-  gallery?: { url?: string }[] | null;
+  gallery?: { _key?: string; url?: string }[] | null;
 }
 
 export interface PortableTextBlock {
