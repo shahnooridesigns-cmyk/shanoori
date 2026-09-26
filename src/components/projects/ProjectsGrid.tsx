@@ -5,7 +5,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSearchParams } from 'next/navigation';
-import type { ProjectSummary } from '@/lib/sanity/types';
+import type { ProjectSummary } from "@/lib/sanity/types";
+import { ArrowUpRight } from "../shared/ui";
 
 const categories = [
   { label: 'All', value: 'all' },
@@ -49,8 +50,8 @@ function ProjectsGridInner({ initialProjects }: ProjectsGridProps) {
               aria-pressed={isActive}
               className={`px-6 py-2 rounded-full font-medium transition-colors whitespace-nowrap ${
                 isActive 
-                  ? 'bg-primary-900 text-white shadow-md' 
-                  : 'bg-primary-50 text-primary-900 hover:bg-primary-100'
+                  ? "bg-maroon text-white shadow-md"
+                  : "bg-cream text-maroon hover:bg-white"
               }`}
             >
               {cat.label}
@@ -65,7 +66,7 @@ function ProjectsGridInner({ initialProjects }: ProjectsGridProps) {
           layout
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
         >
-          <AnimatePresence mode="popLayout">
+          <AnimatePresence mode="popLayout" initial={false}>
             {filteredProjects.map((project) => (
               <motion.div
                 key={project._id}
@@ -77,23 +78,26 @@ function ProjectsGridInner({ initialProjects }: ProjectsGridProps) {
               >
                 <Link 
                   href={`/projects/${encodeURIComponent(project.slug)}`} 
-                  className="group block relative rounded-2xl overflow-hidden bg-white border border-gray-200 shadow-sm transition-all hover:shadow-md hover:-translate-y-1 h-full flex flex-col"
+                  className="group relative block aspect-[4/3] overflow-hidden rounded-2xl shadow-[0_20px_40px_-15px_rgba(60,40,10,0.5)] transition-transform hover:-translate-y-1"
                 >
-                  <div className="relative aspect-[4/3] w-full overflow-hidden bg-gray-100">
-                    <Image
-                      src={project.imageUrl || "/placeholder.svg"}
-                      alt={project.title}
-                      fill
-                      sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
-                      className="object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                  </div>
-                  <div className="p-6 flex-1 flex flex-col">
-                    <div className="text-sm font-semibold text-accent-700 mb-2 uppercase tracking-wide">
-                      {categories.find(c => c.value === project.category)?.label}
+                  <Image
+                    src={project.imageUrl || "/placeholder.svg"}
+                    alt={project.title}
+                    fill
+                    sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 bg-gradient-to-t from-maroon/95 via-maroon/60 to-transparent p-5 pt-20">
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-wider text-gold">
+                        {categories.find(c => c.value === project.category)?.label}
+                        {project.year ? ` · ${project.year}` : ''}
+                      </p>
+                      <h3 className="mt-1 text-xl text-white">{[project.title, project.location].filter(Boolean).join(' - ')}</h3>
                     </div>
-                    <h3 className="text-xl font-bold text-primary-900 mb-2">{project.title}</h3>
-                    {project.year && <p className="text-foreground/60 text-sm mt-auto">Completed in {project.year}</p>}
+                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white/90 text-ink">
+                      <ArrowUpRight className="h-4 w-4" />
+                    </span>
                   </div>
                 </Link>
               </motion.div>
@@ -106,7 +110,7 @@ function ProjectsGridInner({ initialProjects }: ProjectsGridProps) {
           animate={{ opacity: 1 }}
           className="py-20 text-center"
         >
-          <p className="text-xl text-foreground/60">No projects in this category yet &mdash; check back soon.</p>
+          <p className="text-xl text-ink/60">No projects in this category yet &mdash; check back soon.</p>
         </motion.div>
       )}
     </div>
@@ -115,7 +119,7 @@ function ProjectsGridInner({ initialProjects }: ProjectsGridProps) {
 
 export function ProjectsGrid(props: ProjectsGridProps) {
   return (
-    <Suspense fallback={<div className="py-20 text-center text-foreground/60">Loading projects...</div>}>
+    <Suspense fallback={<div className="py-20 text-center text-ink/60">Loading projects...</div>}>
       <ProjectsGridInner {...props} />
     </Suspense>
   );

@@ -1,7 +1,9 @@
 import React from 'react';
 import type { Metadata } from 'next';
 import { Container } from '@/components/shared/Container';
+import { PageHero } from '@/components/shared/PageHero';
 import { ProjectsGrid } from '@/components/projects/ProjectsGrid';
+import { CtaBanner } from '@/components/shared/CtaBanner';
 import { fetchAllProjects } from '@/lib/sanity/fetch';
 
 export const metadata: Metadata = {
@@ -13,17 +15,20 @@ export default async function ProjectsPage() {
   const projects = await fetchAllProjects();
 
   return (
-    <main className="flex-1 py-20 w-full overflow-hidden">
-      <Container>
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <h1 className="text-4xl md:text-5xl font-bold text-primary-900 mb-6">Our Portfolio</h1>
-          <p className="text-lg text-foreground/80">
-            Explore our diverse range of successful projects completed across various sectors in Qatar.
-          </p>
-        </div>
+    <main className="flex-1 w-full">
+      <PageHero label="Projects" image="/images/story-2.jpg" title="Selected Work">
+        <p className="max-w-xl text-lg text-gold/90">
+          A collection of spaces shaped through precision, craftsmanship, and integrated execution across Qatar.
+        </p>
+      </PageHero>
 
-        <ProjectsGrid initialProjects={projects} />
-      </Container>
+      <section className="bg-beige py-20 md:py-28">
+        <Container>
+          <ProjectsGrid initialProjects={projects} />
+        </Container>
+      </section>
+
+      <CtaBanner />
     </main>
   );
 }

@@ -8,28 +8,36 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
-  
-  /* Brand palette */
-  --color-primary: #5C1A32; /* Deep Maroon */
-  --color-accent: #E8D9A8; /* Cream / Gold */
-  
+  --font-sans: var(--font-cabin), ui-sans-serif, system-ui, sans-serif;
+
+  /* Brand palette (sampled from the Figma designs) */
+  --color-maroon: #57132D; /* Dark maroon: buttons, headings, gradient start */
+  --color-rose: #B13160; /* Gradient end, second word of two-tone headings */
+  --color-gold: #E4D4A3; /* Gold/cream text on dark backgrounds */
+  --color-beige: #E6D6A8; /* Page background for light sections */
+  --color-butter: #F3EBA8; /* Lighter yellow end of beige gradients */
+  --color-cream: #F8F1E4; /* Form fields, chips, tinted cards */
+  --color-ink: #0A0A0A; /* Near-black text and dark sections */
+
+  --color-primary: #57132D;
+  --color-accent: #E4D4A3;
+
   --color-primary-50: #fdf5f8;
   --color-primary-100: #fce8f0;
   --color-primary-200: #fad1e1;
   --color-primary-300: #f5a9c5;
   --color-primary-400: #eb74a0;
   --color-primary-500: #de477c;
-  --color-primary-600: #c62a5b;
-  --color-primary-700: #a71e48;
-  --color-primary-800: #8b1a3d;
-  --color-primary-900: #5C1A32;
+  --color-primary-600: #b13160;
+  --color-primary-700: #8f2349;
+  --color-primary-800: #731a3a;
+  --color-primary-900: #57132D;
   --color-primary-950: #3b0d1d;
 
   --color-accent-50: #fdfcf6;
   --color-accent-100: #faf7eb;
   --color-accent-200: #f4ecda;
-  --color-accent-300: #E8D9A8;
+  --color-accent-300: #E4D4A3;
   --color-accent-400: #dec176;
   --color-accent-500: #d3a44d;
   --color-accent-600: #bd863d;
@@ -75,7 +83,27 @@ html.lenis, html.lenis body {
   outline-offset: 2px;
 }
 
-/* Keep in-page anchor targets (e.g. /services#civil) clear of the sticky header */
+/* Keep in-page anchor targets (e.g. /services#civil) clear of the fixed header */
 section[id] {
   scroll-margin-top: 6rem;
+}
+
+/* Two-tone maroon → rose heading text used across the designs ("Selected Work") */
+.text-brand-gradient {
+  background: linear-gradient(90deg, var(--color-maroon) 0%, var(--color-rose) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.bg-brand-gradient {
+  background: linear-gradient(120deg, var(--color-maroon) 0%, var(--color-rose) 100%);
+}
+
+/* FAQ accordion: hide the default <summary> marker */
+details > summary {
+  list-style: none;
+}
+details > summary::-webkit-details-marker {
+  display: none;
 }

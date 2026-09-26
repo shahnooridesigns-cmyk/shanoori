@@ -5,62 +5,69 @@ import { Container } from '../shared/Container';
 import { resolveContact, toTelHref } from '@/lib/constants';
 import { fetchSiteSettings } from '@/lib/sanity/fetch';
 
+const navLinks = [
+  { name: 'Home', href: '/' },
+  { name: 'About', href: '/about' },
+  { name: 'Projects', href: '/projects' },
+  { name: 'Services', href: '/services' },
+  { name: 'Contact', href: '/contact' },
+];
+
 export const Footer = async () => {
-  const { address, phone: primaryPhone, email } = resolveContact(await fetchSiteSettings());
+  const settings = await fetchSiteSettings();
+  const { address, phone, email } = resolveContact(settings);
+  const socials = [
+    { name: 'Instagram', href: settings?.instagramUrl },
+    { name: 'Facebook', href: settings?.facebookUrl },
+  ].filter((s): s is { name: string; href: string } => Boolean(s.href));
 
   return (
-    <footer className="bg-primary-950 text-white pt-16 pb-8">
-      <Container>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
-          {/* Brand Info */}
-          <div className="flex flex-col gap-4">
-            <Link href="/" className="flex items-center">
-              <Image 
-                src="/logo.webp" 
-                alt="Shah Noori Logo" 
-                width={150} 
-                height={50} 
-                className="object-contain w-auto h-12 brightness-0 invert"
-              />
-            </Link>
-            <p className="text-white/70 max-w-sm">
-              Premium Interior & Fit-out services based in Doha, Qatar. Building excellence through precision and passion.
-            </p>
-          </div>
+    <footer className="overflow-hidden bg-black text-gold">
+      <Container className="pt-20">
+        <div className="flex flex-col gap-12 md:flex-row md:justify-between">
+          <Link href="/" aria-label="Shah Noori home" className="w-fit">
+            <Image src="/logo-gold.png" alt="Shah Noori" width={104} height={124} className="h-28 w-auto" />
+          </Link>
 
-          {/* Quick Links */}
-          <div className="flex flex-col gap-4">
-            <h3 className="text-lg font-semibold text-accent-300">Quick Links</h3>
-            <nav className="flex flex-col gap-2">
-              <Link href="/" className="text-white/70 hover:text-white transition-colors w-fit">Home</Link>
-              <Link href="/about" className="text-white/70 hover:text-white transition-colors w-fit">About Us</Link>
-              <Link href="/services" className="text-white/70 hover:text-white transition-colors w-fit">Services</Link>
-              <Link href="/projects" className="text-white/70 hover:text-white transition-colors w-fit">Projects</Link>
-              <Link href="/contact" className="text-white/70 hover:text-white transition-colors w-fit">Contact</Link>
+          <div className="grid grid-cols-2 gap-x-16 gap-y-10 sm:grid-cols-3">
+            <nav className="flex flex-col gap-2 text-lg" aria-label="Footer">
+              {navLinks.map((link) => (
+                <Link key={link.href} href={link.href} className="w-fit hover:opacity-75">
+                  {link.name}
+                </Link>
+              ))}
             </nav>
-          </div>
 
-          {/* Contact Info */}
-          <div className="flex flex-col gap-4">
-            <h3 className="text-lg font-semibold text-accent-300">Contact Us</h3>
-            <div className="flex flex-col gap-2 text-white/70">
-              <p className="whitespace-pre-line">{address}</p>
-              <p>
-                <a href={toTelHref(primaryPhone)} className="hover:text-white transition-colors">{primaryPhone}</a>
-              </p>
-              <p>
-                <a href={`mailto:${email}`} className="hover:text-white transition-colors">{email}</a>
-              </p>
+            {socials.length > 0 && (
+              <div className="flex flex-col gap-2 text-lg">
+                {socials.map((s) => (
+                  <a key={s.name} href={s.href} target="_blank" rel="noopener noreferrer" className="w-fit hover:opacity-75">
+                    {s.name}
+                  </a>
+                ))}
+              </div>
+            )}
+
+            <div className="col-span-2 flex flex-col gap-2 sm:col-span-1">
+              <a href={`mailto:${email}`} className="w-fit text-lg hover:opacity-75">{email}</a>
+              <a href={toTelHref(phone)} className="w-fit hover:opacity-75">{phone}</a>
+              <p className="whitespace-pre-line text-gold/80">{address}</p>
             </div>
           </div>
         </div>
 
-        <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-white/50 text-sm text-center md:text-left">
-            &copy; {new Date().getFullYear()} Shah Noori Interior & Fit-out. All rights reserved.
-          </p>
-        </div>
+        <p className="mt-16 text-sm text-gold/60">
+          &copy; {new Date().getFullYear()} Shah Noori. All rights reserved.
+        </p>
       </Container>
+
+      {/* Oversized wordmark from the design, cropped by the bottom edge */}
+      <p
+        aria-hidden="true"
+        className="mt-6 select-none whitespace-nowrap text-center font-medium leading-[0.8] text-white text-[19vw] translate-y-[8%]"
+      >
+        Shah Noori
+      </p>
     </footer>
   );
 };

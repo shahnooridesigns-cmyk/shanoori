@@ -1,88 +1,134 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Container } from '../shared/Container';
 import { WhatsAppButton } from '../shared/WhatsAppButton';
-import { WHATSAPP_NUMBER } from '@/lib/constants';
+import { WHATSAPP_NUMBER, toTelHref } from '@/lib/constants';
 
 const navLinks = [
   { name: 'Home', href: '/' },
   { name: 'About', href: '/about' },
-  { name: 'Services', href: '/services' },
   { name: 'Projects', href: '/projects' },
+  { name: 'Services', href: '/services' },
   { name: 'Contact', href: '/contact' },
 ];
 
-export const Header = ({ whatsapp = WHATSAPP_NUMBER }: { whatsapp?: string }) => {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+const isActive = (pathname: string, href: string) =>
+  href === '/' ? pathname === '/' : pathname === href || pathname.startsWith(`${href}/`);
+
+export const Header = ({
+  whatsapp = WHATSAPP_NUMBER,
+  phones = [],
+}: {
+  whatsapp?: string;
+  phones?: string[];
+}) => {
+  const pathname = usePathname();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  // Per the design, the home page shows the full nav + phones; inner pages use a menu button.
+  const isHome = pathname === '/';
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 40);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  // Lock page scroll while the menu is open
+  useEffect(() => {
+    document.documentElement.style.overflow = menuOpen ? 'hidden' : '';
+    return () => {
+      document.documentElement.style.overflow = '';
+    };
+  }, [menuOpen]);
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-background/95 backdrop-blur shadow-sm">
-      <Container className="flex h-20 items-center justify-between">
-        {/* Logo */}
-        <Link href="/" className="flex items-center">
-          <Image 
-            src="/logo.webp" 
-            alt="Shah Noori Logo" 
-            width={120} 
-            height={40} 
-            className="object-contain w-auto h-12"
-            priority
-          />
+    <header
+      className={`fixed inset-x-0 top-0 z-40 transition-colors duration-300 ${
+        scrolled && !menuOpen ? 'bg-ink/80 backdrop-blur-md' : 'bg-transparent'
+      }`}
+    >
+      <Container className="flex h-20 items-center justify-between gap-6">
+        <Link href="/" className="relative z-50 shrink-0" aria-label="Shah Noori home">
+          <Image src="/logo-gold.png" alt="Shah Noori" width={42} height={50} className="h-11 w-auto" priority />
         </Link>
 
-        {/* Desktop Nav */}
-        <nav className="hidden md:flex items-center gap-8">
-          {navLinks.map((link) => (
-            <Link 
-              key={link.name} 
-              href={link.href}
-              className="text-foreground/80 hover:text-primary-700 font-medium transition-colors"
-            >
-              {link.name}
-            </Link>
-          ))}
-          <WhatsAppButton className="!py-2 !px-4 !text-sm" phoneNumber={whatsapp} />
-        </nav>
+        {isHome && (
+          <nav className="hidden lg:flex items-center gap-9" aria-label="Main">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                aria-current={isActive(pathname, link.href) ? 'page' : undefined}
+                className={`text-gold transition-opacity hover:opacity-80 ${
+                  isActive(pathname, link.href) ? 'font-semibold underline underline-offset-4' : ''
+                }`}
+              >
+                {link.name}
+              </Link>
+            ))}
+          </nav>
+        )}
 
-        {/* Mobile Hamburger Toggle */}
+        {isHome && phones.length > 0 && (
+          <div className="hidden lg:flex flex-col items-end text-gold leading-tight">
+            {phones.slice(0, 2).map((phone) => (
+              <a key={phone} href={toTelHref(phone)} className="hover:opacity-80">
+                {phone}
+              </a>
+            ))}
+          </div>
+        )}
+
         <button
-          className="md:hidden flex flex-col items-center justify-center w-10 h-10 space-y-1.5 focus:outline-none"
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          aria-label="Toggle menu"
-          aria-expanded={isMobileMenuOpen}
-          aria-controls="mobile-menu"
+          type="button"
+          onClick={() => setMenuOpen((open) => !open)}
+          aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+          aria-expanded={menuOpen}
+          aria-controls="site-menu"
+          className={`relative z-50 flex h-10 w-10 flex-col items-end justify-center gap-2 ${isHome ? 'lg:hidden' : ''}`}
         >
-          <span className={`block w-6 h-0.5 bg-foreground transition-transform duration-300 ${isMobileMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
-          <span className={`block w-6 h-0.5 bg-foreground transition-opacity duration-300 ${isMobileMenuOpen ? 'opacity-0' : ''}`}></span>
-          <span className={`block w-6 h-0.5 bg-foreground transition-transform duration-300 ${isMobileMenuOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
+          <span className={`block h-0.5 w-8 bg-gold transition-transform duration-300 ${menuOpen ? 'translate-y-[5px] rotate-45' : ''}`} />
+          <span className={`block h-0.5 w-8 bg-gold transition-transform duration-300 ${menuOpen ? '-translate-y-[5px] -rotate-45' : ''}`} />
         </button>
       </Container>
 
-      {/* Mobile Nav Menu */}
+      {/* Full-screen menu */}
       <div
-        id="mobile-menu"
-        // Collapsed menu must not be reachable by keyboard or screen readers
-        inert={!isMobileMenuOpen}
-        className={`md:hidden absolute top-20 left-0 w-full bg-background shadow-lg transition-all duration-300 ease-in-out overflow-hidden ${
-          isMobileMenuOpen ? 'max-h-[400px] opacity-100 border-t border-gray-100' : 'max-h-0 opacity-0'
+        id="site-menu"
+        inert={!menuOpen}
+        className={`fixed inset-0 z-40 bg-brand-gradient transition-opacity duration-300 ${
+          menuOpen ? 'opacity-100' : 'pointer-events-none opacity-0'
         }`}
       >
-        <Container className="flex flex-col py-4 gap-4">
-          {navLinks.map((link) => (
-            <Link 
-              key={link.name} 
-              href={link.href}
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="block text-lg font-medium text-foreground/90 hover:text-primary-700 py-2"
-            >
-              {link.name}
-            </Link>
-          ))}
-          <div className="pt-4 border-t border-gray-100 pb-2">
-             <WhatsAppButton className="w-full justify-center" phoneNumber={whatsapp} />
+        <Container className="flex h-full flex-col justify-center gap-12 pt-20 pb-10">
+          <nav className="flex flex-col gap-3" aria-label="Menu">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={() => setMenuOpen(false)}
+                aria-current={isActive(pathname, link.href) ? 'page' : undefined}
+                className={`text-4xl md:text-6xl font-semibold text-gold transition-opacity hover:opacity-80 ${
+                  isActive(pathname, link.href) ? 'underline underline-offset-8' : ''
+                }`}
+              >
+                {link.name}
+              </Link>
+            ))}
+          </nav>
+          <div className="flex flex-col gap-4 text-gold/90">
+            {phones.slice(0, 2).map((phone) => (
+              <a key={phone} href={toTelHref(phone)} className="text-lg hover:opacity-80">
+                {phone}
+              </a>
+            ))}
+            <WhatsAppButton className="w-fit" phoneNumber={whatsapp} />
           </div>
         </Container>
       </div>

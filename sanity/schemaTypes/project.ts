@@ -44,6 +44,12 @@ export default defineType({
       description: 'Select an existing client from the list, or create a new Client document first if they are not listed yet.',
     }),
     defineField({
+      name: 'location',
+      title: 'Location',
+      type: 'string',
+      description: 'Shown on project cards, e.g. "West Bay, Doha".',
+    }),
+    defineField({
       name: 'year',
       title: 'Year',
       type: 'number',

@@ -12,6 +12,9 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   images: {
+    // Dev only: this machine's network resolves cdn.sanity.io to a NAT64 address (64:ff9b::/96),
+    // which Next's SSRF guard treats as private. Production keeps the guard on.
+    dangerouslyAllowLocalIP: process.env.NODE_ENV === 'development',
     remotePatterns: [
       {
         protocol: 'https',

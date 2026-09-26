@@ -5,6 +5,7 @@ const projectSummaryFields = groq`
   title,
   "slug": slug.current,
   category,
+  location,
   year,
   "imageUrl": coverImage.asset->url
 `;
@@ -46,7 +47,9 @@ export const getSiteSettings = groq`
     phoneNumbers,
     address,
     email,
-    serviceContacts
+    serviceContacts,
+    instagramUrl,
+    facebookUrl
   }
 `;
 

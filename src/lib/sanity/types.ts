@@ -5,6 +5,7 @@ export interface ProjectSummary {
   title: string;
   slug: string;
   category: Category;
+  location?: string;
   year?: number;
   imageUrl?: string;
 }
@@ -44,4 +45,6 @@ export interface SiteSettings {
   address?: string;
   email?: string;
   serviceContacts?: Partial<Record<Category, string>>;
+  instagramUrl?: string;
+  facebookUrl?: string;
 }

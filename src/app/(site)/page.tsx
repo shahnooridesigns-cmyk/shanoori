@@ -1,21 +1,25 @@
 import { Hero } from "@/components/home/Hero";
+import { AboutIntro } from "@/components/home/AboutIntro";
+import { SelectedWork } from "@/components/home/SelectedWork";
 import { WhyChooseUs } from "@/components/home/WhyChooseUs";
-import { ClientsStrip } from "@/components/home/ClientsStrip";
-import { ServicesPreview } from "@/components/home/ServicesPreview";
-import { FeaturedProjects } from "@/components/home/FeaturedProjects";
-import { Reviews } from "@/components/home/Reviews";
-import { CTASection } from "@/components/home/CTASection";
+import { ServicesShowcase } from "@/components/home/ServicesShowcase";
+import { Process } from "@/components/home/Process";
+import { Testimonials } from "@/components/home/Testimonials";
+import { FaqSection } from "@/components/shared/FaqSection";
+import { CtaBanner } from "@/components/shared/CtaBanner";
 
 export default function Home() {
   return (
     <main className="flex-1 w-full flex flex-col">
       <Hero />
+      <AboutIntro />
+      <SelectedWork />
       <WhyChooseUs />
-      <ClientsStrip />
-      <ServicesPreview />
-      <FeaturedProjects />
-      <Reviews />
-      <CTASection />
+      <ServicesShowcase />
+      <Process />
+      <Testimonials />
+      <FaqSection />
+      <CtaBanner />
     </main>
   );
 }

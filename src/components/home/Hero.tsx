@@ -1,46 +1,22 @@
 import React from 'react';
 import Image from 'next/image';
 import { Container } from '../shared/Container';
-import Link from 'next/link';
+import { ArrowLink } from '../shared/ui';
 
-export const Hero = () => {
-  return (
-    <section className="relative flex min-h-[80vh] items-center bg-primary-950 overflow-hidden">
-      {/* Background Image Placeholder */}
-      <div className="absolute inset-0 z-0">
-        <Image
-          src="/placeholder.svg"
-          alt="Hero Background"
-          fill
-          className="object-cover opacity-20"
-          priority
-        />
-      </div>
-      
-      <Container className="relative z-10 py-20">
-        <div className="max-w-3xl flex flex-col gap-6">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white leading-tight">
-            Building Excellence <br/> Through Precision
-          </h1>
-          <p className="text-lg md:text-xl text-white/80 max-w-2xl leading-relaxed">
-            Premium interior and fit-out services in Doha, Qatar. We transform spaces with unparalleled quality and design.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 pt-4">
-            <Link 
-              href="/contact" 
-              className="inline-flex items-center justify-center rounded-full bg-accent-300 px-8 py-3.5 font-semibold text-primary-950 transition-colors hover:bg-accent-400"
-            >
-              Get a Quote
-            </Link>
-            <Link 
-              href="/projects" 
-              className="inline-flex items-center justify-center rounded-full border-2 border-white/30 bg-transparent px-8 py-3.5 font-semibold text-white transition-colors hover:bg-white/10 hover:border-white/50"
-            >
-              View Our Work
-            </Link>
-          </div>
-        </div>
-      </Container>
-    </section>
-  );
-};
+export const Hero = () => (
+  <section className="relative flex min-h-[640px] h-[100svh] max-h-[900px] flex-col overflow-hidden bg-ink">
+    <Image src="/images/hero-home.jpg" alt="" fill priority sizes="100vw" className="object-cover" />
+    <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/50" aria-hidden="true" />
+
+    <Container className="relative flex flex-1 flex-col justify-center pt-24">
+      <p className="max-w-xs text-lg leading-snug text-gold">
+        Integrated construction and fit-out solutions, thoughtfully executed from concept to completion.
+      </p>
+      <ArrowLink href="/contact" className="mt-8 w-fit text-white">Start a Project</ArrowLink>
+    </Container>
+
+    <h1 className="relative select-none whitespace-nowrap px-4 text-center font-medium leading-[0.78] text-gold text-[19vw] 2xl:text-[280px]">
+      Shah Noori
+    </h1>
+  </section>
+);

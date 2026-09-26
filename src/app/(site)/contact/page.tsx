@@ -1,81 +1,145 @@
 import React from 'react';
 import type { Metadata } from 'next';
 import { Container } from '@/components/shared/Container';
-import { WhatsAppButton } from '@/components/shared/WhatsAppButton';
+import { SectionLabel } from '@/components/shared/ui';
 import { ContactForm } from '@/components/contact/ContactForm';
+import { whatsAppHref } from '@/components/shared/WhatsAppButton';
+import { FaqSection } from '@/components/shared/FaqSection';
+import { CtaBanner } from '@/components/shared/CtaBanner';
 import { resolveContact, toTelHref } from '@/lib/constants';
 import { fetchSiteSettings } from '@/lib/sanity/fetch';
 
 export const metadata: Metadata = {
   title: 'Contact',
-  description: 'Get in touch with Shah Noori for enquiries and project consultations in Doha, Qatar.',
+  description: 'Request a project consultation with Shah Noori: civil construction, interior fit-out and MEP works in Doha, Qatar.',
 };
 
+const badges = ['Grade-A Classified', 'Turnkey Delivery Under One Roof', 'Rapid 24-Hour Tender Response'];
+
+const travelTimes = [
+  { place: "Hamad Int'l Airport", time: '20 Mins', via: 'Via G-Ring Expressway' },
+  { place: 'West Bay & Corniche', time: '25 Mins', via: 'Via Sabah Al-Ahmad Corridor' },
+  { place: 'Lusail Marina District', time: '28 Mins', via: 'Via Al Majd Orbital' },
+];
+
 export default async function ContactPage() {
-  const { address, phone: primaryPhone, email, whatsapp } = resolveContact(await fetchSiteSettings());
-  const mapsHref = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+  const { address, phone, email, whatsapp } = resolveContact(await fetchSiteSettings());
+  const mapsQuery = encodeURIComponent(address);
+  const displayPhone = `+${whatsapp.slice(0, 3)} ${whatsapp.slice(3, 7)} ${whatsapp.slice(7)}`.trim();
 
   return (
-    <main className="flex-1 py-20 w-full overflow-hidden">
-      <Container>
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <h1 className="text-4xl md:text-5xl font-bold text-primary-900 mb-6">Contact Us</h1>
-          <p className="text-lg text-foreground/80">
-            Get in touch with our team for enquiries, project consultations, or any information you may need.
+    <main className="flex-1 w-full">
+      {/* Hero + form */}
+      <section className="bg-brand-gradient pt-32 pb-20">
+        <Container>
+          <SectionLabel tone="gold">Contact Us</SectionLabel>
+          <h1 className="mt-8 text-center text-4xl sm:text-5xl md:text-6xl font-semibold leading-tight text-white">
+            Let&apos;s Build Your Next <span className="text-[#FFE59E]">Project Together.</span>
+          </h1>
+          <p className="mt-8 text-center text-lg font-medium text-white">
+            Looking for a reliable construction, interior fit-out or MEP company in Qatar?
           </p>
-        </div>
+          <p className="mt-2 text-center text-white/70">
+            Talk to Shah Noori about your project requirements and work with one integrated project partner.
+          </p>
+          <ul className="mt-10 flex flex-wrap justify-center gap-3">
+            {badges.map((b) => (
+              <li key={b} className="rounded-full bg-white/10 px-4 py-2 text-sm font-medium text-white">{b}</li>
+            ))}
+          </ul>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-          {/* Contact Information & Map */}
-          <div className="flex flex-col gap-10">
-            <div className="bg-primary-50 p-8 rounded-2xl border border-primary-100 flex flex-col gap-6">
-              <h2 className="text-2xl font-bold text-primary-900">Get In Touch</h2>
+          <div className="mt-16 rounded-[32px] bg-[#F4ECEE] p-6 sm:p-10 md:p-12">
+            <p className="text-xs font-semibold uppercase tracking-wider text-ink/70">Direct Tender Submission &amp; RFQ</p>
+            <h2 className="mt-2 text-3xl md:text-4xl font-semibold text-maroon">Request a Project Consultation</h2>
+            <p className="mt-2 mb-10 text-ink/70">Submit your tender documents or project specifications for confidential evaluation.</p>
+            <ContactForm phoneNumber={whatsapp} email={email} />
+          </div>
+        </Container>
+      </section>
 
-              <div className="flex flex-col gap-4 text-foreground/80">
-                <div>
-                  <strong className="block text-primary-900 mb-1">Address:</strong>
-                  <span className="whitespace-pre-line">{address}</span>
-                </div>
-                <div>
-                  <strong className="block text-primary-900 mb-1">Phone:</strong>
-                  <a href={toTelHref(primaryPhone)} className="hover:text-primary-700 transition-colors">{primaryPhone}</a>
-                </div>
-                <div>
-                  <strong className="block text-primary-900 mb-1">Email:</strong>
-                  <a href={`mailto:${email}`} className="hover:text-primary-700 transition-colors">{email}</a>
-                </div>
-              </div>
+      <FaqSection />
 
-              <div className="pt-4">
-                <WhatsAppButton
-                  message="Hello Shah Noori, I would like to get in touch regarding a new project."
-                  phoneNumber={whatsapp}
-                />
-              </div>
+      {/* Location */}
+      <section className="bg-brand-gradient py-24">
+        <Container>
+          <p className="text-xs font-semibold uppercase tracking-wider text-white">Operational Center &amp; Production Plant</p>
+          <h2 className="mt-4 max-w-3xl whitespace-pre-line text-3xl md:text-5xl font-semibold leading-tight text-gold">
+            Find Our Location — {address}
+          </h2>
+          <p className="mt-6 max-w-2xl text-white/90">
+            Strategically located in Birkat Awamer logistics and manufacturing hub with integrated joinery workshop, MEP testing yard, and administrative engineering offices.
+          </p>
+
+          <div className="mt-12 grid gap-5 lg:grid-cols-[1.25fr_1fr]">
+            <div className="overflow-hidden rounded-[32px] bg-white">
+              <iframe
+                title="Shah Noori location map"
+                src={`https://www.google.com/maps?q=${mapsQuery}&output=embed`}
+                className="h-80 w-full border-0"
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              />
+              <ul className="grid gap-3 p-4 sm:grid-cols-3">
+                {travelTimes.map((t) => (
+                  <li key={t.place} className="rounded-2xl bg-cream p-3">
+                    <p className="text-xs font-semibold text-ink/80">{t.place}</p>
+                    <p className="text-2xl font-semibold text-ink">{t.time}</p>
+                    <p className="text-xs text-ink/70">{t.via}</p>
+                  </li>
+                ))}
+              </ul>
             </div>
 
-            {/* Location */}
-            <a
-              href={mapsHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group w-full h-64 bg-primary-900 rounded-2xl flex flex-col items-center justify-center gap-3 text-center p-8 transition-colors hover:bg-primary-800"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-10 h-10 fill-accent-300" aria-hidden="true">
-                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z" />
-              </svg>
-              <span className="text-white font-semibold text-lg">View our location on Google Maps</span>
-              <span className="text-accent-300 text-sm group-hover:underline">Open in a new tab &rarr;</span>
-            </a>
-          </div>
+            <div className="flex flex-col gap-5">
+              <div className="overflow-hidden rounded-[32px] bg-white">
+                <div className="flex gap-5 p-8">
+                  <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-cream text-maroon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-6 w-6" aria-hidden="true"><path d="M12 21s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12z" /><circle cx="12" cy="9" r="2.5" /></svg>
+                  </span>
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-wider text-[#8A6D1F]">Corporate Headquarters</p>
+                    <p className="mt-1 whitespace-pre-line text-xl font-semibold text-ink">{address}</p>
+                    <p className="mt-2 text-sm text-ink/70">Central Engineering Yard, Joinery Complex &amp; Executive Boardroom</p>
+                  </div>
+                </div>
+                <div className="flex flex-wrap items-center justify-between gap-3 bg-cream px-8 py-4">
+                  <a href={toTelHref(phone)} className="text-sm text-ink/80 hover:text-ink">{phone}</a>
+                  <a
+                    href={`https://www.google.com/maps/search/?api=1&query=${mapsQuery}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="rounded-full bg-maroon px-5 py-2 text-sm font-semibold text-white hover:bg-[#6d1a3a]"
+                  >
+                    Map: Find Our Location →
+                  </a>
+                </div>
+              </div>
 
-          {/* Contact Form */}
-          <div className="bg-white p-8 md:p-10 rounded-2xl border border-gray-200 shadow-sm h-fit">
-            <h2 className="text-2xl font-bold text-primary-900 mb-6">Send us a Message</h2>
-            <ContactForm phoneNumber={whatsapp} />
+              <div className="rounded-[32px] bg-gradient-to-br from-white via-white to-[#F2D4DD] p-8">
+                <div className="flex items-center justify-between gap-4">
+                  <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#8A6D1F]">
+                    <span className="h-2.5 w-2.5 rounded-full bg-[#E0B83A]" aria-hidden="true" />
+                    Immediate Technical Channel
+                  </p>
+                  <span className="rounded-full bg-[#FFF1B8] px-3 py-1 text-xs font-semibold text-[#8A6D1F]">Active Now</span>
+                </div>
+                <h3 className="mt-4 text-3xl font-semibold text-ink">WhatsApp: Direct Enquiry</h3>
+                <p className="mt-3 text-ink/75">Instant chat with our senior project estimator &amp; engineering directors.</p>
+                <a
+                  href={whatsAppHref(whatsapp, 'Hello Shah Noori, I would like to discuss a project.')}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-6 flex items-center justify-center gap-3 rounded-full bg-maroon px-6 py-3.5 font-semibold text-white hover:bg-[#6d1a3a]"
+                >
+                  {displayPhone} (Open WhatsApp)
+                </a>
+              </div>
+            </div>
           </div>
-        </div>
-      </Container>
+        </Container>
+      </section>
+
+      <CtaBanner />
     </main>
   );
 }

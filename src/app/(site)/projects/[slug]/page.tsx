@@ -8,6 +8,8 @@ import { WhatsAppButton } from '@/components/shared/WhatsAppButton';
 import { resolveWhatsAppNumber } from '@/lib/constants';
 import { fetchProjectBySlug, fetchSiteSettings } from '@/lib/sanity/fetch';
 import type { ProjectDetail } from '@/lib/sanity/types';
+import { CtaBanner } from '@/components/shared/CtaBanner';
+import { SectionLabel } from '@/components/shared/ui';
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -50,83 +52,81 @@ export default async function ProjectDetailPage({ params }: Props) {
   const description = descriptionToText(project.description);
   const gallery = (project.gallery ?? []).filter((img): img is { url: string } => Boolean(img?.url));
 
-  return (
-    <main className="flex-1 py-12 md:py-20 w-full overflow-hidden">
-      <Container>
-        {/* Breadcrumb */}
-        <nav aria-label="Breadcrumb" className="mb-8 text-sm text-foreground/60">
-          <Link href="/projects" className="hover:text-primary-700 transition-colors">Projects</Link>
-          <span className="mx-2" aria-hidden="true">/</span>
-          <span className="text-foreground/90 capitalize" aria-current="page">{project.title}</span>
-        </nav>
+  const categoryLabel = project.category?.charAt(0).toUpperCase() + project.category?.slice(1);
+  const facts = [
+    { label: 'Category', value: categoryLabel },
+    { label: 'Client', value: project.client?.name },
+    { label: 'Location', value: project.location },
+    { label: 'Year', value: project.year?.toString() },
+  ].filter((f): f is { label: string; value: string } => Boolean(f.value));
 
-        {/* Header Section */}
-        <div className="flex flex-col md:flex-row md:justify-between md:items-end gap-6 mb-10">
-          <div className="max-w-3xl">
-            <div className="text-sm font-semibold text-accent-700 mb-3 uppercase tracking-wide">{project.category}</div>
-            <h1 className="text-3xl md:text-5xl font-bold text-primary-900 mb-4 capitalize">
-              {project.title}
-            </h1>
-            <div className="flex flex-wrap gap-x-8 gap-y-2 text-foreground/70">
-              {project.client?.name && (
-                <p><span className="font-semibold text-primary-900">Client:</span> {project.client.name}</p>
-              )}
-              {project.year && (
-                <p><span className="font-semibold text-primary-900">Year:</span> {project.year}</p>
-              )}
-            </div>
-          </div>
-          <div>
+  return (
+    <main className="flex-1 w-full">
+      {/* Hero */}
+      <section className="relative overflow-hidden bg-maroon">
+        <Image src={project.imageUrl || '/placeholder.svg'} alt="" fill priority sizes="100vw" className="object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-t from-maroon via-maroon/60 to-maroon/20" aria-hidden="true" />
+        <Container className="relative flex min-h-[560px] flex-col justify-end gap-6 pt-32 pb-16">
+          <nav aria-label="Breadcrumb" className="text-sm text-gold/80">
+            <Link href="/projects" className="hover:text-gold">Projects</Link>
+            <span className="mx-2" aria-hidden="true">/</span>
+            <span aria-current="page">{project.title}</span>
+          </nav>
+          <h1 className="max-w-4xl text-4xl sm:text-5xl md:text-6xl font-semibold leading-tight text-gold">{project.title}</h1>
+          <div className="flex flex-wrap items-center gap-6">
             <WhatsAppButton
               message={`Hello Shah Noori, I am interested in learning more about the project: ${project.title}`}
               phoneNumber={phoneNumber}
             />
           </div>
-        </div>
+        </Container>
+      </section>
 
-        {/* Cover Image */}
-        <div className="relative w-full aspect-[16/9] md:aspect-[21/9] rounded-2xl overflow-hidden bg-gray-100 mb-16">
-          <Image
-            src={project.imageUrl || '/placeholder.svg'}
-            alt={project.title}
-            fill
-            sizes="(min-width: 1280px) 1216px, 100vw"
-            className="object-cover"
-            priority
-          />
-        </div>
-
-        {/* Content Section */}
-        <div className="flex flex-col gap-16">
-          {/* Project Overview */}
+      {/* Overview */}
+      <section className="bg-beige py-20 md:py-28">
+        <Container className="grid gap-12 lg:grid-cols-[1fr_320px] lg:gap-20">
           <div>
-            <h2 className="text-2xl font-bold text-primary-900 mb-6">Project Overview</h2>
-            <div className="max-w-none text-lg text-foreground/80 leading-relaxed">
-              <p className="whitespace-pre-wrap">{description || 'Description coming soon.'}</p>
-            </div>
+            <SectionLabel>Project Overview</SectionLabel>
+            <p className="mt-6 whitespace-pre-wrap text-xl md:text-2xl leading-snug text-ink">
+              {description || 'Description coming soon.'}
+            </p>
           </div>
-
-          {/* Project Gallery */}
-          {gallery.length > 0 && (
-            <div>
-              <h2 className="text-2xl font-bold text-primary-900 mb-6">Project Gallery</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                {gallery.map((img, idx) => (
-                  <div key={img.url} className="relative aspect-[4/3] w-full rounded-xl overflow-hidden bg-gray-100">
-                    <Image
-                      src={img.url}
-                      alt={`${project.title} gallery image ${idx + 1}`}
-                      fill
-                      sizes="(min-width: 768px) 33vw, (min-width: 640px) 50vw, 100vw"
-                      className="object-cover"
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
+          {facts.length > 0 && (
+            <dl className="h-fit rounded-[28px] bg-white/70 p-8 shadow-[0_16px_32px_-16px_rgba(90,70,20,0.4)]">
+              {facts.map((f) => (
+                <div key={f.label} className="border-b border-maroon/15 py-4 first:pt-0 last:border-0 last:pb-0">
+                  <dt className="text-xs font-semibold uppercase tracking-wider text-maroon/70">{f.label}</dt>
+                  <dd className="mt-1 text-lg text-ink">{f.value}</dd>
+                </div>
+              ))}
+            </dl>
           )}
-        </div>
-      </Container>
+        </Container>
+      </section>
+
+      {/* Gallery */}
+      {gallery.length > 0 && (
+        <section className="bg-white py-20 md:py-28">
+          <Container>
+            <h2 className="text-brand-gradient w-fit text-4xl md:text-5xl font-medium">Project Gallery</h2>
+            <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {gallery.map((img, idx) => (
+                <div key={img.url} className="relative aspect-[4/3] overflow-hidden rounded-2xl shadow-[0_16px_32px_-16px_rgba(0,0,0,0.4)]">
+                  <Image
+                    src={img.url}
+                    alt={`${project.title} gallery image ${idx + 1}`}
+                    fill
+                    sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                    className="object-cover"
+                  />
+                </div>
+              ))}
+            </div>
+          </Container>
+        </section>
+      )}
+
+      <CtaBanner />
     </main>
   );
 }

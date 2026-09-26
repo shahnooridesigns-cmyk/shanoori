@@ -31,6 +31,18 @@ export default defineType({
       type: 'text',
     }),
     defineField({
+      name: 'instagramUrl',
+      title: 'Instagram URL',
+      type: 'url',
+      description: 'Shown in the footer. Leave blank to hide.',
+    }),
+    defineField({
+      name: 'facebookUrl',
+      title: 'Facebook URL',
+      type: 'url',
+      description: 'Shown in the footer. Leave blank to hide.',
+    }),
+    defineField({
       name: 'serviceContacts',
       title: 'Service-Specific WhatsApp Numbers (Optional)',
       description: 'Leave blank to use the main WhatsApp number above for that service. Only fill in if a specific service should route to a different number.',
