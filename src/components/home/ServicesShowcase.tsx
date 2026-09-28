@@ -1,8 +1,7 @@
 import React from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
 import { Container } from '../shared/Container';
 import { SectionLabel } from '../shared/ui';
+import { StackedServices } from './StackedServices';
 import { divisions } from '@/lib/services';
 
 export const ServicesShowcase = () => (
@@ -20,25 +19,7 @@ export const ServicesShowcase = () => (
         </p>
       </div>
 
-      <div className="flex flex-col gap-20 md:gap-32">
-        {divisions.map((d) => (
-          <Link
-            key={d.id}
-            href={`/services#${d.id}`}
-            className="group grid gap-6 sm:grid-cols-[1fr_260px] sm:gap-4"
-          >
-            <div className="flex flex-col">
-              <span className="text-white/80">/{d.number}</span>
-              <h3 className="mt-6 text-3xl md:text-4xl text-gold transition-opacity group-hover:opacity-80">{d.title}</h3>
-              <p className="mt-6 max-w-xs text-white/75">{d.summary}</p>
-              <p className="mt-auto pt-8 text-white/75">{d.tags.join(' · ')}</p>
-            </div>
-            <div className="relative aspect-[261/337] overflow-hidden">
-              <Image src={d.image} alt={d.title} fill sizes="(min-width: 640px) 260px, 100vw" className="object-cover transition-transform duration-700 group-hover:scale-105" />
-            </div>
-          </Link>
-        ))}
-      </div>
+      <StackedServices divisions={divisions} />
     </Container>
   </section>
 );
