@@ -1,6 +1,7 @@
 import React from 'react';
 import { Container } from '../shared/Container';
 import { SectionLabel } from '../shared/ui';
+import { CountUp } from '../shared/CountUp';
 
 const stats = [
   { value: '100+', label: 'Completed Projects' },
@@ -20,7 +21,7 @@ export const AboutIntro = () => (
           {stats.map((stat) => (
             <div key={stat.label} className="flex flex-col items-center gap-2 text-center">
               <dt className="order-2 text-base md:text-lg text-ink/90">{stat.label}</dt>
-              <dd className="order-1 text-6xl sm:text-8xl md:text-[140px] font-medium leading-none text-ink">{stat.value}</dd>
+              <dd className="order-1 text-6xl sm:text-8xl md:text-[140px] font-medium leading-none text-ink"><CountUp value={stat.value} /></dd>
             </div>
           ))}
         </dl>

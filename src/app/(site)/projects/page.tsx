@@ -6,6 +6,7 @@ import { Container } from '@/components/shared/Container';
 import { ArrowLink, ArrowUpRight, SectionLabel } from '@/components/shared/ui';
 import { ProjectsGrid } from '@/components/projects/ProjectsGrid';
 import { CtaBanner } from '@/components/shared/CtaBanner';
+import { CountUp } from '@/components/shared/CountUp';
 import { categoryLabel } from '@/lib/categories';
 import { fetchAllProjects, fetchFeaturedProjects } from '@/lib/sanity/fetch';
 
@@ -48,7 +49,7 @@ export default async function ProjectsPage() {
               {stats.map((s) => (
                 <div key={s.label} className="flex flex-col-reverse">
                   <dt className="mt-1 text-sm text-white/60">{s.label}</dt>
-                  <dd className="text-4xl md:text-5xl font-medium text-gold">{s.value}</dd>
+                  <dd className="text-4xl md:text-5xl font-medium text-gold"><CountUp value={s.value} /></dd>
                 </div>
               ))}
             </dl>

@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import { AnimatePresence, motion } from 'framer-motion';
 import type { Review } from '@/lib/sanity/types';
+import { CountUp } from '../shared/CountUp';
 
 const Star = () => (
   <svg viewBox="0 0 20 20" className="h-6 w-6 fill-current" aria-hidden="true">
@@ -51,7 +52,7 @@ export const TestimonialSlider = ({ reviews }: { reviews: Review[] }) => {
           </div>
         </div>
         <div className="flex items-center gap-4 text-lg text-ink" aria-label={`Average rating ${average.toFixed(1)} out of 5`}>
-          {average.toFixed(1)}/5
+          <CountUp value={`${average.toFixed(1)}/5`} />
           <span className="flex">{Array.from({ length: 5 }, (_, i) => <Star key={i} />)}</span>
         </div>
       </div>

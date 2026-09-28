@@ -5,6 +5,7 @@ import { SectionLabel } from '@/components/shared/ui';
 import { ContactForm } from '@/components/contact/ContactForm';
 import { whatsAppHref } from '@/components/shared/WhatsAppButton';
 import { FaqSection } from '@/components/shared/FaqSection';
+import { CountUp } from '@/components/shared/CountUp';
 import { CtaBanner } from '@/components/shared/CtaBanner';
 import { resolveContact, toTelHref } from '@/lib/constants';
 import { fetchSiteSettings } from '@/lib/sanity/fetch';
@@ -83,7 +84,7 @@ export default async function ContactPage() {
                 {travelTimes.map((t) => (
                   <li key={t.place} className="rounded-2xl bg-cream p-3">
                     <p className="text-xs font-semibold text-ink/80">{t.place}</p>
-                    <p className="text-2xl font-semibold text-ink">{t.time}</p>
+                    <p className="text-2xl font-semibold text-ink"><CountUp value={t.time} /></p>
                     <p className="text-xs text-ink/70">{t.via}</p>
                   </li>
                 ))}

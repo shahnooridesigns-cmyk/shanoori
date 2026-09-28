@@ -7,6 +7,7 @@ import { ArrowLink, SectionLabel } from '@/components/shared/ui';
 import { DivisionCards } from '@/components/shared/DivisionCards';
 import { TrustedBy } from '@/components/shared/TrustedBy';
 import { FaqSection } from '@/components/shared/FaqSection';
+import { CountUp } from '@/components/shared/CountUp';
 import { CtaBanner } from '@/components/shared/CtaBanner';
 
 export const metadata: Metadata = {
@@ -87,7 +88,7 @@ export default function AboutPage() {
           <dl className="mt-12 flex flex-col gap-10 lg:ml-[35%]">
             {stats.map((s) => (
               <div key={s.value} className="grid items-center gap-4 sm:grid-cols-[320px_1fr]">
-                <dt className="text-8xl md:text-[128px] font-medium leading-none tracking-tight text-ink">{s.value}</dt>
+                <dt className="text-8xl md:text-[128px] font-medium leading-none tracking-tight text-ink"><CountUp value={s.value} /></dt>
                 <dd className="max-w-sm text-lg md:text-xl leading-snug text-ink/80">{s.text}</dd>
               </div>
             ))}
