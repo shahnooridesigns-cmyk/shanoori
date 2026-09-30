@@ -37,7 +37,7 @@ export default function AboutPage() {
         <Container>
           <SectionLabel tone="ink">Our Story</SectionLabel>
           <div className="mt-8 grid gap-10 lg:grid-cols-[400px_1fr] lg:gap-28">
-            <div className="relative aspect-[443/644] overflow-hidden rounded-[32px] lg:max-h-[470px]">
+            <div className="card-reveal relative aspect-[443/644] overflow-hidden rounded-[32px] lg:max-h-[470px]">
               <Image src="/images/story-1.jpg" alt="Café interior fit-out by Shah Noori" fill sizes="(min-width: 1024px) 400px, 100vw" className="object-cover" />
             </div>
             <div className="flex flex-col gap-8">
@@ -52,7 +52,7 @@ export default function AboutPage() {
                   combining practical knowledge with disciplined project execution.
                 </p>
               </div>
-              <div className="relative aspect-square max-h-[440px] overflow-hidden rounded-[32px] lg:-ml-8">
+              <div className="card-reveal relative aspect-square max-h-[440px] overflow-hidden rounded-[32px] lg:-ml-8">
                 <Image src="/images/story-2.jpg" alt="Exhibition stand built by Shah Noori" fill sizes="(min-width: 1024px) 620px, 100vw" className="object-cover" />
               </div>
             </div>
@@ -95,14 +95,14 @@ export default function AboutPage() {
           </dl>
 
           <div className="mt-28 grid gap-4 md:grid-cols-2">
-            <div className="bg-brand-gradient rounded-[28px] p-8 md:p-10 shadow-[0_12px_24px_-8px_rgba(0,0,0,0.3)]">
+            <div className="card-reveal card-lift bg-brand-gradient rounded-[28px] p-8 md:p-10 shadow-[0_12px_24px_-8px_rgba(0,0,0,0.3)]">
               <h3 className="text-center text-3xl text-gold">Our Mission</h3>
               <p className="mt-6 text-xl leading-snug text-gold">
                 To deliver high-quality and cost-effective services and products through a motivated and focused team, guided
                 by sound engineering principles and ethical business practices.
               </p>
             </div>
-            <div className="rounded-[28px] bg-white p-8 md:p-10 shadow-[0_8px_24px_-6px_rgba(0,0,0,0.3)]">
+            <div className="card-reveal card-lift rounded-[28px] bg-white p-8 md:p-10 shadow-[0_8px_24px_-6px_rgba(0,0,0,0.3)]">
               <h3 className="text-center text-3xl text-maroon">Our Vision</h3>
               <p className="mt-6 text-xl leading-snug text-maroon">
                 To create new concepts of living, build lasting client trust and provide personalized solutions while becoming

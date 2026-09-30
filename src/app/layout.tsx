@@ -25,7 +25,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       lang="en"
       className={`${cabin.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col font-sans">
+      {/* Extensions like Grammarly add attributes to <body> before React hydrates; ignore those
+          (only this element's own attributes, not anything inside it) */}
+      <body className="min-h-full flex flex-col font-sans" suppressHydrationWarning>
         {children}
       </body>
     </html>

@@ -5,7 +5,7 @@ export const WHATSAPP_NUMBER = "97433494880";
 export const FALLBACK_CONTACT = {
   address: 'Doha, Qatar',
   phone: '+974 3349 4880',
-  email: 'info@shahnoori.qa',
+  email: 'info@sncreatives.com',
 };
 
 /** Digits only — wa.me requires the international number without "+", spaces or dashes. */

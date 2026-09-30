@@ -14,7 +14,7 @@ const Check = () => (
 export const DivisionCards = () => (
   <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
     {divisions.map((d) => (
-      <article key={d.id} className="flex flex-col overflow-hidden rounded-[32px] bg-white shadow-[0_20px_40px_-12px_rgba(0,0,0,0.25)]">
+      <article key={d.id} className="card-reveal card-lift flex flex-col overflow-hidden rounded-[32px] bg-white shadow-[0_20px_40px_-12px_rgba(0,0,0,0.25)]">
         <div className="relative aspect-[340/220]">
           <Image src={d.image} alt={d.title} fill sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw" className="object-cover" />
           <span className="absolute left-5 top-5 rounded-full bg-maroon px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-gold">

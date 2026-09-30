@@ -49,7 +49,7 @@ export default async function ContactPage() {
             ))}
           </ul>
 
-          <div className="mt-16 rounded-[32px] bg-[#F4ECEE] p-6 sm:p-10 md:p-12">
+          <div className="card-reveal mt-16 rounded-[32px] bg-[#F4ECEE] p-6 sm:p-10 md:p-12">
             <p className="text-xs font-semibold uppercase tracking-wider text-ink/70">Direct Tender Submission &amp; RFQ</p>
             <h2 className="mt-2 text-3xl md:text-4xl font-semibold text-maroon">Request a Project Consultation</h2>
             <p className="mt-2 mb-10 text-ink/70">Submit your tender documents or project specifications for confidential evaluation.</p>
@@ -72,7 +72,7 @@ export default async function ContactPage() {
           </p>
 
           <div className="mt-12 grid gap-5 lg:grid-cols-[1.25fr_1fr]">
-            <div className="overflow-hidden rounded-[32px] bg-white">
+            <div className="card-reveal overflow-hidden rounded-[32px] bg-white">
               <iframe
                 title="Shah Noori location map"
                 src={`https://www.google.com/maps?q=${mapsQuery}&output=embed`}
@@ -82,7 +82,7 @@ export default async function ContactPage() {
               />
               <ul className="grid gap-3 p-4 sm:grid-cols-3">
                 {travelTimes.map((t) => (
-                  <li key={t.place} className="rounded-2xl bg-cream p-3">
+                  <li key={t.place} className="card-lift rounded-2xl bg-cream p-3">
                     <p className="text-xs font-semibold text-ink/80">{t.place}</p>
                     <p className="text-2xl font-semibold text-ink"><CountUp value={t.time} /></p>
                     <p className="text-xs text-ink/70">{t.via}</p>
@@ -92,7 +92,7 @@ export default async function ContactPage() {
             </div>
 
             <div className="flex flex-col gap-5">
-              <div className="overflow-hidden rounded-[32px] bg-white">
+              <div className="card-reveal card-lift overflow-hidden rounded-[32px] bg-white">
                 <div className="flex gap-5 p-8">
                   <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-cream text-maroon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-6 w-6" aria-hidden="true"><path d="M12 21s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12z" /><circle cx="12" cy="9" r="2.5" /></svg>
@@ -116,7 +116,7 @@ export default async function ContactPage() {
                 </div>
               </div>
 
-              <div className="rounded-[32px] bg-gradient-to-br from-white via-white to-[#F2D4DD] p-8">
+              <div className="card-reveal card-lift rounded-[32px] bg-gradient-to-br from-white via-white to-[#F2D4DD] p-8">
                 <div className="flex items-center justify-between gap-4">
                   <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#8A6D1F]">
                     <span className="h-2.5 w-2.5 rounded-full bg-[#E0B83A]" aria-hidden="true" />

@@ -149,7 +149,7 @@ export const ProcessScroll = ({ steps }: { steps: ProcessStep[] }) => {
     return (
       <ol className="grid gap-8 md:grid-cols-2">
         {steps.map((step, i) => (
-          <li key={step.title} className="overflow-hidden rounded-[24px] bg-[#111]">
+          <li key={step.title} className="card-reveal overflow-hidden rounded-[24px] bg-[#111]">
             <div className="relative aspect-[16/10]">
               <Image src={`/images/process-${i + 1}.jpg`} alt="" fill sizes="(min-width: 768px) 50vw, 100vw" className="object-cover" />
             </div>

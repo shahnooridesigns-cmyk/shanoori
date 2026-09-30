@@ -23,7 +23,7 @@ export const ProjectCard = ({
   return (
     <Link
       href={`/projects/${encodeURIComponent(project.slug)}`}
-      className="group relative block h-full min-h-[300px] overflow-hidden rounded-[24px] bg-maroon shadow-[0_24px_48px_-20px_rgba(60,40,10,0.55)] focus-visible:outline-offset-4"
+      className="card-lift group relative block h-full min-h-[300px] overflow-hidden rounded-[24px] bg-maroon shadow-[0_24px_48px_-20px_rgba(60,40,10,0.55)] focus-visible:outline-offset-4"
     >
       <Image
         src={project.imageUrl || '/placeholder.svg'}

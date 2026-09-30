@@ -1,6 +1,7 @@
 import React from 'react';
 import { Container } from './Container';
 import { SectionLabel } from './ui';
+import { FaqAccordion } from './FaqAccordion';
 
 const faqs = [
   {
@@ -37,20 +38,7 @@ export const FaqSection = () => (
         </p>
       </div>
 
-      <div className="border-b border-ink/70">
-        {faqs.map((faq, i) => (
-          <details key={faq.q} open={i === 0} className="group border-t border-ink/70">
-            <summary className="flex cursor-pointer items-center justify-between gap-6 py-8 text-lg text-ink/80 hover:text-ink">
-              {faq.q}
-              <span className="relative h-4 w-4 shrink-0" aria-hidden="true">
-                <span className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-current transition-transform group-open:rotate-45" />
-                <span className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-current transition-transform group-open:rotate-45" />
-              </span>
-            </summary>
-            <p className="-mt-2 pb-8 pr-10 text-lg text-ink/75">{faq.a}</p>
-          </details>
-        ))}
-      </div>
+      <FaqAccordion faqs={faqs} />
     </Container>
   </section>
 );

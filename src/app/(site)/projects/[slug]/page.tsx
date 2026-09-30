@@ -110,7 +110,7 @@ export default async function ProjectDetailPage({ params }: Props) {
             </p>
           </div>
           <aside className="h-fit lg:sticky lg:top-28">
-            <div className="bg-brand-gradient rounded-[28px] p-8 shadow-[0_24px_48px_-20px_rgba(87,19,45,0.6)]">
+            <div className="card-reveal bg-brand-gradient rounded-[28px] p-8 shadow-[0_24px_48px_-20px_rgba(87,19,45,0.6)]">
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold/70">Planning something similar?</p>
               <p className="mt-4 text-2xl leading-snug text-gold">
                 Talk to our team about your {discipline.toLowerCase()} project.

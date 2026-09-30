@@ -16,7 +16,7 @@ export const TrustedBy = async () => {
           {clients.map((c) => (
             <li
               key={c._id}
-              className="relative flex h-28 w-28 items-center justify-center overflow-hidden rounded-full bg-white md:h-36 md:w-36"
+              className="card-reveal card-lift relative flex h-28 w-28 items-center justify-center overflow-hidden rounded-full bg-white md:h-36 md:w-36"
               title={c.name}
             >
               {c.logoUrl ? (

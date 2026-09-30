@@ -42,7 +42,7 @@ export interface FeatureCardData {
 
 /** Photo card with the maroon fade and caption at the bottom. */
 export const FeatureCard = ({ card, sizes, className = '' }: { card: FeatureCardData; sizes: string; className?: string }) => (
-  <article className={`group relative min-h-[380px] overflow-hidden rounded-[28px] shadow-[0_16px_32px_-12px_rgba(0,0,0,0.4)] ${className}`}>
+  <article className={`card-reveal card-lift group relative min-h-[380px] overflow-hidden rounded-[28px] shadow-[0_16px_32px_-12px_rgba(0,0,0,0.4)] ${className}`}>
     <Image src={card.image} alt={card.title} fill sizes={sizes} className="object-cover transition-transform duration-700 group-hover:scale-105" />
     <div className="absolute inset-0 bg-gradient-to-t from-maroon via-maroon/35 to-transparent" aria-hidden="true" />
     <div className="absolute inset-x-0 bottom-0 flex flex-col items-start gap-2 p-6">
@@ -57,7 +57,7 @@ export const FeatureCard = ({ card, sizes, className = '' }: { card: FeatureCard
 
 /** Small cream card with an icon, used for competencies. */
 export const MiniCard = ({ icon, title, text, tag }: { icon: React.ReactNode; title: string; text: string; tag: string }) => (
-  <article className="rounded-2xl bg-gradient-to-br from-white to-cream p-4 shadow-[0_10px_24px_-10px_rgba(90,70,20,0.35)]">
+  <article className="card-reveal card-lift rounded-2xl bg-gradient-to-br from-white to-cream p-4 shadow-[0_10px_24px_-10px_rgba(90,70,20,0.35)]">
     <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-cream text-maroon">{icon}</span>
     <h4 className="mt-3 font-semibold text-maroon">{title}</h4>
     <p className="mt-1 text-sm text-ink">{text}</p>
@@ -67,7 +67,7 @@ export const MiniCard = ({ icon, title, text, tag }: { icon: React.ReactNode; ti
 
 /** White card with a list of chips (fit-out specialties). */
 export const ChipCard = ({ icon, title, text, chips }: { icon: React.ReactNode; title: string; text: string; chips: string[] }) => (
-  <article className="rounded-[24px] bg-white p-6 shadow-[0_10px_24px_-12px_rgba(90,70,20,0.35)]">
+  <article className="card-reveal card-lift rounded-[24px] bg-white p-6 shadow-[0_10px_24px_-12px_rgba(90,70,20,0.35)]">
     <span className="flex h-10 w-10 items-center justify-center rounded-full bg-cream text-maroon">{icon}</span>
     <h4 className="mt-4 text-lg text-ink">{title}</h4>
     <p className="mt-1 text-sm text-ink/70">{text}</p>

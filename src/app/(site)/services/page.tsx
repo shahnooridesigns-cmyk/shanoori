@@ -168,7 +168,7 @@ export default function ServicesPage() {
             </p>
             <ol className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
               {handoverSteps.map((step, i) => (
-                <li key={step.title} className="rounded-[24px] bg-white p-6 pb-10">
+                <li key={step.title} className="card-reveal card-lift rounded-[24px] bg-white p-6 pb-10">
                   <span className="text-5xl font-medium text-maroon/40">{String(i + 1).padStart(2, '0')}</span>
                   <h3 className="mt-2 text-lg font-semibold text-maroon">{step.title}</h3>
                   <p className="text-sm text-ink/70">{step.sub}</p>

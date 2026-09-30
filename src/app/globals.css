@@ -101,10 +101,293 @@ section[id] {
   background: linear-gradient(120deg, var(--color-maroon) 0%, var(--color-rose) 100%);
 }
 
-/* FAQ accordion: hide the default <summary> marker */
-details > summary {
-  list-style: none;
+/*
+ * Section titles (every h2 inside .scroll-titles; hero titles are h1 so they're left alone)
+ * are written in by a soft diagonal sweep while rising and sharpening, scrubbed to the scroll
+ * position: scrolling back up rewinds it. The mask works on gradient text too. Browsers
+ * without scroll-driven animations, and reduced-motion users, just see the static title.
+ * Opt a heading out with data-no-scroll-anim.
+ */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .scroll-titles h2:not([data-no-scroll-anim]) {
+      -webkit-mask-image: linear-gradient(105deg, #000 40%, transparent 60%);
+      mask-image: linear-gradient(105deg, #000 40%, transparent 60%);
+      -webkit-mask-size: 260% 100%;
+      mask-size: 260% 100%;
+      -webkit-mask-repeat: no-repeat;
+      mask-repeat: no-repeat;
+      animation: title-scroll-reveal linear both;
+      animation-timeline: view();
+      /* Starts as the title enters and is done once it has risen 25vh above the bottom edge:
+         a fixed distance every page can scroll, so even the last title (above the footer)
+         always finishes, whatever the screen height */
+      animation-range: entry 10% entry calc(100% + 25vh);
+    }
+  }
 }
-details > summary::-webkit-details-marker {
+
+/*
+ * "Drafting table" cursor + blueprint grid (see CursorEffects.tsx). Only active once the
+ * component adds .has-custom-cursor, which it skips for touch and reduced-motion users.
+ * Maroon on light sections, gold on dark ones.
+ */
+.cursor-layer {
+  --c: var(--color-maroon);
+  --c-ink: var(--color-cream);
+}
+.cursor-layer[data-tone="dark"] {
+  --c: var(--color-gold);
+  --c-ink: var(--color-maroon);
+}
+.cursor-layer > * {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.cursor-visible .cursor-layer:not([data-mode="text"]) > .cursor-cross,
+.cursor-visible .cursor-layer:not([data-mode="text"]) > .cursor-frame {
+  opacity: 1;
+}
+
+/* Crosshair: four hairlines around a small diamond, plus a coordinate readout */
+.cursor-cross {
+  z-index: 100;
+  width: 0;
+  height: 0;
+  will-change: transform;
+}
+.cursor-cross > i,
+.cursor-cross > b {
+  position: absolute;
+  background: var(--c);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s;
+}
+.cursor-cross > .n,
+.cursor-cross > .s {
+  left: -0.75px;
+  width: 1.5px;
+  height: 9px;
+}
+.cursor-cross > .n { top: -15px; transform-origin: bottom; }
+.cursor-cross > .s { top: 6px; transform-origin: top; }
+.cursor-cross > .e,
+.cursor-cross > .w {
+  top: -0.75px;
+  width: 9px;
+  height: 1.5px;
+}
+.cursor-cross > .e { left: 6px; transform-origin: left; }
+.cursor-cross > .w { left: -15px; transform-origin: right; }
+.cursor-cross > .diamond {
+  left: -2.5px;
+  top: -2.5px;
+  width: 5px;
+  height: 5px;
+  transform: rotate(45deg);
+}
+.cursor-layer[data-mode="snap"] .cursor-cross > i {
+  transform: scale(0);
+}
+.cursor-layer[data-mode="snap"] .cursor-cross > .diamond {
+  transform: rotate(225deg) scale(1.3);
+}
+
+.cursor-coords {
+  /* Sits just outside the 34px viewfinder so the brackets never cross the numbers */
+  position: absolute;
+  left: 24px;
+  top: 24px;
+  white-space: nowrap;
+  font: 500 10px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  letter-spacing: 0.06em;
+  color: var(--c);
+  opacity: 0.7;
+  transition: opacity 0.25s, color 0.3s;
+}
+.cursor-layer[data-mode="snap"] .cursor-coords {
+  opacity: 0;
+}
+
+/* Viewfinder: corner brackets that trail the crosshair and snap around clickable things */
+.cursor-frame {
+  z-index: 100;
+  will-change: transform, width, height;
+}
+.cursor-frame > i {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  border: 0 solid var(--c);
+  transition: width 0.3s, height 0.3s, border-color 0.3s;
+}
+.cursor-frame > .tl { top: 0; left: 0; border-top-width: 1.5px; border-left-width: 1.5px; }
+.cursor-frame > .tr { top: 0; right: 0; border-top-width: 1.5px; border-right-width: 1.5px; }
+.cursor-frame > .bl { bottom: 0; left: 0; border-bottom-width: 1.5px; border-left-width: 1.5px; }
+.cursor-frame > .br { bottom: 0; right: 0; border-bottom-width: 1.5px; border-right-width: 1.5px; }
+.cursor-layer[data-mode="snap"] .cursor-frame > i {
+  width: 14px;
+  height: 14px;
+}
+
+.cursor-tag {
+  position: absolute;
+  left: 0;
+  bottom: 100%;
+  margin-bottom: 6px;
+  padding: 4px 8px;
+  white-space: nowrap;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  background: var(--c);
+  color: var(--c-ink);
+  transform-origin: bottom left;
+  transform: scale(0.6);
+  opacity: 0;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s, background-color 0.3s;
+}
+.cursor-tag::after {
+  content: " →";
+}
+.cursor-layer[data-mode="snap"] .cursor-tag:not(:empty) {
+  transform: none;
+  opacity: 1;
+}
+.cursor-tag:empty {
   display: none;
+}
+
+/* Blueprint grid revealed around the pointer in dark sections */
+.cursor-grid {
+  z-index: 30;
+  width: 100vw;
+  height: 100vh;
+  background-image:
+    linear-gradient(to right, rgb(228 212 163 / 0.16) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(228 212 163 / 0.16) 1px, transparent 1px);
+  background-size: 44px 44px;
+  -webkit-mask-image: radial-gradient(240px circle at var(--gx, -999px) var(--gy, -999px), #000 0%, rgb(0 0 0 / 0.35) 45%, transparent 100%);
+  mask-image: radial-gradient(240px circle at var(--gx, -999px) var(--gy, -999px), #000 0%, rgb(0 0 0 / 0.35) 45%, transparent 100%);
+  transition: opacity 0.6s ease;
+}
+.cursor-visible .cursor-layer[data-tone="dark"]:not([data-mode="text"]) > .cursor-grid {
+  opacity: 1;
+}
+
+/* Hide the system cursor while the custom one is showing, except where typing happens */
+.has-custom-cursor.cursor-visible,
+.has-custom-cursor.cursor-visible * {
+  cursor: none !important;
+}
+.has-custom-cursor.cursor-visible :is(input:not([type="radio"]):not([type="checkbox"]), textarea, [contenteditable="true"]) {
+  cursor: text !important;
+}
+
+/*
+ * Cards. .card-reveal rises and fades in over the first 28vh of scrolling after it enters,
+ * scrubbed to the scroll like the titles; cards later in a row start a little later, so a
+ * row arrives as a wave. .card-lift floats up on hover. Both use properties the cursor's
+ * magnet/tilt don't touch (animation: transform; hover: the separate `translate` property).
+ * No blur here: filters on large image cards are costly while scrolling.
+ */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .card-reveal {
+      animation: card-rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 28vh;
+    }
+    .card-reveal:nth-child(4n + 2) { animation-range: entry 3vh entry 31vh; }
+    .card-reveal:nth-child(4n + 3) { animation-range: entry 6vh entry 34vh; }
+    .card-reveal:nth-child(4n + 4) { animation-range: entry 9vh entry 37vh; }
+  }
+}
+
+@keyframes card-rise {
+  from {
+    opacity: 0;
+    transform: translateY(56px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .card-lift {
+    transition: translate 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .card-lift:hover {
+    translate: 0 -8px;
+  }
+}
+
+@keyframes title-scroll-reveal {
+  from {
+    -webkit-mask-position: 100% 0;
+    mask-position: 100% 0;
+    transform: translateY(0.45em);
+    filter: blur(10px);
+    opacity: 0.2;
+  }
+  to {
+    -webkit-mask-position: 0% 0;
+    mask-position: 0% 0;
+    transform: none;
+    filter: blur(0);
+    opacity: 1;
+  }
+}
+
+/*
+ * Page-to-page transitions (template.tsx): the old page fades out and lifts away, the new one
+ * fades in and settles, and the header stays put. Browsers without view transitions just swap.
+ */
+::view-transition {
+  pointer-events: none;
+}
+::view-transition-old(.page-exit) {
+  animation: page-out 260ms cubic-bezier(0.4, 0, 1, 1) both;
+}
+::view-transition-new(.page-enter) {
+  animation: page-in 520ms cubic-bezier(0.16, 1, 0.3, 1) 120ms both;
+}
+@keyframes page-out {
+  to {
+    opacity: 0;
+    transform: translateY(-16px);
+    filter: blur(4px);
+  }
+}
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+    filter: blur(6px);
+  }
+}
+::view-transition-group(site-header) {
+  animation: none;
+  z-index: 100;
+}
+::view-transition-old(site-header) {
+  display: none;
+}
+::view-transition-new(site-header) {
+  animation: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
 }

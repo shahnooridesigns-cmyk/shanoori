@@ -52,6 +52,8 @@ export const Header = ({
       className={`fixed inset-x-0 top-0 z-40 transition-colors duration-300 ${
         scrolled && !menuOpen ? 'bg-ink/80 backdrop-blur-md' : 'bg-transparent'
       }`}
+      // Keeps the header still while page content fades between routes
+      style={{ viewTransitionName: 'site-header' }}
     >
       <Container className="flex h-20 items-center justify-between gap-6">
         <Link href="/" className="relative z-50 shrink-0" aria-label="Shah Noori home">

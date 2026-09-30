@@ -63,7 +63,7 @@ export default async function ProjectsPage() {
           <Container>
             <Link
               href={`/projects/${encodeURIComponent(spotlight.slug)}`}
-              className="group grid overflow-hidden rounded-[32px] bg-maroon shadow-[0_30px_60px_-25px_rgba(60,40,10,0.6)] lg:grid-cols-[1.4fr_1fr]"
+              className="group grid overflow-clip rounded-[32px] bg-maroon shadow-[0_30px_60px_-25px_rgba(60,40,10,0.6)] lg:grid-cols-[1.4fr_1fr]"
             >
               <div className="relative min-h-[320px] overflow-hidden lg:min-h-[460px]">
                 <Image

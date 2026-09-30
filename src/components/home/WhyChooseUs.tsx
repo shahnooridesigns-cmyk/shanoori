@@ -50,7 +50,7 @@ export const WhyChooseUs = () => (
         {reasons.map((reason) => (
           <article
             key={reason.title}
-            className="flex flex-col rounded-[28px] bg-gradient-to-b from-[#E9DBA4] to-[#FDF8A6] p-8 shadow-[0_18px_30px_-12px_rgba(90,70,20,0.45)]"
+            className="card-reveal card-lift flex flex-col rounded-[28px] bg-gradient-to-b from-[#E9DBA4] to-[#FDF8A6] p-8 shadow-[0_18px_30px_-12px_rgba(90,70,20,0.45)]"
           >
             <span className="flex h-14 w-14 items-center justify-center rounded-xl bg-cream text-maroon shadow-sm">{reason.icon}</span>
             <h3 className="mt-6 text-xl font-semibold leading-tight text-maroon">{reason.title}</h3>

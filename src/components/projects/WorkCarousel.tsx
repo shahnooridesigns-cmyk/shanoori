@@ -46,7 +46,7 @@ export const WorkCarousel = ({ projects }: { projects: ProjectSummary[] }) => {
           >
             <Link
               href={`/projects/${encodeURIComponent(current.slug)}`}
-              className="group relative block aspect-[3/2] w-full overflow-hidden rounded-2xl shadow-[0_30px_50px_-15px_rgba(60,40,10,0.55)]"
+              className="card-lift group relative block aspect-[3/2] w-full overflow-hidden rounded-2xl shadow-[0_30px_50px_-15px_rgba(60,40,10,0.55)]"
             >
               <Image
                 src={current.imageUrl || '/placeholder.svg'}
