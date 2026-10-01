@@ -21,8 +21,9 @@ const SEEN_KEY = 'sn_preloaded';
 const MIN_MS = 2400; // long enough for the sketch to finish drawing
 const MAX_MS = 6000; // stop waiting for slow images after this
 
-const NOTES = ['Marhaba!', 'Measuring twice…', 'Picking the fabrics…', 'Hanging the lamp…'];
-const FINAL_NOTE = 'Welcome in.';
+// Follows a Shah Noori project from plan to handover
+const NOTES = ['Planning the space…', 'Drafting the design…', 'Building with care…', 'Fitting out the interiors…'];
+const FINAL_NOTE = 'Welcome to Shah Noori.';
 
 // Each stroke of the sketch, with when it starts drawing (s) and how long it takes.
 const STROKES: { d: string; at: number; dur: number }[] = [
@@ -243,7 +244,7 @@ export const Preloader = () => {
           </svg>
 
           {/* Handwritten note with a scribbled underline that redraws for each one */}
-          <div className={`${hand.className} relative mt-8 h-12 text-[30px] leading-none sm:text-[34px]`}>
+          <div className={`${hand.className} relative mt-8 h-12 text-[26px] leading-none sm:text-[34px]`}>
             <AnimatePresence mode="wait" initial={false}>
               <motion.p
                 key={lit ? 'final' : note}
