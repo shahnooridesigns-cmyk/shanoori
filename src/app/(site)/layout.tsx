@@ -3,6 +3,7 @@ import { Footer } from "@/components/layout/Footer";
 import { WhatsAppButton } from "@/components/shared/WhatsAppButton";
 import { SmoothScrollProvider } from "@/components/shared/SmoothScrollProvider";
 import { CursorEffects } from "@/components/shared/CursorEffects";
+import { Preloader } from "@/components/shared/Preloader";
 import { FALLBACK_CONTACT, resolveWhatsAppNumber } from "@/lib/constants";
 import { fetchSiteSettings } from "@/lib/sanity/fetch";
 
@@ -19,6 +20,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
 
   return (
     <SmoothScrollProvider>
+      <Preloader />
       <Header whatsapp={whatsapp} phones={phones.length ? phones : [FALLBACK_CONTACT.phone]} />
       <div className="scroll-titles flex-1 flex flex-col">
         {children}

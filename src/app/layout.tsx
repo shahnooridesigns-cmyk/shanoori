@@ -21,9 +21,11 @@ export const metadata: Metadata = {
 // so that the embedded Sanity Studio at /studio renders without it.
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
+    // suppressHydrationWarning: the preloader's boot script sets data-sn-preload on <html> before hydration
     <html
       lang="en"
       className={`${cabin.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
       {/* Extensions like Grammarly add attributes to <body> before React hydrates; ignore those
           (only this element's own attributes, not anything inside it) */}

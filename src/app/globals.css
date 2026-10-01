@@ -391,3 +391,15 @@ section[id] {
     animation-delay: 0s !important;
   }
 }
+
+/* Preloader (components/shared/Preloader.tsx). Hidden unless its boot script turned it on
+   before first paint, so no-JS visitors and repeat visits never see it. */
+.sn-preloader {
+  display: none;
+}
+html[data-sn-preload="on"] .sn-preloader {
+  display: flex;
+}
+html[data-sn-preload="on"] {
+  overflow: hidden;
+}
