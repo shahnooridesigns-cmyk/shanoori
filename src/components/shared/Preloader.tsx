@@ -81,6 +81,8 @@ export const Preloader = () => {
   const [note, setNote] = useState(0);
   const progress = useMotionValue(0);
   const countRef = useRef<HTMLSpanElement>(null);
+  const unblockRef = useRef(() => {});
+  const finishRef = useRef(() => {});
 
   useMotionValueEvent(progress, 'change', (v) => {
     if (countRef.current) countRef.current.textContent = String(Math.round(v)).padStart(3, '0');
@@ -97,12 +99,17 @@ export const Preloader = () => {
 
     // Keep Lenis from scrolling the page underneath. Capture on window runs before
     // Lenis's own wheel listener, and stopping it there keeps the event from reaching it.
+    // The component stays mounted after finishing, so finish() must remove these too.
     const block = (e: Event) => {
       e.preventDefault();
       e.stopPropagation();
     };
     window.addEventListener('wheel', block, { capture: true, passive: false });
     window.addEventListener('touchmove', block, { capture: true, passive: false });
+    unblockRef.current = () => {
+      window.removeEventListener('wheel', block, { capture: true });
+      window.removeEventListener('touchmove', block, { capture: true });
+    };
 
     let cancelled = false;
     const ticker = setInterval(() => setNote((n) => Math.min(n + 1, NOTES.length - 1)), 620);
@@ -117,25 +124,33 @@ export const Preloader = () => {
       clearInterval(ticker);
       setPhase('lit');
       await wait(reduceMotion ? 300 : 750);
-      if (!cancelled) setPhase('leaving');
+      if (cancelled) return;
+      setPhase('leaving');
+      // Backup in case the lift animation's completion callback never fires
+      await wait(1500);
+      if (!cancelled) finishRef.current();
     })();
 
     return () => {
       cancelled = true;
       clearInterval(ticker);
       counting.stop();
-      window.removeEventListener('wheel', block, { capture: true });
-      window.removeEventListener('touchmove', block, { capture: true });
+      unblockRef.current();
     };
   }, [progress, reduceMotion]);
 
   const finish = () => {
+    unblockRef.current();
     try {
       sessionStorage.setItem(SEEN_KEY, '1');
     } catch {}
     document.documentElement.dataset.snPreload = 'skip';
     setPhase('done');
   };
+
+  useEffect(() => {
+    finishRef.current = finish;
+  });
 
   if (phase === 'done') return null;
 
