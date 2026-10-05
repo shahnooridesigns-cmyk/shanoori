@@ -40,9 +40,13 @@ const PAPER_SCALE = 372 / 218;
 /** How long the stretched sleeve strips are: far past any screen edge */
 const SLEEVE_PX = 3000;
 
-const EASE = [0.16, 1, 0.3, 1] as const;
-const MEET_S = 0.65;
-const WRITE_S = 1.1;
+/** Arriving and parting: a long, gentle settle */
+const SETTLE = [0.22, 1, 0.36, 1] as const;
+/** Coming together to sign: eases in as well as out, so the hands don't lurch off the mark */
+const IN_OUT = [0.65, 0, 0.35, 1] as const;
+const ARRIVE_S = 1.5;
+const MEET_S = 1.05;
+const WRITE_S = 1.3;
 
 /** Sizes and offsets in px for the current screen width. */
 const layout = (vw: number) => {
@@ -61,8 +65,9 @@ const layout = (vw: number) => {
     paperH: PHOTO.paper.h * paper,
     // Resting gap: each hand stands this far back from where it signs
     apart: Math.max(vw * 0.22, 80),
-    // Fully off its side of the screen
-    away: vw * 0.5 + paperW,
+    // Before the scene is in view each hand waits this much further out, unseen: a short
+    // drift in while fading up reads as smooth where a run in from off-screen read as a jump
+    drift: Math.max(vw * 0.14, 60),
     paperX,
     // Puts the nib on the start of the signature line
     penX: paperX + SIGN_START.x * paper - PEN_TIP.x * pen,
@@ -116,7 +121,7 @@ export const CtaSigning = ({ heading, text, buttonLabel }: { heading: string; te
   // No hover on touch screens: sign once the hands have arrived, and reset when the scene leaves
   useEffect(() => {
     if (!inView || !window.matchMedia('(hover: none)').matches) return;
-    const timer = setTimeout(() => setAutoSign(true), 1400);
+    const timer = setTimeout(() => setAutoSign(true), 2000);
     return () => {
       clearTimeout(timer);
       setAutoSign(false);
@@ -125,8 +130,15 @@ export const CtaSigning = ({ heading, text, buttonLabel }: { heading: string; te
 
   const signing = inView && (hovered || autoSign);
   const l = layout(vw);
-  const offset = !inView ? l.away : signing ? 0 : l.apart;
-  const move = reduceMotion ? { duration: 0 } : { duration: signing ? MEET_S : 0.8, ease: EASE };
+  const offset = !inView ? l.apart + l.drift : signing ? 0 : l.apart;
+  const visible = inView ? 1 : 0;
+  const move = reduceMotion
+    ? { duration: 0 }
+    : !inView
+      ? { duration: 0.5, ease: 'easeIn' as const }
+      : signing
+        ? { duration: MEET_S, ease: IN_OUT }
+        : { duration: ARRIVE_S, ease: SETTLE };
   const sceneH = l.paperH || 160;
 
   // Click: the Contact page's colour floods the screen from the button, Contact loads under
@@ -154,8 +166,8 @@ export const CtaSigning = ({ heading, text, buttonLabel }: { heading: string; te
             <motion.div
               className="absolute left-1/2 top-0"
               style={{ width: l.paperW, height: l.paperH }}
-              initial={{ x: l.paperX - l.away }}
-              animate={{ x: l.paperX - offset }}
+              initial={{ x: l.paperX - l.apart - l.drift, opacity: 0 }}
+              animate={{ x: l.paperX - offset, opacity: visible }}
               transition={move}
             >
               <Arm photo="paper" side="left" />
@@ -184,8 +196,8 @@ export const CtaSigning = ({ heading, text, buttonLabel }: { heading: string; te
             <motion.div
               className="absolute left-1/2 top-0"
               style={{ width: l.penW, height: l.penH }}
-              initial={{ x: l.penX + l.away, y: l.penY }}
-              animate={{ x: l.penX + offset, y: l.penY }}
+              initial={{ x: l.penX + l.apart + l.drift, y: l.penY, opacity: 0 }}
+              animate={{ x: l.penX + offset, y: l.penY, opacity: visible }}
               transition={move}
             >
               {/* The writing stroke: across the line with a small up-and-down scribble */}
