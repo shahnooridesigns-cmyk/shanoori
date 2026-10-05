@@ -151,7 +151,7 @@ export const ProcessScroll = ({ steps }: { steps: ProcessStep[] }) => {
         {steps.map((step, i) => (
           <li key={i} className="card-reveal overflow-hidden rounded-[24px] bg-[#111]">
             <div className="relative aspect-[16/10]">
-              <Image src={`/images/process-${i + 1}.jpg`} alt="" fill sizes="(min-width: 768px) 50vw, 100vw" className="object-cover" />
+              <Image src={`/images/process-${i + 1}.webp`} alt="" fill sizes="(min-width: 768px) 50vw, 100vw" className="object-cover" />
             </div>
             <div className="p-8 text-white">
               <span className="text-6xl font-bold">{String(i + 1).padStart(2, '0')}</span>

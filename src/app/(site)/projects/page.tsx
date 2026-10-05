@@ -32,7 +32,7 @@ export default async function ProjectsPage() {
     <main className="flex-1 w-full">
       {/* Hero */}
       <section className="relative overflow-hidden bg-maroon">
-        <Image src={spotlight?.imageUrl || '/images/story-2.jpg'} alt="" fill priority sizes="100vw" className="scale-105 object-cover blur-[2px]" />
+        <Image src={spotlight?.imageUrl || '/images/story-2.webp'} alt="" fill priority sizes="100vw" className="scale-105 object-cover blur-[2px]" />
         <div className="absolute inset-0 bg-gradient-to-r from-maroon via-maroon/85 to-maroon/40" aria-hidden="true" />
         <Container className="relative flex min-h-[600px] flex-col justify-end gap-10 pt-36 pb-16">
           <SectionLabel tone="gold">Projects</SectionLabel>

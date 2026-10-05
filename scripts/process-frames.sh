@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Builds the frame sequence for the home page "How We Work" scroll animation.
 #
-#   bash scripts/process-frames.sh               # "line drawing" video from public/images/process-1..4.jpg
+#   bash scripts/process-frames.sh               # "line drawing" video from public/images/process-1..4.webp
 #   bash scripts/process-frames.sh my-video.mp4  # from your own video
 #
 # Image mode renders scripts/output/process-video.mp4: for each step, gold lines draw in from a
@@ -48,10 +48,10 @@ else
   FILTER+="[x2][s3]xfade=transition=fade:duration=$XF:offset=$O3[out]"
 
   "$FFMPEG" -hide_banner -loglevel error -y \
-    -loop 1 -framerate 30 -t $D -i public/images/process-1.jpg \
-    -loop 1 -framerate 30 -t $D -i public/images/process-2.jpg \
-    -loop 1 -framerate 30 -t $D -i public/images/process-3.jpg \
-    -loop 1 -framerate 30 -t $D -i public/images/process-4.jpg \
+    -loop 1 -framerate 30 -t $D -i public/images/process-1.webp \
+    -loop 1 -framerate 30 -t $D -i public/images/process-2.webp \
+    -loop 1 -framerate 30 -t $D -i public/images/process-3.webp \
+    -loop 1 -framerate 30 -t $D -i public/images/process-4.webp \
     -filter_complex "$FILTER" -map "[out]" -c:v libx264 -crf 20 -preset slow -pix_fmt yuv420p -movflags +faststart "$VIDEO"
   echo "Video: $VIDEO"
 fi

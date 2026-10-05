@@ -26,7 +26,7 @@ export const Footer = async () => {
       <Container className="pt-20">
         <div className="flex flex-col gap-12 md:flex-row md:justify-between">
           <Link href="/" aria-label="Shah Noori home" className="w-fit">
-            <Image src="/logo-gold.png" alt="Shah Noori" width={104} height={124} className="h-28 w-auto" />
+            <Image src="/logo-gold.webp" alt="Shah Noori" width={104} height={124} className="h-28 w-auto" />
           </Link>
 
           <div className="grid grid-cols-2 gap-x-16 gap-y-10 sm:grid-cols-3">
