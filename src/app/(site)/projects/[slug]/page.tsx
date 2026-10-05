@@ -13,6 +13,7 @@ import { ArrowUpRight, SectionLabel } from '@/components/shared/ui';
 import { ProjectGallery } from '@/components/projects/ProjectGallery';
 import { ProjectCard } from '@/components/projects/ProjectCard';
 import { categoryLabel } from '@/lib/categories';
+import { pageMeta } from '@/lib/seo';
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -32,11 +33,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!project) return {};
 
   const description = descriptionToText(project.description).slice(0, 160) || undefined;
-  return {
+  return pageMeta({
     title: project.title,
     description,
-    openGraph: project.imageUrl ? { images: [project.imageUrl] } : undefined,
-  };
+    path: `/projects/${encodeURIComponent(project.slug)}`,
+    // A 1200x630 crop of the cover photo, the shape link previews use
+    image: project.imageUrl ? `${project.imageUrl}?w=1200&h=630&fit=crop&auto=format` : undefined,
+  });
 }
 
 export default async function ProjectDetailPage({ params }: Props) {
@@ -77,7 +80,7 @@ export default async function ProjectDetailPage({ params }: Props) {
     <main className="flex-1 w-full">
       {/* Full-screen hero with fact strip */}
       <section className="relative flex h-[100svh] min-h-[620px] max-h-[960px] flex-col overflow-hidden bg-maroon">
-        <Image src={project.imageUrl || '/placeholder.svg'} alt="" fill priority sizes="100vw" className="object-cover" />
+        <Image src={project.imageUrl || '/assets/images/placeholder.webp'} alt="" fill priority sizes="100vw" className="object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-maroon via-maroon/40 to-black/40" aria-hidden="true" />
 
         <Container className="relative flex flex-1 flex-col justify-end pt-32 pb-10">
@@ -195,7 +198,7 @@ export default async function ProjectDetailPage({ params }: Props) {
               className={`group relative flex min-h-[260px] flex-col justify-end overflow-hidden p-8 md:min-h-[340px] md:p-12 ${alignEnd ? 'md:items-end md:text-right' : ''}`}
             >
               <Image
-                src={p.imageUrl || '/placeholder.svg'}
+                src={p.imageUrl || '/assets/images/placeholder.webp'}
                 alt=""
                 fill
                 sizes="(min-width: 768px) 50vw, 100vw"

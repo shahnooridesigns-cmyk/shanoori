@@ -1,24 +1,26 @@
 #!/usr/bin/env bash
 # Builds the frame sequence for the home page "How We Work" scroll animation.
 #
-#   bash scripts/process-frames.sh               # "line drawing" video from public/images/process-1..4.webp
+#   bash scripts/process-frames.sh               # "line drawing" video from public/assets/images/process/process-1..4.webp
 #   bash scripts/process-frames.sh my-video.mp4  # from your own video
+#   bash scripts/process-frames.sh my-video.mp4 0.6  # same, skipping the first 0.6 seconds
 #
 # Image mode renders scripts/output/process-video.mp4: for each step, gold lines draw in from a
 # black screen (strongest edges first, fine detail last), then the real photo fades in over them,
 # and each step dissolves into the next step's drawing.
 #
-# Output frames: public/process-frames/frame-001.webp … frame-NNN.webp
+# Output frames: public/assets/process-frames/frame-001.webp … frame-NNN.webp
 # After changing the frame count, update FRAME_COUNT in src/components/home/ProcessScroll.tsx.
 # Requires ffmpeg/ffprobe on PATH (or set FFMPEG / FFPROBE).
 set -euo pipefail
 
 FFMPEG="${FFMPEG:-ffmpeg}"
 FFPROBE="${FFPROBE:-ffprobe}"
-OUT="public/process-frames"
+OUT="public/assets/process-frames"
 W=1152
 H=720
-TARGET_FRAMES=140
+TARGET_FRAMES=180
+SKIP="${2:-0}" # seconds to drop from the start of your own video
 
 if [ $# -ge 1 ]; then
   VIDEO="$1"
@@ -48,20 +50,20 @@ else
   FILTER+="[x2][s3]xfade=transition=fade:duration=$XF:offset=$O3[out]"
 
   "$FFMPEG" -hide_banner -loglevel error -y \
-    -loop 1 -framerate 30 -t $D -i public/images/process-1.webp \
-    -loop 1 -framerate 30 -t $D -i public/images/process-2.webp \
-    -loop 1 -framerate 30 -t $D -i public/images/process-3.webp \
-    -loop 1 -framerate 30 -t $D -i public/images/process-4.webp \
+    -loop 1 -framerate 30 -t $D -i public/assets/images/process/process-1.webp \
+    -loop 1 -framerate 30 -t $D -i public/assets/images/process/process-2.webp \
+    -loop 1 -framerate 30 -t $D -i public/assets/images/process/process-3.webp \
+    -loop 1 -framerate 30 -t $D -i public/assets/images/process/process-4.webp \
     -filter_complex "$FILTER" -map "[out]" -c:v libx264 -crf 20 -preset slow -pix_fmt yuv420p -movflags +faststart "$VIDEO"
   echo "Video: $VIDEO"
 fi
 
 # Spread TARGET_FRAMES frames evenly across the clip, cover-cropped to ${W}x${H}
-DURATION=$("$FFPROBE" -v error -show_entries format=duration -of csv=p=0 "$VIDEO")
+DURATION=$("$FFPROBE" -v error -show_entries format=duration -of csv=p=0 "$VIDEO" | awk "{ print \$1 - $SKIP }")
 FPS=$(awk "BEGIN { printf \"%.4f\", $TARGET_FRAMES / $DURATION }")
 mkdir -p "$OUT" && rm -f "$OUT"/frame-*.webp
-"$FFMPEG" -hide_banner -loglevel error -y -i "$VIDEO" \
-  -vf "fps=$FPS,scale=$W:$H:force_original_aspect_ratio=increase,crop=$W:$H" \
+"$FFMPEG" -hide_banner -loglevel error -y -ss "$SKIP" -i "$VIDEO" \
+  -frames:v $TARGET_FRAMES -vf "fps=$FPS,scale=$W:$H:force_original_aspect_ratio=increase,crop=$W:$H" \
   -c:v libwebp -quality 50 -compression_level 5 "$OUT/frame-%03d.webp"
 
 echo "Frames: $(ls "$OUT" | wc -l) ($(du -sh "$OUT" | cut -f1))"

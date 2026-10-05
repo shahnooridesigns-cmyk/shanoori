@@ -32,7 +32,7 @@ const SideCard = ({ project, label, onClick }: { project: ProjectSummary; label:
         exit={{ opacity: 0 }}
         transition={{ duration: 0.6, ease: 'easeInOut' }}
       >
-        <Image src={project.imageUrl || '/placeholder.svg'} alt="" fill sizes={SIDE_SIZES} className="object-cover" />
+        <Image src={project.imageUrl || '/assets/images/placeholder.webp'} alt="" fill sizes={SIDE_SIZES} className="object-cover" />
       </motion.span>
     </AnimatePresence>
   </button>
@@ -113,7 +113,7 @@ export const WorkCarousel = ({ projects }: { projects: ProjectSummary[] }) => {
           {/* Out of sight, but loaded at the size the main photo uses */}
           <div className="absolute inset-0 opacity-0" aria-hidden="true">
             {upcoming.map((p) => (
-              <Image key={p._id} src={p.imageUrl || '/placeholder.svg'} alt="" fill sizes={MAIN_SIZES} loading="eager" className="object-cover" />
+              <Image key={p._id} src={p.imageUrl || '/assets/images/placeholder.webp'} alt="" fill sizes={MAIN_SIZES} loading="eager" className="object-cover" />
             ))}
           </div>
 
@@ -130,7 +130,7 @@ export const WorkCarousel = ({ projects }: { projects: ProjectSummary[] }) => {
             >
               <Link href={`/projects/${encodeURIComponent(current.slug)}`} className="group relative block h-full w-full">
                 <Image
-                  src={current.imageUrl || '/placeholder.svg'}
+                  src={current.imageUrl || '/assets/images/placeholder.webp'}
                   alt={current.title}
                   fill
                   sizes={MAIN_SIZES}

@@ -57,7 +57,7 @@ export const Header = ({
     >
       <Container className="flex h-20 items-center justify-between gap-6">
         <Link href="/" className="relative z-50 shrink-0" aria-label="Shah Noori home">
-          <Image src="/logo-gold.webp" alt="Shah Noori" width={42} height={50} className="h-11 w-auto" priority />
+          <Image src="/assets/images/brand/logo-gold.webp" alt="Shah Noori" width={42} height={50} className="h-11 w-auto" priority />
         </Link>
 
         {isHome && (

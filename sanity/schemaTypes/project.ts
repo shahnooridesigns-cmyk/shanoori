@@ -14,13 +14,19 @@ export default defineType({
     }),
     defineField({
       name: 'slug',
-      title: 'Slug',
+      title: 'Web address (slug)',
+      description: 'The end of this project\'s link, e.g. sncreatives.com/projects/le-bebe. Do not type here: press "Generate" and it is made from the title.',
       type: 'slug',
       options: {
         source: 'title',
         maxLength: 96,
       },
-      validation: (Rule) => Rule.required(),
+      validation: (Rule) =>
+        Rule.required().custom((slug) =>
+          !slug?.current || /^[a-z0-9]+(-[a-z0-9]+)*$/.test(slug.current)
+            ? true
+            : 'Use small letters, numbers and dashes only (no spaces). Press "Generate" to fix it.'
+        ),
     }),
     defineField({
       name: 'category',

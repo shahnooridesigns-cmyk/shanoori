@@ -19,7 +19,7 @@ import { startPageFlood } from './PageFlood';
  */
 
 /**
- * The two photos: file name (under public/images, without extension) and pixel size, which
+ * The two photos: file name (under public/assets/images/cta, without extension) and pixel size, which
  * is also the coordinate space every point below is measured in.
  * Give a replacement photo a NEW file name: the image optimiser and browsers cache by URL,
  * so reusing a name keeps serving the old picture inside the new one's box.
@@ -82,7 +82,7 @@ const Arm = ({ photo, side }: { photo: 'paper' | 'pen'; side: 'left' | 'right' }
   <>
     {/* The few columns of sleeve at the photo's edge, stretched sideways (overlapping it by 1px to hide the join) */}
     <Image
-      src={`/images/${PHOTO[photo].file}-sleeve.png`}
+      src={`/assets/images/cta/${PHOTO[photo].file}-sleeve.webp`}
       alt=""
       width={4}
       height={PHOTO[photo].h}
@@ -91,7 +91,7 @@ const Arm = ({ photo, side }: { photo: 'paper' | 'pen'; side: 'left' | 'right' }
       style={{ width: SLEEVE_PX, height: '100%', [side === 'left' ? 'right' : 'left']: 'calc(100% - 1px)' }}
     />
     <Image
-      src={`/images/${PHOTO[photo].file}.webp`}
+      src={`/assets/images/cta/${PHOTO[photo].file}.webp`}
       alt=""
       width={PHOTO[photo].w}
       height={PHOTO[photo].h}

@@ -1,5 +1,6 @@
 import React from 'react';
 import type { Metadata } from 'next';
+import { pageMeta } from '@/lib/seo';
 import { Container } from '@/components/shared/Container';
 import { PageHero } from '@/components/shared/PageHero';
 import { FaqSection } from '@/components/shared/FaqSection';
@@ -8,10 +9,12 @@ import { ChipCard, DivisionHeader, FeatureCard, Icons, MiniCard, type FeatureCar
 import { BalancedGrid } from '@/components/shared/BalancedGrid';
 import { fetchServicesContent } from '@/lib/sanity/fetch';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta({
   title: 'Services',
-  description: 'End-to-end civil construction, interior & fit-out, and MEP engineering solutions in Doha, Qatar.',
-};
+  description:
+    'Interior fit-out, MEP (mechanical, electrical, plumbing) and civil construction services in Doha, Qatar, delivered end to end by one team.',
+  path: '/services',
+});
 
 /** Icon picked in Studio (SERVICE_ICONS in lib/content/defaults.ts) */
 const icon = (name: string) => Icons[name as keyof typeof Icons] ?? Icons.grid;

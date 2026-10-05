@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Cabin } from "next/font/google";
 import "./globals.css";
+import { SITE_URL, pageMeta } from "@/lib/seo";
 
 const cabin = Cabin({
   variable: "--font-cabin",
@@ -8,13 +9,27 @@ const cabin = Cabin({
   weight: ["400", "500", "600", "700"],
 });
 
+const DESCRIPTION =
+  "Shah Noori is an interior fit-out, MEP and civil contracting company in Doha, Qatar. See our completed projects and services, and request a consultation.";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
+  ...pageMeta({ description: DESCRIPTION, path: "/" }),
   title: {
-    default: "Shah Noori Interior & Fit-out | Doha, Qatar",
+    default: "Shah Noori | Interior Fit-out, MEP & Civil Contractor in Doha, Qatar",
     template: "%s | Shah Noori",
   },
-  description:
-    "Civil construction, interior fit-out and MEP works in Doha, Qatar. Explore Shah Noori's projects and services.",
+  applicationName: "Shah Noori",
+  keywords: [
+    "interior fit-out Qatar",
+    "fit-out contractor Doha",
+    "MEP contractor Qatar",
+    "civil construction Qatar",
+    "interior design Doha",
+    "contracting company Qatar",
+    "Shah Noori",
+  ],
+  formatDetection: { telephone: false },
 };
 
 // Site chrome (header, footer, WhatsApp button, smooth scroll) lives in (site)/layout.tsx

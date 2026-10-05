@@ -1,5 +1,6 @@
 import React from 'react';
 import type { Metadata } from 'next';
+import { pageMeta } from '@/lib/seo';
 import Image from 'next/image';
 import { Container } from '@/components/shared/Container';
 import { PageHero } from '@/components/shared/PageHero';
@@ -12,11 +13,12 @@ import { CtaBanner } from '@/components/shared/CtaBanner';
 import { fetchAboutContent } from '@/lib/sanity/fetch';
 import { paragraphs } from '@/lib/content/resolve';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta({
   title: 'About',
   description:
-    'Shah Noori is an integrated construction and contracting company in Qatar, founded in 2022 with 15 years of experience and 100+ completed projects.',
-};
+    'Shah Noori is an integrated construction and contracting company in Doha, Qatar, with 15+ years of experience in interior fit-out, MEP and civil works.',
+  path: '/about',
+});
 
 export default async function AboutPage() {
   const { hero, story, approach, stats, mission, vision, services } = await fetchAboutContent();

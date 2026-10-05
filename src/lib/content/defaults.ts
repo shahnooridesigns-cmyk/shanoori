@@ -42,7 +42,7 @@ export const sharedDefaults = {
     heading: 'Ready to Elevate\nYour Space',
     text: "Let's create something memorable together",
     buttonLabel: 'Start a Project',
-    image: '/images/cta.webp',
+    image: '/assets/images/cta/cta.webp',
   },
   clients: {
     heading: 'Trusted by Businesses & Brands',
@@ -51,7 +51,7 @@ export const sharedDefaults = {
     title: 'Interior & Fit-Out',
     summary: 'Creating refined, functional environments through thoughtful planning and high-quality fit-out execution.',
     tags: ['Fit-out', 'Finishing', 'Interior execution'],
-    image: '/images/service-interior.webp',
+    image: '/assets/images/services/service-interior.webp',
     pill: 'Div 01 / Interior',
     tagline: 'Refined spaces delivered with craftsmanship.',
     description:
@@ -63,7 +63,7 @@ export const sharedDefaults = {
     title: 'MEP Works',
     summary: 'Complete mechanical, electrical and plumbing solutions integrated seamlessly into every project.',
     tags: ['Mechanical', 'Electrical', 'Plumbing', 'Commissioning'],
-    image: '/images/service-mep.webp',
+    image: '/assets/images/services/service-mep.webp',
     pill: 'Div 02 / MEP',
     tagline: 'Integrated systems, tested and commissioned.',
     description:
@@ -75,7 +75,7 @@ export const sharedDefaults = {
     title: 'Civil Construction',
     summary: 'Building strong foundations through precise execution, reliable workmanship, and coordinated project management.',
     tags: ['Structural works', 'Construction', 'Site execution'],
-    image: '/images/service-civil.webp',
+    image: '/assets/images/services/service-civil.webp',
     pill: 'Div 03 / Civil',
     tagline: 'Reliable construction solutions for diverse projects.',
     description:
@@ -90,7 +90,7 @@ export const homeDefaults = {
     title: 'Shah Noori',
     text: 'Integrated construction and fit-out solutions, thoughtfully executed from concept to completion.',
     buttonLabel: 'Start a Project',
-    image: '/images/hero-home.webp',
+    image: '/assets/images/hero/hero-home.webp',
   },
   about: {
     text: 'We are an integrated construction and contracting company delivering civil, interior & fit-out, and complete MEP solutions with precision, reliability, and a commitment to quality.',
@@ -157,14 +157,14 @@ export const aboutDefaults = {
   hero: {
     title: 'Integrated Construction & Contracting Company in Qatar',
     buttonLabel: 'Start a Project',
-    image: '/images/hero-about.webp',
+    image: '/assets/images/hero/hero-about.webp',
   },
   story: {
     text:
       'Established on 11 September 2022, Shah Noori brings together a strong foundation of construction expertise and 15 years of professional experience in Qatar. Founded by Riyas N, the company has grown with a clear focus on delivering reliable, high-quality construction solutions.\n\n' +
       'With 100+ projects completed, our experience spans the demands of diverse construction environments, combining practical knowledge with disciplined project execution.',
-    image1: '/images/story-1.webp',
-    image2: '/images/story-2.webp',
+    image1: '/assets/images/about/story-1.webp',
+    image2: '/assets/images/about/story-2.webp',
   },
   approach: {
     heading: 'Precision in Planning.\nExcellence in Execution.',
@@ -195,7 +195,7 @@ export const aboutDefaults = {
 export const servicesDefaults = {
   hero: {
     title: 'End-to-End Civil, Interior & Fit-Out, and MEP Engineering Solutions',
-    image: '/images/hero-services.webp',
+    image: '/assets/images/hero/hero-services.webp',
   },
   interior: {
     eyebrow: 'Interior & Fit-Out',
@@ -203,9 +203,9 @@ export const servicesDefaults = {
     text: 'Executing complete luxury interiors: shell & core fit-outs, executive lounges, five-star hospitality boutiques, and private palatial majlis spaces with integrated bespoke joinery workshops.',
     linkLabel: 'Explore Fit-Out Portfolio',
     features: [
-      { image: '/images/interior-1.webp', pill: 'Turnkey Villa Majlis', title: 'Calacatta Marble & Fluted Oak', text: 'Integrated brass mashrabiya panels, acoustic timber walling, and bespoke curved velvet furnishings.' },
-      { image: '/images/interior-2.webp', pill: 'Birkat Awamer Workshop', title: 'CNC Millwork & Joinery Hub', text: 'In-house master carpenters producing high-tolerance reception counters, carved doors, and bespoke cabinetry.' },
-      { image: '/images/interior-3.webp', pill: 'Hospitality & Retail', title: 'Curved Travertine & Champagne Gold', text: 'Fluted travertine archways, concealed perimeter LED coves, and boutique hospitality lounges.' },
+      { image: '/assets/images/services/interior-1.webp', pill: 'Turnkey Villa Majlis', title: 'Calacatta Marble & Fluted Oak', text: 'Integrated brass mashrabiya panels, acoustic timber walling, and bespoke curved velvet furnishings.' },
+      { image: '/assets/images/services/interior-2.webp', pill: 'Birkat Awamer Workshop', title: 'CNC Millwork & Joinery Hub', text: 'In-house master carpenters producing high-tolerance reception counters, carved doors, and bespoke cabinetry.' },
+      { image: '/assets/images/services/interior-3.webp', pill: 'Hospitality & Retail', title: 'Curved Travertine & Champagne Gold', text: 'Fluted travertine archways, concealed perimeter LED coves, and boutique hospitality lounges.' },
     ],
     specialties: [
       {
@@ -240,8 +240,8 @@ export const servicesDefaults = {
     text: 'In-house Mechanical, Electrical, ELV, and Plumbing coordination eliminates clash rework, reduces ceiling plenum conflicts, and accelerates Kahramaa and Civil Defense approvals across Qatar.',
     linkLabel: 'Explore MEP Systems',
     features: [
-      { image: '/images/mep-1.webp', pill: 'Industrial Chiller Plant & BMS', title: 'Central Mechanical Plant & Low Current Infrastructure', text: 'Smart SCADA controls, dual centrifugal chillers, stainless pipe insulation, and organized low-noise cable risers.' },
-      { image: '/images/mep-2.webp', pill: 'Lusail Marina Towers', title: 'Integrated High-Rise Vertical MEP', text: 'Complete electrical feeds, chilled water loops, and life safety certified to GSAS 4-star standards.' },
+      { image: '/assets/images/services/mep-1.webp', pill: 'Industrial Chiller Plant & BMS', title: 'Central Mechanical Plant & Low Current Infrastructure', text: 'Smart SCADA controls, dual centrifugal chillers, stainless pipe insulation, and organized low-noise cable risers.' },
+      { image: '/assets/images/services/mep-2.webp', pill: 'Lusail Marina Towers', title: 'Integrated High-Rise Vertical MEP', text: 'Complete electrical feeds, chilled water loops, and life safety certified to GSAS 4-star standards.' },
     ],
   },
   civil: {
@@ -251,13 +251,13 @@ export const servicesDefaults = {
     linkLabel: 'Explore Civil Scope',
     features: [
       {
-        image: '/images/civil-1.webp',
+        image: '/assets/images/services/civil-1.webp',
         pill: 'West Bay Commercial Tower Core',
         title: 'Cast-In-Place Concrete & Core Structural Engineering',
         text: 'Robotic total station accuracy, heavy tower cranes, and accelerated slip-form scheduling.',
       },
       {
-        image: '/images/civil-2.webp',
+        image: '/assets/images/services/civil-2.webp',
         pill: 'Ashghal Ready QA/QC',
         title: 'On-Site Blueprint & Digital BIM Coordination',
         text: 'Tight tolerance structural surveys ensuring zero interference before MEP pass-throughs.',

@@ -1,5 +1,6 @@
 import React from 'react';
 import type { Metadata } from 'next';
+import { pageMeta } from '@/lib/seo';
 import { Container } from '@/components/shared/Container';
 import { SectionLabel } from '@/components/shared/ui';
 import { ContactForm } from '@/components/contact/ContactForm';
@@ -11,10 +12,12 @@ import { BalancedGrid } from '@/components/shared/BalancedGrid';
 import { resolveContact, toTelHref } from '@/lib/constants';
 import { fetchContactContent, fetchSiteSettings } from '@/lib/sanity/fetch';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta({
   title: 'Contact',
-  description: 'Request a project consultation with Shah Noori: civil construction, interior fit-out and MEP works in Doha, Qatar.',
-};
+  description:
+    'Request a project consultation with Shah Noori: interior fit-out, MEP and civil works in Doha, Qatar. Call, WhatsApp or send us a message.',
+  path: '/contact',
+});
 
 export default async function ContactPage() {
   const [settings, { hero, form, location, whatsapp: chat }] = await Promise.all([fetchSiteSettings(), fetchContactContent()]);

@@ -1,5 +1,6 @@
 import React from 'react';
 import type { Metadata } from 'next';
+import { pageMeta } from '@/lib/seo';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Container } from '@/components/shared/Container';
@@ -10,10 +11,12 @@ import { CountUp } from '@/components/shared/CountUp';
 import { categoryLabel } from '@/lib/categories';
 import { fetchAllProjects, fetchFeaturedProjects, fetchProjectsContent } from '@/lib/sanity/fetch';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta({
   title: 'Projects',
-  description: 'Civil, interior and MEP projects completed by Shah Noori across Qatar.',
-};
+  description:
+    'Interior fit-out, MEP and civil projects completed by Shah Noori across Qatar: offices, shops, cafes, villas and more.',
+  path: '/projects',
+});
 
 export default async function ProjectsPage() {
   const [projects, featured, content] = await Promise.all([fetchAllProjects(), fetchFeaturedProjects(), fetchProjectsContent()]);
@@ -32,7 +35,7 @@ export default async function ProjectsPage() {
     <main className="flex-1 w-full">
       {/* Hero */}
       <section className="relative overflow-hidden bg-maroon">
-        <Image src={spotlight?.imageUrl || '/images/story-2.webp'} alt="" fill priority sizes="100vw" className="scale-105 object-cover blur-[2px]" />
+        <Image src={spotlight?.imageUrl || '/assets/images/about/story-2.webp'} alt="" fill priority sizes="100vw" className="scale-105 object-cover blur-[2px]" />
         <div className="absolute inset-0 bg-gradient-to-r from-maroon via-maroon/85 to-maroon/40" aria-hidden="true" />
         <Container className="relative flex min-h-[600px] flex-col justify-end gap-10 pt-36 pb-16">
           <SectionLabel tone="gold">Projects</SectionLabel>
@@ -63,7 +66,7 @@ export default async function ProjectsPage() {
             >
               <div className="relative min-h-[320px] overflow-hidden lg:min-h-[460px]">
                 <Image
-                  src={spotlight.imageUrl || '/placeholder.svg'}
+                  src={spotlight.imageUrl || '/assets/images/placeholder.webp'}
                   alt={spotlight.title}
                   fill
                   sizes="(min-width: 1024px) 60vw, 100vw"

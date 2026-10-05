@@ -34,7 +34,16 @@ export const fetchFeaturedProjects = cache(
 );
 
 export const fetchProjectBySlug = cache(
-  async (slug: string): Promise<ProjectDetail | null> => client.fetch(getProjectBySlug, { slug })
+  async (slug: string): Promise<ProjectDetail | null> => {
+    // Route params arrive as written in the address ("Fit%20out"); the stored slug is the plain text
+    let plain = slug;
+    try {
+      plain = decodeURIComponent(slug);
+    } catch {
+      // Not valid encoding: look it up as given
+    }
+    return client.fetch(getProjectBySlug, { slug: plain });
+  }
 );
 
 export const fetchClients = cache(
