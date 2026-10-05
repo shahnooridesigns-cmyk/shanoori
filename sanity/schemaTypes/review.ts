@@ -6,16 +6,30 @@ export default defineType({
   type: 'document',
   fields: [
     defineField({
+      name: 'client',
+      title: 'Client',
+      type: 'reference',
+      to: [{ type: 'client' }],
+      description:
+        'Pick the client from the list. Their name and logo are used automatically. If they are not listed yet, create the Client first.',
+    }),
+    defineField({
       name: 'clientName',
-      title: 'Client Name',
+      title: 'Person Name',
       type: 'string',
-      validation: (Rule) => Rule.required(),
+      description: 'Optional: the person who gave the review, e.g. "Ahmed Khan". Leave empty to show just the client.',
+      // Reviews written before the Client dropdown existed only have this name
+      validation: (Rule) =>
+        Rule.custom((value, context) =>
+          value || context.document?.client ? true : 'Pick a client above, or type a name here.'
+        ),
     }),
     defineField({
       name: 'clientCompany',
       title: 'Client Company',
       type: 'string',
-      description: 'Company name if different from client name.',
+      description: 'Only needed when no client is picked above.',
+      hidden: ({ document }) => Boolean(document?.client),
     }),
     defineField({
       name: 'rating',
@@ -35,8 +49,9 @@ export default defineType({
     }),
     defineField({
       name: 'clientPhoto',
-      title: 'Client Photo / Logo',
+      title: 'Person Photo',
       type: 'image',
+      description: "Optional. If empty, the client's logo is shown.",
       options: {
         hotspot: true,
       },
@@ -46,7 +61,14 @@ export default defineType({
       title: 'Related Project',
       type: 'reference',
       to: [{ type: 'project' }],
-      description: 'Optional reference to a specific project.',
+      description: 'The project this review is about. The review is shown on that project page.',
+      // With a client picked, only list that client's projects
+      options: {
+        filter: ({ document }) => {
+          const clientId = (document?.client as { _ref?: string } | undefined)?._ref;
+          return clientId ? { filter: 'client._ref == $clientId', params: { clientId } } : {};
+        },
+      },
     }),
     defineField({
       name: 'featured',
@@ -58,15 +80,17 @@ export default defineType({
   ],
   preview: {
     select: {
-      title: 'clientName',
+      personName: 'clientName',
+      clientName: 'client.name',
       subtitle: 'reviewText',
-      media: 'clientPhoto',
+      photo: 'clientPhoto',
+      logo: 'client.logo',
     },
-    prepare({ title, subtitle, media }) {
+    prepare({ personName, clientName, subtitle, photo, logo }) {
       return {
-        title,
+        title: [personName, clientName].filter(Boolean).join(' · '),
         subtitle: subtitle ? (subtitle.length > 50 ? subtitle.substring(0, 50) + '...' : subtitle) : '',
-        media,
+        media: photo ?? logo,
       };
     },
   },

@@ -60,10 +60,11 @@ export default async function ProjectDetailPage({ params }: Props) {
 
   const facts = [
     { label: 'Category', value: categoryLabel(project.category) },
-    { label: 'Client', value: project.client?.name },
+    { label: 'Client', value: project.client?.name, logoUrl: project.client?.logoUrl },
     { label: 'Location', value: project.location },
     { label: 'Year', value: project.year?.toString() },
-  ].filter((f): f is { label: string; value: string } => Boolean(f.value));
+  ].filter((f): f is { label: string; value: string; logoUrl?: string } => Boolean(f.value));
+  const review = project.review;
 
   // Neighbours in portfolio order (wraps around) and related work from the same discipline
   const index = all.findIndex((p) => p._id === project._id);
@@ -92,7 +93,14 @@ export default async function ProjectDetailPage({ params }: Props) {
               {facts.map((f) => (
                 <div key={f.label} className="py-2 pr-6 md:border-l md:border-gold/25 md:pl-6 md:first:border-l-0 md:first:pl-0">
                   <dt className="text-xs uppercase tracking-[0.2em] text-white/55">{f.label}</dt>
-                  <dd className="mt-2 text-lg text-white">{f.value}</dd>
+                  <dd className="mt-2 flex items-center gap-3 text-lg text-white">
+                    {f.logoUrl && (
+                      <span className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-white">
+                        <Image src={f.logoUrl} alt="" fill sizes="40px" className="object-contain p-1" />
+                      </span>
+                    )}
+                    {f.value}
+                  </dd>
                 </div>
               ))}
             </dl>
@@ -127,6 +135,37 @@ export default async function ProjectDetailPage({ params }: Props) {
           </aside>
         </Container>
       </section>
+
+      {/* What the client said about this project */}
+      {review && (
+        <section className="bg-brand-gradient py-20 md:py-28">
+          <Container>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold/70">From the client</p>
+            <blockquote className="mt-8 max-w-4xl text-2xl md:text-4xl leading-snug text-gold">
+              &ldquo;{review.reviewText}&rdquo;
+            </blockquote>
+            <div className="mt-10 flex items-center gap-4">
+              {review.photoUrl && (
+                <span
+                  className={`relative h-14 w-14 shrink-0 overflow-hidden bg-white ${review.photoIsLogo ? 'rounded-xl' : 'rounded-full'}`}
+                >
+                  <Image
+                    src={review.photoUrl}
+                    alt=""
+                    fill
+                    sizes="56px"
+                    className={review.photoIsLogo ? 'object-contain p-1.5' : 'object-cover'}
+                  />
+                </span>
+              )}
+              <div className="leading-tight">
+                <p className="text-lg text-white">{review.clientName}</p>
+                {review.clientCompany && <p className="mt-1 text-sm text-white/70">{review.clientCompany}</p>}
+              </div>
+            </div>
+          </Container>
+        </section>
+      )}
 
       {/* Gallery */}
       {gallery.length > 0 && (

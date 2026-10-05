@@ -12,7 +12,8 @@ export interface ProjectSummary {
 }
 
 export interface ProjectDetail extends ProjectSummary {
-  client?: { name?: string } | null;
+  client?: { name?: string; logoUrl?: string } | null;
+  review?: Review | null;
   /** Plain text per the schema; older imported documents may still hold Portable Text blocks. */
   description?: string | PortableTextBlock[] | null;
   gallery?: { _key?: string; url?: string }[] | null;
@@ -36,6 +37,8 @@ export interface Review {
   rating?: number;
   reviewText: string;
   photoUrl?: string;
+  /** photoUrl is the client's logo (show it whole) rather than a person's photo (crop to a circle) */
+  photoIsLogo?: boolean;
   projectSlug?: string;
   projectName?: string;
 }
