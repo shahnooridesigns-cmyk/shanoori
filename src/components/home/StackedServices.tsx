@@ -38,9 +38,16 @@ const StackCard = ({
     >
       <Link
         href={`/services#${division.id}`}
-        className="group relative grid overflow-hidden rounded-[28px] border border-gold/15 bg-[#0f0d0b] shadow-[0_-20px_50px_-20px_rgba(0,0,0,0.9)] sm:grid-cols-[1fr_240px]"
+        // Frosted glass: a see-through tint over a heavy backdrop blur, so the section's glows
+        // (and the card buried underneath) show through as soft colour, never as readable shapes
+        className="group relative grid overflow-hidden rounded-[28px] border border-white/15 bg-[#17110f]/55 shadow-[0_-20px_50px_-20px_rgba(0,0,0,0.9),inset_0_1px_0_0_rgba(255,255,255,0.18)] backdrop-blur-2xl backdrop-saturate-150 sm:grid-cols-[1fr_240px]"
       >
-        <div className="flex min-h-[340px] flex-col p-7 md:p-9">
+        {/* Light catching the top-left of the pane */}
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.14)_0%,rgba(255,255,255,0.03)_32%,transparent_60%)]"
+        />
+        <div className="relative flex min-h-[340px] flex-col p-7 md:p-9">
           <div className="flex items-center justify-between">
             <span className="text-white/60">/{division.number}</span>
             <span className="flex h-10 w-10 items-center justify-center rounded-full border border-gold/40 text-gold transition-all duration-500 group-hover:rotate-45 group-hover:bg-gold group-hover:text-maroon">
@@ -51,11 +58,12 @@ const StackCard = ({
           <p className="mt-5 max-w-sm text-white/75">{division.summary}</p>
           <ul className="mt-auto flex flex-wrap gap-2 pt-8">
             {division.tags.map((tag) => (
-              <li key={tag} className="rounded-full border border-white/15 px-3 py-1 text-sm text-white/75">{tag}</li>
+              <li key={tag} className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-sm text-white/85">{tag}</li>
             ))}
           </ul>
         </div>
-        <div className="relative min-h-[240px] overflow-hidden sm:min-h-0">
+        {/* Photo set into the glass with its own rounded edge */}
+        <div className="relative m-3 min-h-[240px] overflow-hidden rounded-[20px] ring-1 ring-white/15 sm:ml-0 sm:min-h-0">
           <Image
             src={division.image}
             alt={division.title}

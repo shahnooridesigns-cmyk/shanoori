@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import type { Review } from '@/lib/sanity/types';
 import { CountUp } from '../shared/CountUp';
 import { ArrowUpRight } from '../shared/ui';
@@ -27,16 +27,42 @@ const ArrowButton = ({ dir, onClick }: { dir: 'prev' | 'next'; onClick: () => vo
   </button>
 );
 
+/** How long each review stays before the next slides in */
+const AUTOPLAY_MS = 6000;
+
+/** Reviews travel leftwards going forward (in from the right, out to the left) and the reverse going back. */
+const slide = {
+  enter: (direction: number) => ({ opacity: 0, x: direction * 120 }),
+  center: { opacity: 1, x: 0 },
+  exit: (direction: number) => ({ opacity: 0, x: direction * -120 }),
+};
+const fade = { enter: { opacity: 0 }, center: { opacity: 1 }, exit: { opacity: 0 } };
+
 export const TestimonialSlider = ({ reviews }: { reviews: Review[] }) => {
-  const [index, setIndex] = useState(0);
+  const [[index, direction], setSlide] = useState<[number, number]>([0, 1]);
+  const [paused, setPaused] = useState(false);
+  const reduceMotion = useReducedMotion();
   const count = reviews.length;
   const review = reviews[index];
   const rated = reviews.filter((r) => r.rating);
   const average = rated.length ? rated.reduce((sum, r) => sum + (r.rating ?? 0), 0) / rated.length : 5;
-  const go = (offset: number) => setIndex((i) => (i + offset + count) % count);
+  const go = (offset: number) => setSlide(([i]) => [(i + offset + count) % count, offset]);
+
+  // Advance on its own; waits while the pointer or keyboard focus is on the slider, and
+  // restarts the wait whenever the review changes (so a manual click gets a full turn)
+  useEffect(() => {
+    if (count < 2 || paused || reduceMotion) return;
+    const timer = setTimeout(() => setSlide(([i]) => [(i + 1) % count, 1]), AUTOPLAY_MS);
+    return () => clearTimeout(timer);
+  }, [index, count, paused, reduceMotion]);
 
   return (
-    <div>
+    <div
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+      onFocus={() => setPaused(true)}
+      onBlur={() => setPaused(false)}
+    >
       <div className="flex flex-wrap items-start justify-between gap-6">
         <div className="flex items-center gap-3">
           {/* A client logo is shown whole on white; a person's photo is cropped to a circle */}
@@ -71,14 +97,17 @@ export const TestimonialSlider = ({ reviews }: { reviews: Review[] }) => {
       </div>
 
       <div className="mt-8 flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
-        <div className="min-h-[220px] max-w-3xl md:pl-5" aria-live="polite">
-          <AnimatePresence mode="wait" initial={false}>
+        {/* aria-live is off while it plays by itself so screen readers aren't interrupted every few seconds */}
+        <div className="min-h-[220px] max-w-3xl overflow-x-clip md:pl-5" aria-live={paused ? 'polite' : 'off'}>
+          <AnimatePresence mode="wait" initial={false} custom={direction}>
             <motion.div
               key={review._id}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
-              transition={{ duration: 0.3 }}
+              custom={direction}
+              variants={reduceMotion ? fade : slide}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
             >
               <blockquote className="text-2xl md:text-4xl leading-snug text-ink">
                 &ldquo;{review.reviewText}&rdquo;

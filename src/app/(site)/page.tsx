@@ -5,6 +5,7 @@ import { WhyChooseUs } from "@/components/home/WhyChooseUs";
 import { ServicesShowcase } from "@/components/home/ServicesShowcase";
 import { Process } from "@/components/home/Process";
 import { Testimonials } from "@/components/home/Testimonials";
+import { TrustedBy } from "@/components/shared/TrustedBy";
 import { FaqSection } from "@/components/shared/FaqSection";
 import { CtaBanner } from "@/components/shared/CtaBanner";
 
@@ -17,6 +18,7 @@ export default function Home() {
       <WhyChooseUs />
       <ServicesShowcase />
       <Process />
+      <TrustedBy />
       <Testimonials />
       <FaqSection />
       <CtaBanner />
