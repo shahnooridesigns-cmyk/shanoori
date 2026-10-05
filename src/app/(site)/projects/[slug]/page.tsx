@@ -82,7 +82,7 @@ export default async function ProjectDetailPage({ params }: Props) {
 
         <Container className="relative flex flex-1 flex-col justify-end pt-32 pb-10">
           <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm text-gold/80">
-            <Link href="/projects" className="hover:text-gold">Projects</Link>
+            <Link href="/projects" className="tap-area hover:text-gold">Projects</Link>
             <span aria-hidden="true">/</span>
             <span aria-current="page" className="truncate">{project.title}</span>
           </nav>
@@ -128,7 +128,7 @@ export default async function ProjectDetailPage({ params }: Props) {
                 message={`Hello Shah Noori, I saw your project "${project.title}" and would like to discuss something similar.`}
                 phoneNumber={phoneNumber}
               />
-              <Link href="/contact" className="mt-4 flex items-center justify-center gap-2 text-sm text-gold/90 hover:text-gold">
+              <Link href="/contact" className="tap-area mt-4 flex items-center justify-center gap-2 text-sm text-gold/90 hover:text-gold">
                 Or request a consultation <span aria-hidden="true">→</span>
               </Link>
             </div>
@@ -221,7 +221,7 @@ export default async function ProjectDetailPage({ params }: Props) {
               </div>
               <Link
                 href={`/projects?category=${project.category}`}
-                className="group flex w-fit items-center gap-2 border-b border-maroon pb-0.5 text-lg text-maroon hover:opacity-80"
+                className="tap-area group flex w-fit items-center gap-2 border-b border-maroon pb-0.5 text-lg text-maroon hover:opacity-80"
               >
                 View all {discipline.toLowerCase()} projects
                 <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />

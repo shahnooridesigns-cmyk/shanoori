@@ -23,6 +23,7 @@ export const ProjectGallery = ({ images, title }: { images: GalleryImage[]; titl
   const [direction, setDirection] = useState(0);
   const triggerRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const closeRef = useRef<HTMLButtonElement>(null);
+  const thumbRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const count = images.length;
 
   const go = useCallback(
@@ -56,6 +57,11 @@ export const ProjectGallery = ({ images, title }: { images: GalleryImage[]; titl
       document.documentElement.style.overflow = '';
     };
   }, [open, close, go]);
+
+  // Keep the current photo's thumbnail on screen as the viewer moves through a long set
+  useEffect(() => {
+    if (open !== null) thumbRefs.current[open]?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+  }, [open]);
 
   return (
     <>
@@ -157,10 +163,14 @@ export const ProjectGallery = ({ images, title }: { images: GalleryImage[]; titl
             </div>
 
             {count > 1 && (
-              <div className="flex justify-center gap-2 overflow-x-auto px-5 py-4 [scrollbar-width:none]">
+              // The strip scrolls sideways; the inner row is centred only while it fits, because
+              // centring an overflowing row would push its first thumbnails out of reach
+              <div className="overflow-x-auto px-5 py-4 [scrollbar-width:none]">
+                <div className="mx-auto flex w-max gap-2">
                 {images.map((img, i) => (
                   <button
                     key={img.key}
+                    ref={(el) => { thumbRefs.current[i] = el; }}
                     type="button"
                     onClick={() => { setDirection(i > open ? 1 : -1); setOpen(i); }}
                     aria-label={`Show photo ${i + 1}`}
@@ -170,6 +180,7 @@ export const ProjectGallery = ({ images, title }: { images: GalleryImage[]; titl
                     <Image src={img.url} alt="" fill sizes="80px" className="object-cover" />
                   </button>
                 ))}
+                </div>
               </div>
             )}
           </motion.div>

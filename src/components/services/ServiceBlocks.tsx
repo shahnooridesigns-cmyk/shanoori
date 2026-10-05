@@ -25,7 +25,7 @@ export const DivisionHeader = ({
     </div>
     <Link
       href={href}
-      className="group flex w-fit shrink-0 items-center gap-3 border-b-2 border-maroon pb-1 text-lg font-semibold text-maroon hover:opacity-80"
+      className="tap-area group flex w-fit shrink-0 items-center gap-3 border-b-2 border-maroon pb-1 text-lg font-semibold text-maroon hover:opacity-80"
     >
       {linkLabel}
       <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />

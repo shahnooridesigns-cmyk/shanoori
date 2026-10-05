@@ -93,7 +93,7 @@ export const Header = ({
           aria-label={menuOpen ? 'Close menu' : 'Open menu'}
           aria-expanded={menuOpen}
           aria-controls="site-menu"
-          className={`relative z-50 flex h-10 w-10 flex-col items-end justify-center gap-2 ${isHome ? 'lg:hidden' : ''}`}
+          className={`relative z-50 flex h-11 w-11 flex-col items-end justify-center gap-2 ${isHome ? 'lg:hidden' : ''}`}
         >
           <span className={`block h-0.5 w-8 bg-gold transition-transform duration-300 ${menuOpen ? 'translate-y-[5px] rotate-45' : ''}`} />
           <span className={`block h-0.5 w-8 bg-gold transition-transform duration-300 ${menuOpen ? '-translate-y-[5px] -rotate-45' : ''}`} />

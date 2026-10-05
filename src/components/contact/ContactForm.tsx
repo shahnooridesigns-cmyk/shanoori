@@ -171,7 +171,7 @@ export const ContactForm = ({ phoneNumber, email }: { phoneNumber: string; email
               {projectTypes.map((type) => (
                 <label
                   key={type}
-                  className={`cursor-pointer rounded-full px-4 py-2 text-sm transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-maroon ${
+                  className={`flex min-h-11 cursor-pointer items-center rounded-full px-4 py-2 text-sm transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-maroon ${
                     projectType === type ? 'bg-maroon text-white' : 'bg-cream text-ink/80 hover:bg-[#EFE3D2]'
                   }`}
                 >
@@ -218,7 +218,7 @@ export const ContactForm = ({ phoneNumber, email }: { phoneNumber: string; email
             </button>
             <a
               href={`mailto:${email}?subject=${encodeURIComponent('Project consultation request')}`}
-              className="flex items-center gap-2 font-semibold text-maroon hover:opacity-75 md:px-8"
+              className="tap-area flex items-center gap-2 font-semibold text-maroon hover:opacity-75 md:px-8"
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-4 w-4" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M16 3v4M8 3v4M3 10h18" /></svg>
               Request a Project Consultation

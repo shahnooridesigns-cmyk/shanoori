@@ -5,7 +5,7 @@ import type { ProjectSummary } from '@/lib/sanity/types';
 import { categoryLabel } from '@/lib/categories';
 import { ArrowUpRight } from '../shared/ui';
 
-/** Photo card: zooms on hover and slides up client/year details. Fills its parent's height. */
+/** Photo card: zooms on hover and slides up client/year details (always shown on touch screens, which can't hover). Fills its parent's height. */
 export const ProjectCard = ({
   project,
   sizes,
@@ -52,7 +52,7 @@ export const ProjectCard = ({
           </h3>
           {project.location && <p className="mt-1 text-gold/90">{project.location}</p>}
           {details && (
-            <p className="grid grid-rows-[0fr] text-sm text-white/80 transition-[grid-template-rows] duration-500 group-hover:grid-rows-[1fr] group-focus-visible:grid-rows-[1fr]">
+            <p className="reveal-on-touch grid grid-rows-[0fr] text-sm text-white/80 transition-[grid-template-rows] duration-500 group-hover:grid-rows-[1fr] group-focus-visible:grid-rows-[1fr]">
               <span className="overflow-hidden">
                 <span className="block pt-2">{details}</span>
               </span>

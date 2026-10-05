@@ -92,12 +92,12 @@ export default async function ContactPage() {
                   </div>
                 </div>
                 <div className="flex flex-wrap items-center justify-between gap-3 bg-cream px-8 py-4">
-                  <a href={toTelHref(phone)} className="text-sm text-ink/80 hover:text-ink">{phone}</a>
+                  <a href={toTelHref(phone)} className="tap-area text-sm text-ink/80 hover:text-ink">{phone}</a>
                   <a
                     href={`https://www.google.com/maps/search/?api=1&query=${mapsQuery}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="rounded-full bg-maroon px-5 py-2 text-sm font-semibold text-white hover:bg-[#6d1a3a]"
+                    className="rounded-full bg-maroon px-5 py-3 text-sm font-semibold text-white hover:bg-[#6d1a3a]"
                   >
                     Map: Find Our Location →
                   </a>

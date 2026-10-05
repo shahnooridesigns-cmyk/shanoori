@@ -1,14 +1,21 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import type { ProjectSummary } from '@/lib/sanity/types';
 import { ArrowUpRight } from '../shared/ui';
+import { useSwipe } from '@/lib/useSwipe';
 
 const caption = (p: ProjectSummary) => [p.title, p.location].filter(Boolean).join(' - ');
 
+const MAIN_SIZES = '(min-width: 768px) 45vw, 100vw';
+const SIDE_SIZES = '25vw';
+/** Long, soft deceleration: the photo glides in and settles rather than snapping */
+const GLIDE = [0.32, 0.72, 0, 1] as const;
+
+/** Small preview of the neighbouring project; its photo crossfades when the carousel moves. */
 const SideCard = ({ project, label, onClick }: { project: ProjectSummary; label: string; onClick: () => void }) => (
   <button
     type="button"
@@ -16,62 +23,117 @@ const SideCard = ({ project, label, onClick }: { project: ProjectSummary; label:
     aria-label={label}
     className="relative hidden aspect-[275/225] w-full overflow-hidden rounded-2xl shadow-[0_24px_40px_-12px_rgba(60,40,10,0.45)] transition-transform hover:scale-[1.02] md:block"
   >
-    <Image src={project.imageUrl || '/placeholder.svg'} alt="" fill sizes="25vw" className="object-cover" />
+    <AnimatePresence initial={false}>
+      <motion.span
+        key={project._id}
+        className="absolute inset-0"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.6, ease: 'easeInOut' }}
+      >
+        <Image src={project.imageUrl || '/placeholder.svg'} alt="" fill sizes={SIDE_SIZES} className="object-cover" />
+      </motion.span>
+    </AnimatePresence>
   </button>
 );
 
-/** Round arrow sitting on the left or right edge of the main photo. */
+/** Large round arrow on the outer edge of the carousel (over the photo's edge on phones, where there are no side cards). */
 const EdgeArrow = ({ dir, onClick }: { dir: 'prev' | 'next'; onClick: () => void }) => (
   <button
     type="button"
     onClick={onClick}
     aria-label={dir === 'prev' ? 'Previous project' : 'Next project'}
-    className={`absolute top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-maroon shadow-lg backdrop-blur-sm transition-all hover:scale-110 hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-maroon md:h-12 md:w-12 ${
-      dir === 'prev' ? 'left-3 md:-left-6' : 'right-3 md:-right-6'
+    className={`absolute top-1/2 z-10 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white text-maroon shadow-[0_10px_30px_-8px_rgba(60,40,10,0.55)] transition-all hover:scale-110 hover:bg-maroon hover:text-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-maroon md:h-16 md:w-16 ${
+      dir === 'prev' ? 'left-2 md:-left-8' : 'right-2 md:-right-8'
     }`}
   >
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5" aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6 md:h-7 md:w-7" aria-hidden="true">
       {dir === 'prev' ? <path d="m15 5-7 7 7 7" /> : <path d="m9 5 7 7-7 7" />}
     </svg>
   </button>
 );
 
+/** How long each project stays before the next slides in */
+const AUTOPLAY_MS = 5000;
+
+/**
+ * Both photos travel together inside the frame: going forward the new one comes in from the
+ * right as the old one leaves to the left, and the reverse going back.
+ */
+const slide = {
+  enter: (direction: number) => ({ x: `${direction * 100}%` }),
+  center: { x: '0%' },
+  exit: (direction: number) => ({ x: `${direction * -100}%` }),
+};
+const fade = { enter: { opacity: 0 }, center: { opacity: 1 }, exit: { opacity: 0 } };
+
 export const WorkCarousel = ({ projects }: { projects: ProjectSummary[] }) => {
-  const [index, setIndex] = useState(0);
+  const [[index, direction], setSlide] = useState<[number, number]>([0, 1]);
+  const [paused, setPaused] = useState(false);
+  const reduceMotion = useReducedMotion();
   const count = projects.length;
+  // Swipe left for the next project, right for the previous one
+  const swipe = useSwipe((dir) => count > 1 && setSlide(([i]) => [(i + dir + count) % count, dir]), setPaused);
+
+  // Advance on its own; waits while the pointer, keyboard focus or a finger is on the
+  // carousel, and restarts the wait whenever the project changes
+  useEffect(() => {
+    if (count < 2 || paused || reduceMotion) return;
+    const timer = setTimeout(() => setSlide(([i]) => [(i + 1) % count, 1]), AUTOPLAY_MS);
+    return () => clearTimeout(timer);
+  }, [index, count, paused, reduceMotion]);
+
   if (count === 0) {
     return <p className="py-16 text-center text-ink/60">Featured projects will appear here once they are marked as featured in the Studio.</p>;
   }
 
   const at = (offset: number) => projects[(index + offset + count) % count];
-  const go = (offset: number) => setIndex((i) => (i + offset + count) % count);
+  const go = (offset: number) => setSlide(([i]) => [(i + offset + count) % count, offset]);
   const current = projects[index];
+  // Photos that could be asked for next, fetched ahead so they are ready when they slide in
+  const upcoming = count > 1 ? [...new Map([at(1), at(-1), at(2)].map((p) => [p._id, p])).values()].filter((p) => p._id !== current._id) : [];
 
   return (
-    <div className="flex flex-col items-center gap-8">
-      <div className="grid w-full items-center gap-8 md:grid-cols-[1fr_1.65fr_1fr]">
+    <div
+      className="flex flex-col items-center gap-8"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+      onFocus={() => setPaused(true)}
+      onBlur={() => setPaused(false)}
+      {...swipe}
+    >
+      <div className="relative grid w-full items-center gap-8 md:grid-cols-[1fr_1.65fr_1fr]">
+        {count > 1 && <EdgeArrow dir="prev" onClick={() => go(-1)} />}
+        {count > 1 && <EdgeArrow dir="next" onClick={() => go(1)} />}
         {count > 1 ? <SideCard project={at(-1)} label={`Show ${at(-1).title}`} onClick={() => go(-1)} /> : <div className="hidden md:block" />}
 
-        <div className="relative">
-          {count > 1 && <EdgeArrow dir="prev" onClick={() => go(-1)} />}
-          {count > 1 && <EdgeArrow dir="next" onClick={() => go(1)} />}
-          <AnimatePresence mode="wait" initial={false}>
+        {/* Fixed frame: it keeps its size and shadow while the photos slide through it */}
+        <div className="card-lift relative aspect-[3/2] w-full overflow-hidden rounded-2xl bg-maroon shadow-[0_30px_50px_-15px_rgba(60,40,10,0.55)]">
+          {/* Out of sight, but loaded at the size the main photo uses */}
+          <div className="absolute inset-0 opacity-0" aria-hidden="true">
+            {upcoming.map((p) => (
+              <Image key={p._id} src={p.imageUrl || '/placeholder.svg'} alt="" fill sizes={MAIN_SIZES} loading="eager" className="object-cover" />
+            ))}
+          </div>
+
+          <AnimatePresence initial={false} custom={direction}>
             <motion.div
               key={current._id}
-              initial={{ opacity: 0, scale: 0.96 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.96 }}
-              transition={{ duration: 0.3 }}
+              custom={direction}
+              variants={reduceMotion ? fade : slide}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{ duration: reduceMotion ? 0.3 : 0.75, ease: GLIDE }}
+              className="absolute inset-0 will-change-transform"
             >
-              <Link
-                href={`/projects/${encodeURIComponent(current.slug)}`}
-                className="card-lift group relative block aspect-[3/2] w-full overflow-hidden rounded-2xl shadow-[0_30px_50px_-15px_rgba(60,40,10,0.55)]"
-              >
+              <Link href={`/projects/${encodeURIComponent(current.slug)}`} className="group relative block h-full w-full">
                 <Image
                   src={current.imageUrl || '/placeholder.svg'}
                   alt={current.title}
                   fill
-                  sizes="(min-width: 768px) 45vw, 100vw"
+                  sizes={MAIN_SIZES}
                   className="object-cover transition-transform duration-700 group-hover:scale-105"
                 />
                 <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 bg-gradient-to-t from-maroon/90 via-maroon/50 to-transparent p-5 pt-16">
@@ -89,7 +151,7 @@ export const WorkCarousel = ({ projects }: { projects: ProjectSummary[] }) => {
       </div>
 
       {count > 1 && (
-        <p className="text-sm tabular-nums text-ink/70" aria-live="polite">
+        <p className="text-sm tabular-nums text-ink/70" aria-live={paused ? 'polite' : 'off'}>
           {String(index + 1).padStart(2, '0')} / {String(count).padStart(2, '0')}
         </p>
       )}

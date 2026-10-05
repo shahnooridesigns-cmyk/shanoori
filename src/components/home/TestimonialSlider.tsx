@@ -7,6 +7,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import type { Review } from '@/lib/sanity/types';
 import { CountUp } from '../shared/CountUp';
 import { ArrowUpRight } from '../shared/ui';
+import { useSwipe } from '@/lib/useSwipe';
 
 const Star = () => (
   <svg viewBox="0 0 20 20" className="h-6 w-6 fill-current" aria-hidden="true">
@@ -19,7 +20,7 @@ const ArrowButton = ({ dir, onClick }: { dir: 'prev' | 'next'; onClick: () => vo
     type="button"
     onClick={onClick}
     aria-label={dir === 'prev' ? 'Previous review' : 'Next review'}
-    className="flex h-9 w-9 items-center justify-center rounded-md border-2 border-ink text-ink transition-colors hover:bg-ink hover:text-white"
+    className="flex h-11 w-11 items-center justify-center rounded-md border-2 border-ink text-ink transition-colors hover:bg-ink hover:text-white"
   >
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className="h-5 w-5" aria-hidden="true">
       {dir === 'prev' ? <path d="M19 12H5m6-6-6 6 6 6" /> : <path d="M5 12h14m-6-6 6 6-6 6" />}
@@ -47,6 +48,8 @@ export const TestimonialSlider = ({ reviews }: { reviews: Review[] }) => {
   const rated = reviews.filter((r) => r.rating);
   const average = rated.length ? rated.reduce((sum, r) => sum + (r.rating ?? 0), 0) / rated.length : 5;
   const go = (offset: number) => setSlide(([i]) => [(i + offset + count) % count, offset]);
+  // Swipe left for the next review, right for the previous one
+  const swipe = useSwipe((dir) => count > 1 && go(dir), setPaused);
 
   // Advance on its own; waits while the pointer or keyboard focus is on the slider, and
   // restarts the wait whenever the review changes (so a manual click gets a full turn)
@@ -62,6 +65,7 @@ export const TestimonialSlider = ({ reviews }: { reviews: Review[] }) => {
       onMouseLeave={() => setPaused(false)}
       onFocus={() => setPaused(true)}
       onBlur={() => setPaused(false)}
+      {...swipe}
     >
       <div className="flex flex-wrap items-start justify-between gap-6">
         <div className="flex items-center gap-3">
@@ -115,7 +119,7 @@ export const TestimonialSlider = ({ reviews }: { reviews: Review[] }) => {
               {review.projectSlug && (
                 <Link
                   href={`/projects/${encodeURIComponent(review.projectSlug)}`}
-                  className="group mt-6 flex w-fit items-center gap-2 border-b border-maroon pb-0.5 text-maroon hover:opacity-80"
+                  className="tap-area group mt-6 flex w-fit items-center gap-2 border-b border-maroon pb-0.5 text-maroon hover:opacity-80"
                 >
                   View project{review.projectName ? `: ${review.projectName}` : ''}
                   <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
