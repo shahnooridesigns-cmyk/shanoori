@@ -27,11 +27,11 @@ export default defineType({
       type: 'string',
       options: {
         list: [
-          { title: 'Civil', value: 'civil' },
           { title: 'Interior', value: 'interior' },
           { title: 'Mechanical', value: 'mechanical' },
           { title: 'Electrical', value: 'electrical' },
           { title: 'Plumbing', value: 'plumbing' },
+          { title: 'Civil', value: 'civil' },
         ],
       },
       validation: (Rule) => Rule.required(),

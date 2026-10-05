@@ -8,7 +8,7 @@ import { ProjectsGrid } from '@/components/projects/ProjectsGrid';
 import { CtaBanner } from '@/components/shared/CtaBanner';
 import { CountUp } from '@/components/shared/CountUp';
 import { categoryLabel } from '@/lib/categories';
-import { fetchAllProjects, fetchFeaturedProjects } from '@/lib/sanity/fetch';
+import { fetchAllProjects, fetchFeaturedProjects, fetchProjectsContent } from '@/lib/sanity/fetch';
 
 export const metadata: Metadata = {
   title: 'Projects',
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 };
 
 export default async function ProjectsPage() {
-  const [projects, featured] = await Promise.all([fetchAllProjects(), fetchFeaturedProjects()]);
+  const [projects, featured, content] = await Promise.all([fetchAllProjects(), fetchFeaturedProjects(), fetchProjectsContent()]);
   const spotlight = featured[0] ?? projects[0];
   const categoryCount = new Set(projects.map((p) => p.category)).size;
   const years = projects.map((p) => p.year).filter((y): y is number => typeof y === 'number');
@@ -36,15 +36,11 @@ export default async function ProjectsPage() {
         <div className="absolute inset-0 bg-gradient-to-r from-maroon via-maroon/85 to-maroon/40" aria-hidden="true" />
         <Container className="relative flex min-h-[600px] flex-col justify-end gap-10 pt-36 pb-16">
           <SectionLabel tone="gold">Projects</SectionLabel>
-          <h1 className="max-w-4xl text-5xl sm:text-6xl md:text-8xl font-medium leading-[0.95] text-gold">
-            Spaces we&apos;ve
-            <br />
-            brought to life.
+          <h1 className="max-w-4xl whitespace-pre-line text-5xl sm:text-6xl md:text-8xl font-medium leading-[0.95] text-gold">
+            {content.hero.heading}
           </h1>
           <div className="flex flex-col gap-10 md:flex-row md:items-end md:justify-between">
-            <p className="max-w-md text-lg text-white/80">
-              A collection of spaces shaped through precision, craftsmanship, and integrated execution across Qatar.
-            </p>
+            <p className="max-w-md text-lg text-white/80">{content.hero.text}</p>
             <dl className="flex gap-10 md:gap-14">
               {stats.map((s) => (
                 <div key={s.label} className="flex flex-col-reverse">
@@ -109,8 +105,8 @@ export default async function ProjectsPage() {
       <section className="bg-beige pt-20 pb-24 md:pt-28 md:pb-32">
         <Container>
           <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-            <h2 className="text-brand-gradient w-fit text-5xl md:text-7xl font-medium leading-none">All Work</h2>
-            <ArrowLink href="/contact" className="w-fit text-maroon">Start a Project</ArrowLink>
+            <h2 className="text-brand-gradient w-fit text-5xl md:text-7xl font-medium leading-none">{content.list.heading}</h2>
+            <ArrowLink href="/contact" className="w-fit text-maroon">{content.list.buttonLabel}</ArrowLink>
           </div>
           <ProjectsGrid initialProjects={projects} />
         </Container>

@@ -20,7 +20,7 @@ export const FaqAccordion = ({ faqs }: { faqs: { q: string; a: string }[] }) => 
       {faqs.map((faq, i) => {
         const isOpen = openIndex === i;
         return (
-          <div key={faq.q} className="border-t border-ink/70">
+          <div key={i} className="border-t border-ink/70">
             <h3>
               <button
                 type="button"

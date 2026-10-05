@@ -2,9 +2,11 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { AnimatePresence, motion } from 'framer-motion';
 import type { Review } from '@/lib/sanity/types';
 import { CountUp } from '../shared/CountUp';
+import { ArrowUpRight } from '../shared/ui';
 
 const Star = () => (
   <svg viewBox="0 0 20 20" className="h-6 w-6 fill-current" aria-hidden="true">
@@ -37,9 +39,20 @@ export const TestimonialSlider = ({ reviews }: { reviews: Review[] }) => {
     <div>
       <div className="flex flex-wrap items-start justify-between gap-6">
         <div className="flex items-center gap-3">
-          <span className="relative h-10 w-10 overflow-hidden rounded-full bg-maroon text-gold">
+          {/* A client logo is shown whole on white; a person's photo is cropped to a circle */}
+          <span
+            className={`relative overflow-hidden ${
+              review.photoIsLogo ? 'h-12 w-12 rounded-lg bg-white ring-1 ring-ink/10' : 'h-10 w-10 rounded-full bg-maroon text-gold'
+            }`}
+          >
             {review.photoUrl ? (
-              <Image src={review.photoUrl} alt="" fill sizes="40px" className="object-cover" />
+              <Image
+                src={review.photoUrl}
+                alt=""
+                fill
+                sizes="48px"
+                className={review.photoIsLogo ? 'object-contain p-1' : 'object-cover'}
+              />
             ) : (
               <span className="flex h-full w-full items-center justify-center font-semibold" aria-hidden="true">
                 {review.clientName?.charAt(0) || '?'}
@@ -60,20 +73,33 @@ export const TestimonialSlider = ({ reviews }: { reviews: Review[] }) => {
       <div className="mt-8 flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
         <div className="min-h-[220px] max-w-3xl md:pl-5" aria-live="polite">
           <AnimatePresence mode="wait" initial={false}>
-            <motion.blockquote
+            <motion.div
               key={review._id}
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -12 }}
               transition={{ duration: 0.3 }}
-              className="text-2xl md:text-4xl leading-snug text-ink"
             >
-              &ldquo;{review.reviewText}&rdquo;
-            </motion.blockquote>
+              <blockquote className="text-2xl md:text-4xl leading-snug text-ink">
+                &ldquo;{review.reviewText}&rdquo;
+              </blockquote>
+              {review.projectSlug && (
+                <Link
+                  href={`/projects/${encodeURIComponent(review.projectSlug)}`}
+                  className="group mt-6 flex w-fit items-center gap-2 border-b border-maroon pb-0.5 text-maroon hover:opacity-80"
+                >
+                  View project{review.projectName ? `: ${review.projectName}` : ''}
+                  <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                </Link>
+              )}
+            </motion.div>
           </AnimatePresence>
         </div>
         {count > 1 && (
-          <div className="flex gap-5">
+          <div className="flex items-center gap-5">
+            <span className="text-sm tabular-nums text-ink/60" aria-hidden="true">
+              {String(index + 1).padStart(2, '0')} / {String(count).padStart(2, '0')}
+            </span>
             <ArrowButton dir="prev" onClick={() => go(-1)} />
             <ArrowButton dir="next" onClick={() => go(1)} />
           </div>

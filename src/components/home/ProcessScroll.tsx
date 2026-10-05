@@ -149,7 +149,7 @@ export const ProcessScroll = ({ steps }: { steps: ProcessStep[] }) => {
     return (
       <ol className="grid gap-8 md:grid-cols-2">
         {steps.map((step, i) => (
-          <li key={step.title} className="card-reveal overflow-hidden rounded-[24px] bg-[#111]">
+          <li key={i} className="card-reveal overflow-hidden rounded-[24px] bg-[#111]">
             <div className="relative aspect-[16/10]">
               <Image src={`/images/process-${i + 1}.jpg`} alt="" fill sizes="(min-width: 768px) 50vw, 100vw" className="object-cover" />
             </div>
@@ -179,19 +179,19 @@ export const ProcessScroll = ({ steps }: { steps: ProcessStep[] }) => {
         <div className="relative mx-auto h-full w-full max-w-[1320px] px-5 md:px-10 lg:px-[60px]">
           {/* Step copy: full text for screen readers, animated copies for sighted users */}
           <ol className="sr-only">
-            {steps.map((s) => (
-              <li key={s.title}>{s.title}: {s.sub}. {s.text}</li>
+            {steps.map((s, i) => (
+              <li key={i}>{s.title}: {s.sub}. {s.text}</li>
             ))}
           </ol>
           <div className="relative h-full max-w-xl" aria-hidden="true">
             {steps.map((step, i) => (
-              <StepText key={step.title} step={step} index={i} progress={scrollYProgress} />
+              <StepText key={i} step={step} index={i} progress={scrollYProgress} />
             ))}
           </div>
 
           <ol className="absolute bottom-10 left-5 flex flex-col gap-3 md:left-10 lg:left-[60px]" aria-hidden="true">
-            {steps.map((step, i) => (
-              <RailItem key={step.title} index={i} progress={scrollYProgress} />
+            {steps.map((_, i) => (
+              <RailItem key={i} index={i} progress={scrollYProgress} />
             ))}
           </ol>
         </div>

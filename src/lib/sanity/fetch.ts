@@ -9,6 +9,15 @@ import {
   getSiteSettings,
 } from './queries';
 import type { ClientLogo, ProjectDetail, ProjectSummary, Review, SiteSettings } from './types';
+import {
+  aboutDefaults,
+  contactDefaults,
+  homeDefaults,
+  projectsDefaults,
+  servicesDefaults,
+  sharedDefaults,
+} from '../content/defaults';
+import { resolveContent } from '../content/resolve';
 
 // cache() dedupes identical calls within a single request (e.g. layout, footer and page
 // all needing site settings).
@@ -35,3 +44,24 @@ export const fetchClients = cache(
 export const fetchFeaturedReviews = cache(
   async (): Promise<Review[]> => (await client.fetch(getFeaturedReviews)) ?? []
 );
+
+/**
+ * Page copy: the Studio document (a singleton whose _id is its type name) laid over the
+ * built-in defaults. If Sanity can't be reached the page still renders with the defaults.
+ */
+const pageContent = <T>(id: string, defaults: T) =>
+  cache(async (): Promise<T> => {
+    try {
+      return resolveContent(defaults, await client.fetch(`*[_id == $id][0]`, { id }));
+    } catch (error) {
+      console.error(`Could not load "${id}" content from Sanity, using defaults`, error);
+      return defaults;
+    }
+  });
+
+export const fetchSharedContent = pageContent('sharedContent', sharedDefaults);
+export const fetchHomeContent = pageContent('homePage', homeDefaults);
+export const fetchAboutContent = pageContent('aboutPage', aboutDefaults);
+export const fetchServicesContent = pageContent('servicesPage', servicesDefaults);
+export const fetchProjectsContent = pageContent('projectsPage', projectsDefaults);
+export const fetchContactContent = pageContent('contactPage', contactDefaults);

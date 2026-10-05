@@ -403,3 +403,16 @@ html[data-sn-preload="on"] .sn-preloader {
 html[data-sn-preload="on"] {
   overflow: hidden;
 }
+
+/* Client logo strip (components/shared/TrustedBy.tsx): slides left by one copy of the list */
+@keyframes logo-marquee {
+  to { transform: translateX(var(--marquee-shift, -50%)); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .logo-marquee {
+    animation: logo-marquee var(--marquee-duration, 40s) linear infinite;
+  }
+  .logo-marquee:hover {
+    animation-play-state: paused;
+  }
+}

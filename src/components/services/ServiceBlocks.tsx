@@ -43,7 +43,7 @@ export interface FeatureCardData {
 /** Photo card with the maroon fade and caption at the bottom. */
 export const FeatureCard = ({ card, sizes, className = '' }: { card: FeatureCardData; sizes: string; className?: string }) => (
   <article className={`card-reveal card-lift group relative min-h-[380px] overflow-hidden rounded-[28px] shadow-[0_16px_32px_-12px_rgba(0,0,0,0.4)] ${className}`}>
-    <Image src={card.image} alt={card.title} fill sizes={sizes} className="object-cover transition-transform duration-700 group-hover:scale-105" />
+    <Image src={card.image || '/placeholder.svg'} alt={card.title} fill sizes={sizes} className="object-cover transition-transform duration-700 group-hover:scale-105" />
     <div className="absolute inset-0 bg-gradient-to-t from-maroon via-maroon/35 to-transparent" aria-hidden="true" />
     <div className="absolute inset-x-0 bottom-0 flex flex-col items-start gap-2 p-6">
       <span className="rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-gold backdrop-blur-sm">
