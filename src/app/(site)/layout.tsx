@@ -4,6 +4,7 @@ import { WhatsAppButton } from "@/components/shared/WhatsAppButton";
 import { SmoothScrollProvider } from "@/components/shared/SmoothScrollProvider";
 import { CursorEffects } from "@/components/shared/CursorEffects";
 import { Preloader } from "@/components/shared/Preloader";
+import { PageFlood } from "@/components/shared/PageFlood";
 import { FALLBACK_CONTACT, resolveWhatsAppNumber } from "@/lib/constants";
 import { fetchSiteSettings } from "@/lib/sanity/fetch";
 
@@ -28,6 +29,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
       <Footer />
       <WhatsAppButton variant="floating" phoneNumber={whatsapp} />
       <CursorEffects />
+      <PageFlood />
     </SmoothScrollProvider>
   );
 }
