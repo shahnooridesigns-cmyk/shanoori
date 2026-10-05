@@ -1,4 +1,5 @@
 import { defineField, defineType } from 'sanity';
+import { imageRules } from '../lib/imageRules';
 
 export default defineType({
   name: 'client',
@@ -15,10 +16,15 @@ export default defineType({
       name: 'logo',
       title: 'Logo',
       type: 'image',
+      description: 'PNG file, square (same width and height), at least 400 × 400 px. Best: 800 × 800 px with the logo centred and some empty space around it.',
       options: {
-        hotspot: true,
+        // The file picker only offers PNG files; the rules below catch anything dragged in
+        accept: 'image/png',
       },
-      validation: (Rule) => Rule.required(),
+      validation: (Rule) => [
+        Rule.required(),
+        ...imageRules({ formats: ['png'], requireShape: 'square', requireMinSide: 400 })(Rule),
+      ],
     }),
   ],
 });

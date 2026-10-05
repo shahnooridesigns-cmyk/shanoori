@@ -1,4 +1,5 @@
 import { defineField, defineType } from 'sanity';
+import { imageRules } from '../lib/imageRules';
 
 export default defineType({
   name: 'project',
@@ -58,16 +59,28 @@ export default defineType({
       name: 'coverImage',
       title: 'Cover Image',
       type: 'image',
+      description: 'Landscape photo (wider than tall), at least 1600 px wide. Best: 1920 × 1280 px. JPG, PNG or WebP.',
       options: {
         hotspot: true,
+        accept: 'image/jpeg,image/png,image/webp',
       },
-      validation: (Rule) => Rule.required(),
+      validation: (Rule) => [
+        Rule.required(),
+        ...imageRules({ requireMinWidth: 400, preferShape: 'landscape', preferMinWidth: 1600 })(Rule),
+      ],
     }),
     defineField({
       name: 'gallery',
       title: 'Gallery',
       type: 'array',
-      of: [{ type: 'image', options: { hotspot: true } }],
+      description: 'Any shape works here. Each photo should be at least 1200 px wide. JPG, PNG or WebP.',
+      of: [
+        {
+          type: 'image',
+          options: { hotspot: true, accept: 'image/jpeg,image/png,image/webp' },
+          validation: imageRules({ requireMinWidth: 400, preferMinWidth: 1200 }),
+        },
+      ],
     }),
     defineField({
       name: 'description',

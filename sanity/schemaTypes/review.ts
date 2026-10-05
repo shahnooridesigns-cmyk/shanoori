@@ -1,4 +1,5 @@
 import { defineField, defineType } from 'sanity';
+import { imageRules } from '../lib/imageRules';
 
 export default defineType({
   name: 'review',
@@ -51,10 +52,12 @@ export default defineType({
       name: 'clientPhoto',
       title: 'Person Photo',
       type: 'image',
-      description: "Optional. If empty, the client's logo is shown.",
+      description: "Optional. If empty, the client's logo is shown. Square photo of the person, at least 200 × 200 px.",
       options: {
         hotspot: true,
+        accept: 'image/jpeg,image/png,image/webp',
       },
+      validation: imageRules({ preferShape: 'square', preferMinWidth: 200 }),
     }),
     defineField({
       name: 'relatedProject',

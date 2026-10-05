@@ -1,4 +1,5 @@
 import { defineType, type FieldDefinition, type Rule } from 'sanity';
+import { imageRules } from '../lib/imageRules';
 import {
   SERVICE_ICONS,
   WHY_ICONS,
@@ -28,7 +29,19 @@ interface Hints {
   icons?: readonly string[];
   /** Lists that must keep an exact number of items, by dotted path */
   fixed?: Record<string, number>;
+  /** The shape each photo slot is designed for, by dotted path (default: landscape) */
+  shapes?: Record<string, PhotoShape>;
 }
+
+type PhotoShape = 'landscape' | 'portrait' | 'square' | 'wide';
+
+/** What to ask for in each kind of photo slot. Wrong shape or a small file only warns: the site crops to fit. */
+const PHOTO_GUIDE: Record<PhotoShape, { note: string; shape: 'landscape' | 'portrait' | 'square'; minWidth: number }> = {
+  wide: { note: 'Wide landscape photo, at least 2000 px wide. Best: 2400 × 1400 px.', shape: 'landscape', minWidth: 2000 },
+  landscape: { note: 'Landscape photo (wider than tall), at least 1200 px wide. Best: 1600 × 1000 px.', shape: 'landscape', minWidth: 1200 },
+  portrait: { note: 'Portrait photo (taller than wide), at least 800 px wide. Best: 1000 × 1400 px.', shape: 'portrait', minWidth: 800 },
+  square: { note: 'Square photo, at least 800 × 800 px.', shape: 'square', minWidth: 800 },
+};
 
 const IMAGE_KEY = /^image\d*$/;
 
@@ -60,11 +73,13 @@ const buildField = (key: string, value: Json, path: string, hints: Hints): Field
   const base = { name: key, title, description: hints.notes?.[path] };
 
   if (IMAGE_KEY.test(key)) {
+    const guide = PHOTO_GUIDE[hints.shapes?.[path] ?? 'landscape'];
     return {
       ...base,
       type: 'image',
-      options: { hotspot: true },
-      description: base.description ?? 'Leave empty to keep the current photo.',
+      options: { hotspot: true, accept: 'image/jpeg,image/png,image/webp' },
+      description: base.description ?? `${guide.note} Leave empty to keep the current photo.`,
+      validation: imageRules({ requireMinWidth: 400, preferShape: guide.shape, preferMinWidth: guide.minWidth }),
     } as FieldDefinition;
   }
 
@@ -167,6 +182,7 @@ const divisionNotes = (key: string) => ({
 export const pageTypes = [
   page('homePage', 'Home Page', homeDefaults, {
     icons: WHY_ICONS,
+    shapes: { 'hero.image': 'wide' },
     fixed: { 'process.steps': 4 },
     labels: {
       hero: 'Hero',
@@ -189,6 +205,7 @@ export const pageTypes = [
     },
   }),
   page('aboutPage', 'About Page', aboutDefaults, {
+    shapes: { 'hero.image': 'wide', 'story.image1': 'portrait', 'story.image2': 'square' },
     labels: {
       hero: 'Hero',
       story: 'Our story',
@@ -206,6 +223,7 @@ export const pageTypes = [
   }),
   page('servicesPage', 'Services Page', servicesDefaults, {
     icons: SERVICE_ICONS,
+    shapes: { 'hero.image': 'wide' },
     labels: {
       hero: 'Hero',
       civil: 'Civil',
@@ -238,6 +256,7 @@ export const pageTypes = [
     },
   }),
   page('sharedContent', 'Shared Content', sharedDefaults, {
+    shapes: { 'cta.image': 'wide' },
     labels: {
       faq: 'FAQ',
       cta: 'Bottom banner',
