@@ -6,10 +6,9 @@ export const SITE_NAME = 'Shah Noori';
 export const SHARE_IMAGE = '/assets/images/og.jpg';
 
 /**
- * Placeholder projects seeded for the launch ("sample-…" ids). They stay visible on the site
- * until real work replaces them, but are kept out of the sitemap and marked noindex so search
- * engines never list them. The one real project made from a sample document is let through.
- * Delete this once the sample documents are gone from the dataset.
+ * Placeholder projects seeded for the launch ("sample-…" ids) are hidden from the whole site:
+ * lists, carousels, their own pages and the sitemap. The one real project made from a sample
+ * document is let through. Delete this once the sample documents are gone from the dataset.
  */
 const REAL_SAMPLE_IDS = ['sample-project-dunefield-cafe'];
 export const isSampleProject = (id: string) => id.startsWith('sample-') && !REAL_SAMPLE_IDS.includes(id);

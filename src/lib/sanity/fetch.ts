@@ -18,6 +18,10 @@ import {
   sharedDefaults,
 } from '../content/defaults';
 import { resolveContent } from '../content/resolve';
+import { isSampleProject } from '../seo';
+
+/** Placeholder projects are not shown anywhere on the site (see isSampleProject). */
+const withoutSamples = (projects: ProjectSummary[] | null) => (projects ?? []).filter((p) => !isSampleProject(p._id));
 
 // cache() dedupes identical calls within a single request (e.g. layout, footer and page
 // all needing site settings).
@@ -26,11 +30,11 @@ export const fetchSiteSettings = cache(
 );
 
 export const fetchAllProjects = cache(
-  async (): Promise<ProjectSummary[]> => (await client.fetch(getAllProjects)) ?? []
+  async (): Promise<ProjectSummary[]> => withoutSamples(await client.fetch(getAllProjects))
 );
 
 export const fetchFeaturedProjects = cache(
-  async (): Promise<ProjectSummary[]> => (await client.fetch(getFeaturedProjects)) ?? []
+  async (): Promise<ProjectSummary[]> => withoutSamples(await client.fetch(getFeaturedProjects))
 );
 
 export const fetchProjectBySlug = cache(
@@ -42,7 +46,9 @@ export const fetchProjectBySlug = cache(
     } catch {
       // Not valid encoding: look it up as given
     }
-    return client.fetch(getProjectBySlug, { slug: plain });
+    const project: ProjectDetail | null = await client.fetch(getProjectBySlug, { slug: plain });
+    // A placeholder's address answers "page not found", like any project that does not exist
+    return project && !isSampleProject(project._id) ? project : null;
   }
 );
 
@@ -51,7 +57,11 @@ export const fetchClients = cache(
 );
 
 export const fetchFeaturedReviews = cache(
-  async (): Promise<Review[]> => (await client.fetch(getFeaturedReviews)) ?? []
+  async (): Promise<Review[]> =>
+    // A review of a hidden placeholder project keeps its words but loses the link to that project
+    ((await client.fetch(getFeaturedReviews)) ?? []).map((review: Review) =>
+      review.projectId && isSampleProject(review.projectId) ? { ...review, projectSlug: undefined, projectName: undefined } : review
+    )
 );
 
 /**
