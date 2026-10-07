@@ -28,16 +28,6 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
-      // Plain http moves to the secure address (the host passes on how the visitor arrived)
-      {
-        source: '/:path*',
-        has: [
-          { type: 'header', key: 'x-forwarded-proto', value: 'http' },
-          { type: 'host', value: 'sncreatives.com' },
-        ],
-        destination: 'https://sncreatives.com/:path*',
-        permanent: true,
-      },
       // One address for the site: www moves to the bare domain
       {
         source: '/:path*',
