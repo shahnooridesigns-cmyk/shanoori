@@ -13,15 +13,18 @@ export default function Home() {
   return (
     <main className="flex-1 w-full flex flex-col">
       <Hero />
-      <AboutIntro />
-      <SelectedWork />
-      <WhyChooseUs />
-      <ServicesShowcase />
-      <Process />
-      <TrustedBy />
-      <Testimonials />
-      <FaqSection />
-      <CtaBanner />
+      {/* Above the pinned hero, so these sections slide up over its photo */}
+      <div className="relative z-10 flex flex-col">
+        <AboutIntro />
+        <SelectedWork />
+        <WhyChooseUs />
+        <ServicesShowcase />
+        <Process />
+        <TrustedBy />
+        <Testimonials />
+        <FaqSection />
+        <CtaBanner />
+      </div>
     </main>
   );
 }

@@ -46,6 +46,7 @@ export const sharedDefaults = {
   },
   clients: {
     heading: 'Trusted by Businesses & Brands',
+    note: '100+ Clients',
   },
   interior: {
     title: 'Interior & Fit-Out',
@@ -149,7 +150,7 @@ export const homeDefaults = {
     ],
   },
   testimonials: {
-    heading: 'What Our Clients Say',
+    heading: 'Client Notes',
   },
 };
 

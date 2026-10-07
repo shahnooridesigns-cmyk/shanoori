@@ -1,5 +1,6 @@
 import React from 'react';
 import { Container } from './Container';
+import { CurtainHold } from './CurtainHold';
 import { SectionLabel } from './ui';
 import { FaqAccordion } from './FaqAccordion';
 import { fetchSharedContent } from '@/lib/sanity/fetch';
@@ -11,7 +12,9 @@ export const FaqSection = async () => {
   if (faqs.length === 0) return null;
 
   return (
-  <section className="bg-white py-24 md:py-32">
+  // Slides up over the section before it (CurtainHold), and is itself covered by the closing banner
+  <section className="relative bg-white py-24 md:py-32">
+    <CurtainHold />
     <Container className="grid gap-12 lg:grid-cols-2 lg:gap-20">
       <div className="flex flex-col gap-6">
         <SectionLabel>FAQ</SectionLabel>

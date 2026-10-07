@@ -11,7 +11,9 @@ export const SHARE_IMAGE = '/assets/images/og.jpg';
  * through. Delete this once the sample documents are gone from the dataset.
  */
 const REAL_SAMPLE_IDS = ['sample-project-dunefield-cafe', 'sample-client-dunefield'];
-export const isSample = (id: string) => id.startsWith('sample-') && !REAL_SAMPLE_IDS.includes(id);
+/** Earlier test clients (alrawz, taiwofx, astron), made before the "sample-" naming */
+const OLD_DUMMY_IDS = ['2d3a1a42-d08d-49cb-8dfb-1cf7f68b1c77', '447644fe-3b9f-481b-a81e-9fcd37c676ef', '724dcef7-f271-4b04-9a28-af89846abc69'];
+export const isSample = (id: string) => (id.startsWith('sample-') && !REAL_SAMPLE_IDS.includes(id)) || OLD_DUMMY_IDS.includes(id);
 export const isSampleProject = isSample;
 
 const CLEAN_SLUG = /^[a-z0-9]+(-[a-z0-9]+)*$/;

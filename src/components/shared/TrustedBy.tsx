@@ -1,33 +1,28 @@
 import React from 'react';
 import Image from 'next/image';
 import { Container } from './Container';
+import { CurtainHold } from './CurtainHold';
 import { SectionLabel } from './ui';
 import { fetchClients, fetchSharedContent } from '@/lib/sanity/fetch';
 import type { ClientLogo } from '@/lib/sanity/types';
 
-/** From this many logos they glide past in rows (four on phones, two on larger screens); fewer sit still, centred. */
+/** From this many logos they glide past in one line; fewer sit still, centred. */
 const MARQUEE_FROM = 4;
-/** Logos needed in a row to fill the widest monitors without a gap in the loop. */
-const MARQUEE_FILL = 20;
+/** Logos needed in the line to fill the widest monitors without a gap in the loop. */
+const MARQUEE_FILL = 14;
 
 /**
- * One logo in a frosted-glass circle: a see-through, blurred ring with a light edge, and a white
- * disc inside so any logo stays readable. In the moving rows a phone shows four across (the
- * width is a quarter of the screen less the gaps); larger screens use a fixed size.
+ * One logo, large and on its own (no tile behind it), shown in white so every brand reads on the
+ * maroon background. The uploaded logos are square with transparent backgrounds.
  */
 const Logo = ({ client, className = '' }: { client: ClientLogo; className?: string }) => (
-  <li
-    className={`flex aspect-square w-[calc((100vw-60px)/4)] shrink-0 rounded-full border border-white/35 bg-white/15 p-1.5 backdrop-blur-md transition-transform duration-500 hover:-translate-y-1 sm:w-28 md:w-36 md:p-2.5 ${className}`}
-    title={client.name}
-  >
-    <span className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-full bg-white/95">
-      {client.logoUrl ? (
-        // Eager: the rows repeat each logo many times and keep moving, so lazy loading would leave gaps
-        <Image src={client.logoUrl} alt={client.name} fill sizes="(min-width: 768px) 144px, 25vw" loading="eager" className="object-contain p-3 md:p-5" />
-      ) : (
-        <span className="px-2 text-center text-xs font-semibold text-maroon md:text-sm">{client.name}</span>
-      )}
-    </span>
+  <li className={`relative flex h-[34vw] w-[43vw] shrink-0 items-center justify-center sm:h-44 sm:w-60 md:h-60 md:w-80 ${className}`} title={client.name}>
+    {client.logoUrl ? (
+      // Eager: the line repeats each logo many times and keeps moving, so lazy loading would leave gaps
+      <Image src={client.logoUrl} alt={client.name} fill sizes="(min-width: 768px) 320px, 45vw" loading="eager" className="object-contain brightness-0 invert" />
+    ) : (
+      <span className="px-2 text-center text-base font-semibold text-white md:text-xl">{client.name}</span>
+    )}
   </li>
 );
 
@@ -37,31 +32,26 @@ const Row = ({ clients, reverse = false }: { clients: ClientLogo[]; reverse?: bo
   return (
     <div
       className={`logo-marquee flex w-max ${reverse ? 'logo-marquee-reverse' : ''}`}
-      style={{ '--marquee-duration': `${clients.length * 4}s`, '--marquee-shift': `${-100 / copies}%` } as React.CSSProperties}
+      style={{ '--marquee-duration': `${clients.length * 5}s`, '--marquee-shift': `${-100 / copies}%` } as React.CSSProperties}
     >
       {Array.from({ length: copies }, (_, copy) => (
         <ul key={copy} aria-hidden={copy > 0 || undefined} className="flex shrink-0">
-          {clients.map((c) => <Logo key={c._id} client={c} className="mr-3 md:mr-6" />)}
+          {clients.map((c) => <Logo key={c._id} client={c} className="mr-3 md:mr-16" />)}
         </ul>
       ))}
     </div>
   );
 };
 
-/** "Trusted by Businesses & Brands": client logos from Sanity, gliding past in rows. */
+/** "Trusted by Businesses & Brands": client logos from Sanity in one line, with the client count under it. */
 export const TrustedBy = async () => {
   const [clients, shared] = await Promise.all([fetchClients(), fetchSharedContent()]);
   if (clients.length === 0) return null;
-  // Every row carries all the logos, each starting further along the list, so rows never match
-  const rows = (count: number) =>
-    Array.from({ length: count }, (_, row) => {
-      const start = Math.round((row * clients.length) / count) % clients.length;
-      return [...clients.slice(start), ...clients.slice(0, start)];
-    });
-  const strip = 'relative mt-14 flex-col gap-3 overflow-hidden py-2 motion-reduce:overflow-x-auto md:mt-16 md:gap-6';
 
   return (
+    // Slides up over the section before it (CurtainHold)
     <section className="bg-brand-gradient relative overflow-hidden py-24 md:py-32">
+      <CurtainHold />
       {/* Soft glow behind the logos */}
       <div className="pointer-events-none absolute left-1/2 top-1/2 h-[420px] w-[820px] max-w-[120vw] -translate-x-1/2 -translate-y-1/3 rounded-full bg-gold/15 blur-[110px]" aria-hidden="true" />
 
@@ -72,22 +62,18 @@ export const TrustedBy = async () => {
 
       {clients.length < MARQUEE_FROM ? (
         <Container className="relative">
-          <ul className="mt-14 flex flex-wrap justify-center gap-3 md:mt-16 md:gap-6">
+          <ul className="mt-6 flex items-center justify-center gap-x-3 md:mt-8 md:gap-x-16">
             {clients.map((c) => <Logo key={c._id} client={c} className="card-reveal" />)}
           </ul>
         </Container>
       ) : (
-        // Phones stack four rows; tablets and desktops show two. Neighbouring rows travel opposite ways.
-        // Reduced motion: no sliding, the rows scroll sideways by hand instead
-        <>
-          <div className={`${strip} flex md:hidden`}>
-            {rows(4).map((row, i) => <Row key={i} clients={row} reverse={i % 2 === 1} />)}
-          </div>
-          <div className={`${strip} hidden md:flex md:[mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]`}>
-            {rows(2).map((row, i) => <Row key={i} clients={row} reverse={i % 2 === 1} />)}
-          </div>
-        </>
+        // Reduced motion: no sliding, the line scrolls sideways by hand instead
+        <div className="relative mt-10 overflow-hidden motion-reduce:overflow-x-auto md:mt-12 md:[mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
+          <Row clients={clients} />
+        </div>
       )}
+
+      <p className="relative mt-4 text-center text-sm font-medium uppercase tracking-[0.3em] text-gold/80 md:mt-6">{shared.clients.note}</p>
     </section>
   );
 };

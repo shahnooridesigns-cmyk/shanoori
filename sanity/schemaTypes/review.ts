@@ -60,6 +60,18 @@ export default defineType({
       validation: imageRules({ preferShape: 'square', preferMinWidth: 200 }),
     }),
     defineField({
+      name: 'image',
+      title: 'Card Photo',
+      type: 'image',
+      description:
+        'The large photo on the testimonial card (the finished space). Landscape, at least 1200 px wide. If empty, the cover photo of the Related Project is used.',
+      options: {
+        hotspot: true,
+        accept: 'image/jpeg,image/png,image/webp',
+      },
+      validation: imageRules({ preferShape: 'landscape', preferMinWidth: 1200 }),
+    }),
+    defineField({
       name: 'relatedProject',
       title: 'Related Project',
       type: 'reference',

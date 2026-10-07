@@ -21,6 +21,7 @@ const reviewFields = groq`
   reviewText,
   "photoUrl": coalesce(clientPhoto.asset->url, client->logo.asset->url),
   "photoIsLogo": !defined(clientPhoto.asset) && defined(client->logo.asset),
+  "imageUrl": coalesce(image.asset->url, relatedProject->coverImage.asset->url),
   "projectId": relatedProject._ref,
   "projectSlug": relatedProject->slug.current,
   "projectName": relatedProject->title

@@ -270,6 +270,7 @@ export const pageTypes = [
       'faq.items': 'Shown on the Home, About, Services and Contact pages.',
       'cta.heading': 'The banner above the footer on every page.',
       'clients.heading': 'The logos come from your Clients list.',
+      'clients.note': 'The small line under the logos, e.g. 100+ Clients.',
       ...divisionNotes('civil'),
       ...divisionNotes('interior'),
       ...divisionNotes('mep'),

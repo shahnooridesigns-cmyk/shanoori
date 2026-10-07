@@ -11,7 +11,7 @@ const RING_RADIUS = 22;
 const RING_LENGTH = 2 * Math.PI * RING_RADIUS;
 
 /**
- * Round "back to top" button that sits just above the floating WhatsApp button. The gold ring
+ * Round frosted-glass "back to top" button that sits just above the floating WhatsApp button. The ring
  * around it fills as the page is scrolled: empty at the top, a full circle at the bottom.
  */
 export const BackToTop = () => {
@@ -48,7 +48,7 @@ export const BackToTop = () => {
       aria-label="Back to top"
       data-cursor="Top"
       tabIndex={visible ? 0 : -1}
-      className={`group fixed bottom-[84px] right-5 z-50 flex h-12 w-12 items-center md:bottom-24 md:right-6 md:h-14 md:w-14 justify-center rounded-full bg-maroon text-gold shadow-lg transition-all duration-300 hover:scale-110 focus:outline-none focus-visible:ring-4 focus-visible:ring-gold ${
+      className={`group fixed bottom-[84px] right-5 z-50 flex h-12 w-12 items-center md:bottom-24 md:right-6 md:h-14 md:w-14 justify-center rounded-full border border-white/35 bg-maroon/55 text-white shadow-lg backdrop-blur-md transition-all duration-300 hover:scale-110 hover:bg-maroon/75 focus:outline-none focus-visible:ring-4 focus-visible:ring-gold ${
         visible ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-3 opacity-0'
       }`}
     >
