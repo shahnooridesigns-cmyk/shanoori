@@ -55,7 +55,13 @@ export const fetchProjectBySlug = cache(
       if (match) project = await client.fetch(getProjectBySlug, { slug: match.slug });
     }
     // A placeholder's address answers "page not found", like any project that does not exist
-    return project && !isSample(project._id) ? { ...project, slug: publicSlug(project.slug, project.title) } : null;
+    if (!project || isSample(project._id)) return null;
+    return {
+      ...project,
+      slug: publicSlug(project.slug, project.title),
+      // A placeholder review is not this project's
+      review: project.review && !isSample(project.review._id) ? project.review : null,
+    };
   }
 );
 

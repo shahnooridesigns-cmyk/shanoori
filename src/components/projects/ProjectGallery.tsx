@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import { AnimatePresence, motion } from 'framer-motion';
 
@@ -21,6 +22,8 @@ const ArrowIcon = ({ dir }: { dir: 'left' | 'right' }) => (
 export const ProjectGallery = ({ images, title }: { images: GalleryImage[]; title: string }) => {
   const [open, setOpen] = useState<number | null>(null);
   const [direction, setDirection] = useState(0);
+  // The viewer is added to the page (at the end of <body>) the first time a photo is opened
+  const [viewerUsed, setViewerUsed] = useState(false);
   const triggerRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const closeRef = useRef<HTMLButtonElement>(null);
   const thumbRefs = useRef<(HTMLButtonElement | null)[]>([]);
@@ -78,7 +81,7 @@ export const ProjectGallery = ({ images, title }: { images: GalleryImage[]; titl
             <button
               type="button"
               ref={(el) => { triggerRefs.current[i] = el; }}
-              onClick={() => { setDirection(0); setOpen(i); }}
+              onClick={() => { setDirection(0); setViewerUsed(true); setOpen(i); }}
               className="group relative block h-full w-full overflow-hidden rounded-[20px] bg-maroon/10"
               aria-label={`Open photo ${i + 1} of ${count}`}
             >
@@ -99,6 +102,8 @@ export const ProjectGallery = ({ images, title }: { images: GalleryImage[]; titl
         ))}
       </ul>
 
+      {/* Outside the page's sections, so it always covers the header and every section */}
+      {viewerUsed && createPortal(
       <AnimatePresence>
         {open !== null && (
           <motion.div
@@ -185,7 +190,9 @@ export const ProjectGallery = ({ images, title }: { images: GalleryImage[]; titl
             )}
           </motion.div>
         )}
-      </AnimatePresence>
+      </AnimatePresence>,
+      document.body
+      )}
     </>
   );
 };
