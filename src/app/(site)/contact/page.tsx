@@ -13,7 +13,7 @@ import { resolveContact, toTelHref } from '@/lib/constants';
 import { fetchContactContent, fetchSiteSettings } from '@/lib/sanity/fetch';
 
 export const metadata: Metadata = pageMeta({
-  title: 'Contact',
+  title: 'Contact | Fit-out Contractor in Doha, Qatar',
   description:
     'Request a project consultation with Shah Noori: interior fit-out, MEP and civil works in Doha, Qatar. Call, WhatsApp or send us a message.',
   path: '/contact',

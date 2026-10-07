@@ -12,7 +12,7 @@ import { categoryLabel } from '@/lib/categories';
 import { fetchAllProjects, fetchFeaturedProjects, fetchProjectsContent } from '@/lib/sanity/fetch';
 
 export const metadata: Metadata = pageMeta({
-  title: 'Projects',
+  title: 'Projects | Interior & Fit-out Work in Qatar',
   description:
     'Interior fit-out, MEP and civil projects completed by Shah Noori across Qatar: offices, shops, cafes, villas and more.',
   path: '/projects',

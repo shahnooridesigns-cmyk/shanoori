@@ -14,7 +14,7 @@ import { fetchAboutContent } from '@/lib/sanity/fetch';
 import { paragraphs } from '@/lib/content/resolve';
 
 export const metadata: Metadata = pageMeta({
-  title: 'About',
+  title: 'About Us | Interior Fit-out Company in Doha',
   description:
     'Shah Noori is an integrated construction and contracting company in Doha, Qatar, with 15+ years of experience in interior fit-out, MEP and civil works.',
   path: '/about',

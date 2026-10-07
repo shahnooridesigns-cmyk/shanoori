@@ -10,7 +10,7 @@ import { BalancedGrid } from '@/components/shared/BalancedGrid';
 import { fetchServicesContent } from '@/lib/sanity/fetch';
 
 export const metadata: Metadata = pageMeta({
-  title: 'Services',
+  title: 'Interior Fit-out, MEP & Civil Services in Qatar',
   description:
     'Interior fit-out, MEP (mechanical, electrical, plumbing) and civil construction services in Doha, Qatar, delivered end to end by one team.',
   path: '/services',

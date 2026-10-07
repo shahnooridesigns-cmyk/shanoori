@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   ...pageMeta({ description: DESCRIPTION, path: "/" }),
   title: {
-    default: "Shah Noori | Interior Fit-out, MEP & Civil Contractor in Doha, Qatar",
+    default: "Shah Noori | Interior Fit-out & MEP Contractor in Doha",
     template: "%s | Shah Noori",
   },
   applicationName: "Shah Noori",

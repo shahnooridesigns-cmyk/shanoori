@@ -26,6 +26,17 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      // One address for the site: www moves to the bare domain
+      {
+        source: '/:path*',
+        has: [{ type: 'host', value: 'www.sncreatives.com' }],
+        destination: 'https://sncreatives.com/:path*',
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       { source: '/:path*', headers: securityHeaders },

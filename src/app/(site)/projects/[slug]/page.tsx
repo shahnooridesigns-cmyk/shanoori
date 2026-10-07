@@ -13,7 +13,7 @@ import { ArrowUpRight, SectionLabel } from '@/components/shared/ui';
 import { ProjectGallery } from '@/components/projects/ProjectGallery';
 import { ProjectCard } from '@/components/projects/ProjectCard';
 import { categoryLabel } from '@/lib/categories';
-import { pageMeta } from '@/lib/seo';
+import { SITE_NAME, SITE_URL, isSampleProject, pageMeta } from '@/lib/seo';
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -39,6 +39,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     path: `/projects/${encodeURIComponent(project.slug)}`,
     // A 1200x630 crop of the cover photo, the shape link previews use
     image: project.imageUrl ? `${project.imageUrl}?w=1200&h=630&fit=crop&auto=format` : undefined,
+    noIndex: isSampleProject(project._id),
   });
 }
 
@@ -76,8 +77,40 @@ export default async function ProjectDetailPage({ params }: Props) {
   const related = all.filter((p) => p._id !== project._id && p.category === project.category).slice(0, 3);
   const discipline = categoryLabel(project.category);
 
+  // Tells search engines what this page is: a piece of work by the company, and where it sits in the site
+  const url = `${SITE_URL}/projects/${encodeURIComponent(project.slug)}`;
+  const structuredData = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'CreativeWork',
+      name: project.title,
+      url,
+      ...(description ? { description: description.slice(0, 300) } : {}),
+      ...(project.imageUrl ? { image: [project.imageUrl, ...gallery.slice(0, 5).map((img) => img.url)] } : {}),
+      ...(project.location ? { locationCreated: { '@type': 'Place', name: project.location } } : {}),
+      ...(project.year ? { dateCreated: String(project.year) } : {}),
+      genre: discipline,
+      creator: { '@type': 'GeneralContractor', '@id': `${SITE_URL}/#business`, name: SITE_NAME },
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_URL },
+        { '@type': 'ListItem', position: 2, name: 'Projects', item: `${SITE_URL}/projects` },
+        { '@type': 'ListItem', position: 3, name: project.title, item: url },
+      ],
+    },
+  ];
+
   return (
     <main className="flex-1 w-full">
+      {!isSampleProject(project._id) && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData).replace(/</g, '\\u003c') }}
+        />
+      )}
       {/* Full-screen hero with fact strip */}
       <section className="relative flex h-[100svh] min-h-[620px] max-h-[960px] flex-col overflow-hidden bg-maroon">
         <Image src={project.imageUrl || '/assets/images/placeholder.webp'} alt="" fill priority sizes="100vw" className="object-cover" />
