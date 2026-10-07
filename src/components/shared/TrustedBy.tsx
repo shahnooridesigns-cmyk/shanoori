@@ -32,7 +32,7 @@ export const TrustedBy = async () => {
   return (
     <section className="bg-brand-gradient py-24 md:py-32">
       <Container>
-        <h2 className="text-center text-4xl md:text-5xl text-gold">{shared.clients.heading}</h2>
+        <h2 className="text-center text-4xl md:text-5xl font-semibold text-gold">{shared.clients.heading}</h2>
       </Container>
 
       {clients.length < MARQUEE_FROM ? (

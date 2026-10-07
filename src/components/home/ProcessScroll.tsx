@@ -51,31 +51,6 @@ const StepText = ({ step, index, progress }: { step: ProcessStep; index: number;
   );
 };
 
-const RailItem = ({ index, progress }: { index: number; progress: MotionValue<number> }) => {
-  const start = BOUNDARIES[index];
-  const end = BOUNDARIES[index + 1];
-  // Full 0–1 stops for the native scroll timeline (see StepText)
-  const fill = useTransform(
-    progress,
-    index === 0 ? [0, end, 1] : index === BOUNDARIES.length - 2 ? [0, start, 1] : [0, start, end, 1],
-    index === 0 ? ['0%', '100%', '100%'] : index === BOUNDARIES.length - 2 ? ['0%', '0%', '100%'] : ['0%', '0%', '100%', '100%']
-  );
-  // Number turns gold once its step is reached (the first step is active from the start)
-  const color = useTransform(
-    progress,
-    index === 0 ? [0, 1] : [0, start - 0.01, start, 1],
-    index === 0 ? ['#E4D4A3', '#E4D4A3'] : ['rgba(255,255,255,0.4)', 'rgba(255,255,255,0.4)', '#E4D4A3', '#E4D4A3']
-  );
-  return (
-    <li className="flex items-center gap-3">
-      <motion.span style={{ color }} className="w-6 text-sm font-medium tabular-nums">{String(index + 1).padStart(2, '0')}</motion.span>
-      <span className="relative h-px w-16 overflow-hidden bg-white/20 md:w-24">
-        <motion.span style={{ width: fill }} className="absolute inset-y-0 left-0 bg-gold" />
-      </span>
-    </li>
-  );
-};
-
 /** Pinned section whose background "video" (a frame sequence on a canvas) is scrubbed by scroll. */
 export const ProcessScroll = ({ steps }: { steps: ProcessStep[] }) => {
   const trackRef = useRef<HTMLDivElement>(null);
@@ -205,12 +180,6 @@ export const ProcessScroll = ({ steps }: { steps: ProcessStep[] }) => {
               <StepText key={i} step={step} index={i} progress={scrollYProgress} />
             ))}
           </div>
-
-          <ol className="absolute bottom-10 left-5 flex flex-col gap-3 md:left-10 lg:left-[60px]" aria-hidden="true">
-            {steps.map((_, i) => (
-              <RailItem key={i} index={i} progress={scrollYProgress} />
-            ))}
-          </ol>
         </div>
       </div>
     </div>

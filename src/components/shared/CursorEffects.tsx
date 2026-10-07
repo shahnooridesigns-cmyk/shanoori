@@ -13,6 +13,7 @@ import React, { useEffect, useRef } from 'react';
  * Gold on dark sections, maroon on light ones. Touch devices and reduced-motion users get
  * none of this and keep the native cursor.
  * Override the tag with data-cursor="Label", or data-cursor="none" to skip an element.
+ * Set the colour yourself with data-cursor-tone="ink" (black), "light" (maroon) or "dark" (gold).
  */
 
 const INTERACTIVE = 'a, button, label, summary, select, [role="button"], [data-cursor]';
@@ -149,7 +150,9 @@ export const CursorEffects = () => {
       const text = interactive ? labelFor(interactive) : '';
 
       layer.dataset.mode = textEntry ? 'text' : interactive ? 'snap' : 'idle';
-      layer.dataset.tone = isOnDark(target, mouse.x, mouse.y) ? 'dark' : 'light';
+      // An element can name its own tone (data-cursor-tone), e.g. photo cards on a light section
+      layer.dataset.tone =
+        target.closest('[data-cursor-tone]')?.getAttribute('data-cursor-tone') || (isOnDark(target, mouse.x, mouse.y) ? 'dark' : 'light');
       snapTo = interactive;
       if (tag.textContent !== text) tag.textContent = text;
 

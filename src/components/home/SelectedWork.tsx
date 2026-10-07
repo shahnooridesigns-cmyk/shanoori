@@ -8,14 +8,14 @@ export const SelectedWork = async () => {
   const [projects, { work, hero }] = await Promise.all([fetchFeaturedProjects(), fetchHomeContent()]);
 
   return (
-    <section className="bg-beige py-24 md:py-40">
+    <section className="bg-beige py-24 md:py-32">
       <Container>
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <div className="flex flex-col gap-4">
             <SectionLabel>Projects</SectionLabel>
             <h2 className="text-brand-gradient w-fit whitespace-pre-line text-5xl md:text-7xl font-medium leading-none">{work.heading}</h2>
           </div>
-          <p className="max-w-xs text-lg leading-snug text-maroon">{work.text}</p>
+          <p className="text-reveal max-w-xs text-lg leading-snug text-maroon">{work.text}</p>
         </div>
 
         <div className="mt-16 md:mt-28">

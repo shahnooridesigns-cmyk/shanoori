@@ -21,10 +21,10 @@ export const AboutIntro = async () => {
     <Container className="grid gap-10 lg:grid-cols-[250px_1fr]">
       <SectionLabel className="pt-2">About Us</SectionLabel>
       <div>
-        <p className="max-w-3xl text-3xl md:text-[40px] leading-[1.1] text-ink">{about.text}</p>
+        <p className="text-reveal max-w-3xl text-3xl md:text-[40px] leading-[1.1] text-ink">{about.text}</p>
         <dl className={`mt-16 md:mt-24 grid gap-x-8 gap-y-14 ${layout.grid}`}>
           {about.stats.map((stat, i) => (
-            <div key={i} className="flex flex-col items-center gap-2 text-center">
+            <div key={i} className="flex flex-col items-start gap-2 text-left">
               <dt className="order-2 text-base md:text-lg text-ink/90">{stat.label}</dt>
               <dd className={`order-1 font-medium leading-none text-ink ${layout.number}`}><CountUp value={stat.value} /></dd>
             </div>

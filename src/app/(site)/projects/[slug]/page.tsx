@@ -112,7 +112,7 @@ export default async function ProjectDetailPage({ params }: Props) {
       </section>
 
       {/* Overview */}
-      <section className="bg-beige py-20 md:py-32">
+      <section className="bg-beige py-24 md:py-32">
         <Container className="grid gap-14 lg:grid-cols-[1fr_360px] lg:gap-24">
           <div>
             <SectionLabel>Project Overview</SectionLabel>
@@ -141,7 +141,7 @@ export default async function ProjectDetailPage({ params }: Props) {
 
       {/* What the client said about this project */}
       {review && (
-        <section className="bg-brand-gradient py-20 md:py-28">
+        <section className="bg-brand-gradient py-24 md:py-32">
           <Container>
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold/70">From the client</p>
             <blockquote className="mt-8 max-w-4xl text-2xl md:text-4xl leading-snug text-gold">
@@ -172,7 +172,7 @@ export default async function ProjectDetailPage({ params }: Props) {
 
       {/* Gallery */}
       {gallery.length > 0 && (
-        <section className="bg-white py-20 md:py-28">
+        <section className="bg-white py-24 md:py-32">
           <Container>
             <div className="mb-12 flex items-end justify-between gap-6">
               <h2 className="text-brand-gradient w-fit text-5xl md:text-7xl font-medium leading-none">Gallery</h2>
@@ -215,12 +215,12 @@ export default async function ProjectDetailPage({ params }: Props) {
 
       {/* Related */}
       {related.length > 0 && (
-        <section className="bg-beige py-20 md:py-28">
+        <section className="bg-beige py-24 md:py-32">
           <Container>
             <div className="mb-12 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
               <div>
                 <SectionLabel>More {discipline} Work</SectionLabel>
-                <h2 className="mt-4 text-4xl md:text-5xl font-medium text-maroon">Related Projects</h2>
+                <h2 className="mt-4 text-4xl md:text-5xl font-semibold text-maroon">Related Projects</h2>
               </div>
               <Link
                 href={`/projects?category=${project.category}`}

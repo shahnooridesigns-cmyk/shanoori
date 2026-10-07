@@ -20,8 +20,8 @@ export const DivisionHeader = ({
   <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
     <div className="max-w-3xl">
       <p className="text-sm font-semibold uppercase tracking-[0.2em] text-ink/70">{eyebrow}</p>
-      <h2 className="text-brand-gradient mt-2 w-fit text-3xl md:text-[40px] font-bold uppercase leading-tight">{title}</h2>
-      <p className="mt-3 text-lg leading-relaxed text-ink/75">{intro}</p>
+      <h2 className="text-brand-gradient mt-2 w-fit text-3xl md:text-[40px] font-semibold uppercase leading-tight">{title}</h2>
+      <p className="text-reveal mt-3 text-lg leading-relaxed text-ink/75">{intro}</p>
     </div>
     <Link
       href={href}

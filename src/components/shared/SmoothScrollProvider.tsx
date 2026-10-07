@@ -2,6 +2,7 @@
 
 import React, { useEffect } from 'react';
 import Lenis from 'lenis';
+import { SCROLL_TOP_EVENT } from './BackToTop';
 
 export const SmoothScrollProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
@@ -54,8 +55,16 @@ export const SmoothScrollProvider = ({ children }: { children: React.ReactNode }
 
     document.addEventListener('click', handleAnchorClick);
 
+    // The back-to-top button: glide up, and tell it the request was handled
+    const handleScrollTop = (e: Event) => {
+      e.preventDefault();
+      lenis.scrollTo(0);
+    };
+    window.addEventListener(SCROLL_TOP_EVENT, handleScrollTop);
+
     return () => {
       document.removeEventListener('click', handleAnchorClick);
+      window.removeEventListener(SCROLL_TOP_EVENT, handleScrollTop);
       cancelAnimationFrame(rafId);
       lenis.destroy();
     };

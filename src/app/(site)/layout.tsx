@@ -1,6 +1,7 @@
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { WhatsAppButton } from "@/components/shared/WhatsAppButton";
+import { BackToTop } from "@/components/shared/BackToTop";
 import { SmoothScrollProvider } from "@/components/shared/SmoothScrollProvider";
 import { CursorEffects } from "@/components/shared/CursorEffects";
 import { Preloader } from "@/components/shared/Preloader";
@@ -51,6 +52,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
         {children}
       </div>
       <Footer />
+      <BackToTop />
       <WhatsAppButton variant="floating" phoneNumber={whatsapp} />
       <CursorEffects />
       <PageFlood />

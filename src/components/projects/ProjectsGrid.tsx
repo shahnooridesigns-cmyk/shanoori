@@ -64,8 +64,10 @@ function ProjectsGridInner({ initialProjects }: ProjectsGridProps) {
                   onClick={() => handleFilterChange(f.value)}
                   aria-pressed={isActive}
                   disabled={f.count === 0 && !isActive}
-                  className={`relative shrink-0 rounded-full px-5 py-2.5 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${
-                    isActive ? 'text-gold' : 'text-maroon hover:bg-white/60'
+                  className={`relative shrink-0 rounded-full border px-5 py-2.5 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${
+                    isActive
+                      ? 'border-maroon text-gold'
+                      : 'border-maroon/35 bg-white/45 text-maroon shadow-sm hover:border-maroon hover:bg-white/80'
                   }`}
                 >
                   {isActive && (

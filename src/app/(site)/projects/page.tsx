@@ -35,7 +35,7 @@ export default async function ProjectsPage() {
     <main className="flex-1 w-full">
       {/* Hero */}
       <section className="relative overflow-hidden bg-maroon">
-        <Image src={spotlight?.imageUrl || '/assets/images/about/story-2.webp'} alt="" fill priority sizes="100vw" className="scale-105 object-cover blur-[2px]" />
+        <Image src="/assets/images/hero/hero-projects.webp" alt="" fill priority sizes="100vw" className="object-cover" />
         <div className="absolute inset-0 bg-gradient-to-r from-maroon via-maroon/85 to-maroon/40" aria-hidden="true" />
         <Container className="relative flex min-h-[600px] flex-col justify-end gap-10 pt-36 pb-16">
           <SectionLabel tone="gold">Projects</SectionLabel>
@@ -58,7 +58,7 @@ export default async function ProjectsPage() {
 
       {/* Featured spotlight */}
       {spotlight && (
-        <section className="bg-beige pt-20 md:pt-28">
+        <section className="bg-beige pt-24 md:pt-32">
           <Container>
             <Link
               href={`/projects/${encodeURIComponent(spotlight.slug)}`}
@@ -76,7 +76,7 @@ export default async function ProjectsPage() {
               <div className="flex flex-col justify-between gap-10 p-8 md:p-12">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.25em] text-gold/70">Featured Project</p>
-                  <h2 className="mt-5 text-4xl md:text-5xl font-medium leading-tight text-gold">{spotlight.title}</h2>
+                  <h2 className="mt-5 text-4xl md:text-5xl font-semibold leading-tight text-gold">{spotlight.title}</h2>
                   {spotlight.location && <p className="mt-3 text-lg text-white/75">{spotlight.location}</p>}
                 </div>
                 <div className="flex items-end justify-between gap-6">
@@ -105,7 +105,7 @@ export default async function ProjectsPage() {
       )}
 
       {/* All projects */}
-      <section className="bg-beige pt-20 pb-24 md:pt-28 md:pb-32">
+      <section className="bg-beige py-24 md:py-32">
         <Container>
           <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <h2 className="text-brand-gradient w-fit text-5xl md:text-7xl font-medium leading-none">{content.list.heading}</h2>

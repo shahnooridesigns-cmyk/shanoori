@@ -11,6 +11,8 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  // Hide the round "N" badge Next.js shows in the corner while developing (it never appears on the live site)
+  devIndicators: false,
   images: {
     // Dev only: this machine's network resolves cdn.sanity.io to a NAT64 address (64:ff9b::/96),
     // which Next's SSRF guard treats as private. Production keeps the guard on.

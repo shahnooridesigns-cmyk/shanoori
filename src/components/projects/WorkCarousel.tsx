@@ -14,27 +14,74 @@ const MAIN_SIZES = '(min-width: 768px) 45vw, 100vw';
 const SIDE_SIZES = '25vw';
 /** Long, soft deceleration: the photo glides in and settles rather than snapping */
 const GLIDE = [0.32, 0.72, 0, 1] as const;
+/** How long each project stays before the next slides in */
+const AUTOPLAY_MS = 4000;
 
-/** Small preview of the neighbouring project; its photo crossfades when the carousel moves. */
-const SideCard = ({ project, label, onClick }: { project: ProjectSummary; label: string; onClick: () => void }) => (
+/**
+ * The three frames stay where they are, like screens; only what they show moves. Going forward
+ * every frame's photo leaves to the left as the next one comes in from the right, and the
+ * reverse going back.
+ */
+const slide = {
+  enter: (direction: number) => ({ x: `${direction * 100}%` }),
+  center: { x: '0%' },
+  exit: (direction: number) => ({ x: `${direction * -100}%` }),
+};
+const fade = { enter: { opacity: 0 }, center: { opacity: 1 }, exit: { opacity: 0 } };
+
+/** What one frame shows: slides out and in whenever the project in it changes. */
+const Screen = ({
+  project,
+  direction,
+  reduceMotion,
+  children,
+}: {
+  project: ProjectSummary;
+  direction: number;
+  reduceMotion: boolean;
+  children: React.ReactNode;
+}) => (
+  <AnimatePresence initial={false} custom={direction}>
+    <motion.div
+      key={project._id}
+      custom={direction}
+      variants={reduceMotion ? fade : slide}
+      initial="enter"
+      animate="center"
+      exit="exit"
+      transition={{ duration: reduceMotion ? 0.3 : 0.75, ease: GLIDE }}
+      className="absolute inset-0 will-change-transform"
+    >
+      {children}
+    </motion.div>
+  </AnimatePresence>
+);
+
+/** Small fixed frame showing the neighbouring project. */
+const SideCard = ({
+  project,
+  direction,
+  reduceMotion,
+  label,
+  onClick,
+}: {
+  project: ProjectSummary;
+  direction: number;
+  reduceMotion: boolean;
+  label: string;
+  onClick: () => void;
+}) => (
   <button
     type="button"
     onClick={onClick}
     aria-label={label}
-    className="relative hidden aspect-[275/225] w-full overflow-hidden rounded-2xl shadow-[0_24px_40px_-12px_rgba(60,40,10,0.45)] transition-transform hover:scale-[1.02] md:block"
+    data-cursor="Show"
+    data-cursor-tone="ink"
+    className="relative hidden aspect-[275/225] w-full overflow-hidden rounded-2xl bg-maroon shadow-[0_24px_40px_-12px_rgba(60,40,10,0.45)] md:block"
   >
-    <AnimatePresence initial={false}>
-      <motion.span
-        key={project._id}
-        className="absolute inset-0"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.6, ease: 'easeInOut' }}
-      >
-        <Image src={project.imageUrl || '/assets/images/placeholder.webp'} alt="" fill sizes={SIDE_SIZES} className="object-cover" />
-      </motion.span>
-    </AnimatePresence>
+    <Screen project={project} direction={direction} reduceMotion={reduceMotion}>
+      <Image src={project.imageUrl || '/assets/images/placeholder.webp'} alt="" fill sizes={SIDE_SIZES} className="object-cover" />
+    </Screen>
   </button>
 );
 
@@ -54,30 +101,16 @@ const EdgeArrow = ({ dir, onClick }: { dir: 'prev' | 'next'; onClick: () => void
   </button>
 );
 
-/** How long each project stays before the next slides in */
-const AUTOPLAY_MS = 5000;
-
-/**
- * Both photos travel together inside the frame: going forward the new one comes in from the
- * right as the old one leaves to the left, and the reverse going back.
- */
-const slide = {
-  enter: (direction: number) => ({ x: `${direction * 100}%` }),
-  center: { x: '0%' },
-  exit: (direction: number) => ({ x: `${direction * -100}%` }),
-};
-const fade = { enter: { opacity: 0 }, center: { opacity: 1 }, exit: { opacity: 0 } };
-
 export const WorkCarousel = ({ projects }: { projects: ProjectSummary[] }) => {
   const [[index, direction], setSlide] = useState<[number, number]>([0, 1]);
   const [paused, setPaused] = useState(false);
-  const reduceMotion = useReducedMotion();
+  const reduceMotion = Boolean(useReducedMotion());
   const count = projects.length;
   // Swipe left for the next project, right for the previous one
   const swipe = useSwipe((dir) => count > 1 && setSlide(([i]) => [(i + dir + count) % count, dir]), setPaused);
 
-  // Advance on its own; waits while the pointer, keyboard focus or a finger is on the
-  // carousel, and restarts the wait whenever the project changes
+  // Advance on its own (contents move to the left); waits while the pointer, keyboard focus or
+  // a finger is on the carousel, and restarts the wait whenever the project changes
   useEffect(() => {
     if (count < 2 || paused || reduceMotion) return;
     const timer = setTimeout(() => setSlide(([i]) => [(i + 1) % count, 1]), AUTOPLAY_MS);
@@ -106,10 +139,17 @@ export const WorkCarousel = ({ projects }: { projects: ProjectSummary[] }) => {
       <div className="relative grid w-full items-center gap-8 md:grid-cols-[1fr_1.65fr_1fr]">
         {count > 1 && <EdgeArrow dir="prev" onClick={() => go(-1)} />}
         {count > 1 && <EdgeArrow dir="next" onClick={() => go(1)} />}
-        {count > 1 ? <SideCard project={at(-1)} label={`Show ${at(-1).title}`} onClick={() => go(-1)} /> : <div className="hidden md:block" />}
+        {count > 1 ? (
+          <SideCard project={at(-1)} direction={direction} reduceMotion={reduceMotion} label={`Show ${at(-1).title}`} onClick={() => go(-1)} />
+        ) : (
+          <div className="hidden md:block" />
+        )}
 
         {/* Fixed frame: it keeps its size and shadow while the photos slide through it */}
-        <div className="card-lift relative aspect-[3/2] w-full overflow-hidden rounded-2xl bg-maroon shadow-[0_30px_50px_-15px_rgba(60,40,10,0.55)]">
+        <div
+          data-cursor-tone="ink"
+          className="relative aspect-[3/2] w-full overflow-hidden rounded-2xl bg-maroon shadow-[0_30px_50px_-15px_rgba(60,40,10,0.55)]"
+        >
           {/* Out of sight, but loaded at the size the main photo uses */}
           <div className="absolute inset-0 opacity-0" aria-hidden="true">
             {upcoming.map((p) => (
@@ -117,37 +157,30 @@ export const WorkCarousel = ({ projects }: { projects: ProjectSummary[] }) => {
             ))}
           </div>
 
-          <AnimatePresence initial={false} custom={direction}>
-            <motion.div
-              key={current._id}
-              custom={direction}
-              variants={reduceMotion ? fade : slide}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{ duration: reduceMotion ? 0.3 : 0.75, ease: GLIDE }}
-              className="absolute inset-0 will-change-transform"
-            >
-              <Link href={`/projects/${encodeURIComponent(current.slug)}`} className="group relative block h-full w-full">
-                <Image
-                  src={current.imageUrl || '/assets/images/placeholder.webp'}
-                  alt={current.title}
-                  fill
-                  sizes={MAIN_SIZES}
-                  className="object-cover transition-transform duration-700 group-hover:scale-105"
-                />
-                <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 bg-gradient-to-t from-maroon/90 via-maroon/50 to-transparent p-5 pt-16">
-                  <span className="text-lg text-white">{caption(current)}</span>
-                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white/90 text-ink">
-                    <ArrowUpRight className="h-4 w-4" />
-                  </span>
-                </div>
-              </Link>
-            </motion.div>
-          </AnimatePresence>
+          <Screen project={current} direction={direction} reduceMotion={reduceMotion}>
+            <Link href={`/projects/${encodeURIComponent(current.slug)}`} data-cursor="View project" className="group relative block h-full w-full">
+              <Image
+                src={current.imageUrl || '/assets/images/placeholder.webp'}
+                alt={current.title}
+                fill
+                sizes={MAIN_SIZES}
+                className="object-cover transition-transform duration-700 group-hover:scale-105"
+              />
+              <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 bg-gradient-to-t from-maroon/90 via-maroon/50 to-transparent p-5 pt-16">
+                <span className="text-lg text-white">{caption(current)}</span>
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white/90 text-ink">
+                  <ArrowUpRight className="h-4 w-4" />
+                </span>
+              </div>
+            </Link>
+          </Screen>
         </div>
 
-        {count > 1 ? <SideCard project={at(1)} label={`Show ${at(1).title}`} onClick={() => go(1)} /> : <div className="hidden md:block" />}
+        {count > 1 ? (
+          <SideCard project={at(1)} direction={direction} reduceMotion={reduceMotion} label={`Show ${at(1).title}`} onClick={() => go(1)} />
+        ) : (
+          <div className="hidden md:block" />
+        )}
       </div>
 
       {count > 1 && (

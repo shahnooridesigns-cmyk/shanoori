@@ -140,6 +140,12 @@ section[id] {
   --c: var(--color-gold);
   --c-ink: var(--color-maroon);
 }
+/* Black, for photo cards on a light section (data-cursor-tone="ink"): the brackets sit on the
+   pale background around the card, where gold would disappear */
+.cursor-layer[data-tone="ink"] {
+  --c: var(--color-ink);
+  --c-ink: var(--color-cream);
+}
 .cursor-layer > * {
   position: fixed;
   top: 0;
@@ -306,6 +312,32 @@ section[id] {
     .card-reveal:nth-child(4n + 2) { animation-range: entry 3vh entry 31vh; }
     .card-reveal:nth-child(4n + 3) { animation-range: entry 6vh entry 34vh; }
     .card-reveal:nth-child(4n + 4) { animation-range: entry 9vh entry 37vh; }
+  }
+}
+
+/*
+ * Body text. .text-reveal is the quiet partner of the title reveal: the paragraph rises a
+ * little and fades in as it enters, scrubbed to the scroll, so it follows its heading in.
+ * No mask or blur: paragraphs are long, and it must stay readable while it arrives.
+ */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .text-reveal {
+      animation: text-rise linear both;
+      animation-timeline: view();
+      animation-range: entry 5% entry calc(100% + 18vh);
+    }
+  }
+}
+
+@keyframes text-rise {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
   }
 }
 

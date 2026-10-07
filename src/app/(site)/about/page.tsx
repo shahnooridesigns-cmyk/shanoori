@@ -43,7 +43,7 @@ export default async function AboutPage() {
             </div>
             <div className="flex flex-col gap-8">
               <div className="space-y-4 text-xl md:text-2xl leading-snug text-ink">
-                {paragraphs(story.text).map((p, i) => <p key={i}>{p}</p>)}
+                {paragraphs(story.text).map((p, i) => <p key={i} className="text-reveal">{p}</p>)}
               </div>
               <div className="card-reveal relative aspect-square max-h-[440px] overflow-hidden rounded-[32px] lg:-ml-8">
                 <Image src={story.image2} alt="" fill sizes="(min-width: 1024px) 620px, 100vw" className="object-cover" />
@@ -51,9 +51,9 @@ export default async function AboutPage() {
             </div>
           </div>
 
-          <h2 className="mt-16 whitespace-pre-line text-3xl md:text-4xl leading-tight text-maroon">{approach.heading}</h2>
+          <h2 className="mt-16 whitespace-pre-line text-3xl md:text-4xl font-semibold leading-tight text-maroon">{approach.heading}</h2>
           <div className="mt-5 max-w-5xl space-y-3 text-lg md:text-xl leading-relaxed text-ink">
-            {paragraphs(approach.text).map((p, i) => <p key={i}>{p}</p>)}
+            {paragraphs(approach.text).map((p, i) => <p key={i} className="text-reveal">{p}</p>)}
           </div>
         </Container>
       </section>
@@ -61,12 +61,12 @@ export default async function AboutPage() {
       {/* Stats, mission & vision, services */}
       <section className="bg-white py-24 md:py-32">
         <Container>
-          <h2 className="text-brand-gradient w-fit whitespace-pre-line text-4xl md:text-5xl leading-tight">{stats.heading}</h2>
+          <h2 className="text-brand-gradient w-fit whitespace-pre-line text-4xl md:text-5xl font-semibold leading-tight">{stats.heading}</h2>
           <dl className="mt-12 flex flex-col gap-10 lg:ml-[35%]">
             {stats.items.map((s, i) => (
               <div key={i} className="grid items-center gap-4 sm:grid-cols-[320px_1fr]">
                 <dt className="text-8xl md:text-[128px] font-medium leading-none tracking-tight text-ink"><CountUp value={s.value} /></dt>
-                <dd className="max-w-sm text-lg md:text-xl leading-snug text-ink/80">{s.text}</dd>
+                <dd className="text-reveal max-w-sm text-lg md:text-xl leading-snug text-ink/80">{s.text}</dd>
               </div>
             ))}
           </dl>

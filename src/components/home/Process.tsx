@@ -17,7 +17,7 @@ export const Process = async () => {
         <div className="mt-6 flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
           <div>
             <h2 id="process-heading" className="whitespace-pre-line text-5xl md:text-7xl font-medium text-gold">{process.heading}</h2>
-            <p className="mt-10 max-w-md text-lg text-white/75">{process.text}</p>
+            <p className="text-reveal mt-10 max-w-md text-lg text-white/75">{process.text}</p>
           </div>
           <ArrowLink href="/contact" className="w-fit text-white">{hero.buttonLabel}</ArrowLink>
         </div>

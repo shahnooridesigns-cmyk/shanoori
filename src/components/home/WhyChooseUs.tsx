@@ -28,7 +28,7 @@ export const WhyChooseUs = async () => {
   <section className="bg-beige pb-24 md:pb-32">
     <Container>
       <h2 className="text-brand-gradient w-fit text-4xl md:text-5xl font-semibold">{why.heading}</h2>
-      <p className="mt-8 max-w-md text-lg leading-relaxed text-ink/70">{why.text}</p>
+      <p className="text-reveal mt-8 max-w-md text-lg leading-relaxed text-ink/70">{why.text}</p>
 
       <BalancedGrid count={why.reasons.length} className="mt-14">
         {why.reasons.map((reason, i) => (

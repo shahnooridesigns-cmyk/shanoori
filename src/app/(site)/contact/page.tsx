@@ -45,7 +45,7 @@ export default async function ContactPage() {
           <div className="card-reveal mt-16 rounded-[32px] bg-[#F4ECEE] p-6 sm:p-10 md:p-12">
             <p className="text-xs font-semibold uppercase tracking-wider text-ink/70">{form.eyebrow}</p>
             <h2 className="mt-2 text-3xl md:text-4xl font-semibold text-maroon">{form.heading}</h2>
-            <p className="mt-2 mb-10 text-ink/70">{form.text}</p>
+            <p className="text-reveal mt-2 mb-10 text-ink/70">{form.text}</p>
             <ContactForm phoneNumber={whatsapp} email={email} />
           </div>
         </Container>
@@ -54,13 +54,13 @@ export default async function ContactPage() {
       <FaqSection />
 
       {/* Location */}
-      <section className="bg-brand-gradient py-24">
+      <section className="bg-brand-gradient py-24 md:py-32">
         <Container>
           <p className="text-xs font-semibold uppercase tracking-wider text-white">{location.eyebrow}</p>
           <h2 className="mt-4 max-w-3xl whitespace-pre-line text-3xl md:text-5xl font-semibold leading-tight text-gold">
             {location.heading} — {address}
           </h2>
-          <p className="mt-6 max-w-2xl text-white/90">{location.text}</p>
+          <p className="text-reveal mt-6 max-w-2xl text-white/90">{location.text}</p>
 
           <div className="mt-12 grid gap-5 lg:grid-cols-[1.25fr_1fr]">
             <div className="card-reveal overflow-hidden rounded-[32px] bg-white">

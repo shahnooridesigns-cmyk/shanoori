@@ -112,7 +112,7 @@ export default async function ServicesPage() {
             <h2 className="text-brand-gradient mx-auto w-fit max-w-xl text-center text-4xl md:text-5xl font-semibold leading-tight">
               {handover.heading}
             </h2>
-            <p className="mx-auto mt-5 max-w-2xl text-center text-lg text-ink/80">
+            <p className="text-reveal mx-auto mt-5 max-w-2xl text-center text-lg text-ink/80">
               {handover.text}
             </p>
             <BalancedGrid as="ol" count={handover.steps.length} gap="1.25rem" className="mt-14">

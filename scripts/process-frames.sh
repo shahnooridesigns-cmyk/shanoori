@@ -17,8 +17,8 @@ set -euo pipefail
 FFMPEG="${FFMPEG:-ffmpeg}"
 FFPROBE="${FFPROBE:-ffprobe}"
 OUT="public/assets/process-frames"
-W=1152
-H=720
+W=1920
+H=1080
 TARGET_FRAMES=180
 SKIP="${2:-0}" # seconds to drop from the start of your own video
 
@@ -64,6 +64,6 @@ FPS=$(awk "BEGIN { printf \"%.4f\", $TARGET_FRAMES / $DURATION }")
 mkdir -p "$OUT" && rm -f "$OUT"/frame-*.webp
 "$FFMPEG" -hide_banner -loglevel error -y -ss "$SKIP" -i "$VIDEO" \
   -frames:v $TARGET_FRAMES -vf "fps=$FPS,scale=$W:$H:force_original_aspect_ratio=increase,crop=$W:$H" \
-  -c:v libwebp -quality 50 -compression_level 5 "$OUT/frame-%03d.webp"
+  -c:v libwebp -quality 82 -compression_level 5 "$OUT/frame-%03d.webp"
 
 echo "Frames: $(ls "$OUT" | wc -l) ($(du -sh "$OUT" | cut -f1))"
