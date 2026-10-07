@@ -448,7 +448,7 @@ html[data-sn-preload="on"] {
   overflow: hidden;
 }
 
-/* Client logo strip (components/shared/TrustedBy.tsx): slides left by one copy of the list */
+/* Client logo rows (components/shared/TrustedBy.tsx): each slides by one copy of its list */
 @keyframes logo-marquee {
   to { transform: translateX(var(--marquee-shift, -50%)); }
 }
@@ -458,6 +458,10 @@ html[data-sn-preload="on"] {
   }
   .logo-marquee:hover {
     animation-play-state: paused;
+  }
+  /* The second row travels the other way */
+  .logo-marquee-reverse {
+    animation-direction: reverse;
   }
 }
 

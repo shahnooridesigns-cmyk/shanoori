@@ -5,20 +5,20 @@ import { motion, useInView, useReducedMotion } from 'framer-motion';
 
 /** Letter size: a little smaller than the hero title, leaving a margin either side */
 const FONT_SIZE = '17vw';
-/** Where the letters rest: nudged down so the footer's bottom edge crops them, as in the design */
+/** Where the letters rest: nudged down so the bottom edge of the wordmark's frame crops them, as in the design */
 const REST_Y = '8%';
-/** Fully below the footer's edge (the footer clips them there) */
+/** Fully below the frame's edge (it clips them there) */
 const BELOW_Y = '115%';
 
 /**
- * Oversized wordmark from the design, cropped by the footer's bottom edge. Each time the
+ * Oversized wordmark from the design, cropped by the bottom edge of its frame in the footer. Each time the
  * footer comes into view the letters rise up out of that edge one after another; they drop
  * back when it leaves, so the entrance plays on every visit.
  */
 export const FooterWordmark = ({ children }: { children: string }) => {
   const ref = useRef<HTMLParagraphElement>(null);
   const reduceMotion = useReducedMotion();
-  // Watched on the line itself, which stays put: the letters start outside the footer's
+  // Watched on the line itself, which stays put: the letters start outside the
   // clipped area, where an observer on them would never fire
   const inView = useInView(ref, { amount: 0.4 });
   const shown = inView || Boolean(reduceMotion);

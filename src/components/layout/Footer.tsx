@@ -49,7 +49,7 @@ export const Footer = async () => {
   ].filter((s): s is { name: string; href: string } => Boolean(s.href));
 
   return (
-    // Fills the screen (see .footer-fill): links at the top, copyright and wordmark pinned to the bottom
+    // Fills the screen (see .footer-fill): links at the top, the wordmark and then the copyright line at the bottom
     <footer className="footer-fill flex flex-col overflow-hidden bg-black text-gold">
       <Container className="flex flex-1 flex-col pt-20">
         <div className="flex flex-col gap-12 md:flex-row md:justify-between">
@@ -84,7 +84,17 @@ export const Footer = async () => {
           </div>
         </div>
 
-        <div className="mt-auto flex flex-col gap-3 pt-16 text-sm text-gold/60 md:flex-row md:items-center md:justify-between">
+      </Container>
+
+      {/* Clips the wordmark at its own bottom edge: the letters rise out of it, and rest slightly cropped */}
+      <div className="overflow-hidden">
+        <FooterWordmark>Shah Noori</FooterWordmark>
+      </div>
+
+      {/* Copyright and credits close the footer on a strip in the wordmark's white */}
+      <div className="bg-white">
+      <Container className="py-5">
+        <div className="flex flex-col gap-3 text-sm text-ink/70 md:flex-row md:items-center md:justify-between">
           <p>&copy; {new Date().getFullYear()} Shah Noori. All rights reserved.</p>
           <ul className="flex flex-wrap gap-x-6 gap-y-3">
             {credits.map((credit) => (
@@ -95,12 +105,12 @@ export const Footer = async () => {
                   target="_blank"
                   rel="noopener noreferrer"
                   className={`credit-link tap-area underline-offset-4 hover:underline ${
-                    credit.flowing ? 'flowing-colours font-semibold decoration-gold' : 'text-gold'
+                    credit.flowing ? 'flowing-colours font-semibold decoration-maroon' : 'font-semibold text-maroon'
                   }`}
                 >
                   {credit.name}
                   {credit.badge && (
-                    <span className="credit-badge pointer-events-none absolute -right-5 -top-5 flex h-6 w-6 items-center justify-center rounded-full bg-gold text-maroon shadow-lg" aria-hidden="true">
+                    <span className="credit-badge pointer-events-none absolute -right-5 -top-5 flex h-6 w-6 items-center justify-center rounded-full bg-maroon text-gold shadow-lg" aria-hidden="true">
                       {badges[credit.badge]}
                     </span>
                   )}
@@ -110,8 +120,7 @@ export const Footer = async () => {
           </ul>
         </div>
       </Container>
-
-      <FooterWordmark>Shah Noori</FooterWordmark>
+      </div>
     </footer>
   );
 };
