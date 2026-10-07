@@ -2,7 +2,7 @@ import React from 'react';
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
 import { Container } from '@/components/shared/Container';
 import { WhatsAppButton } from '@/components/shared/WhatsAppButton';
 import { resolveWhatsAppNumber } from '@/lib/constants';
@@ -20,11 +20,15 @@ type Props = { params: Promise<{ slug: string }> };
 /** The schema stores plain text, but older imported documents hold Portable Text blocks. */
 const descriptionToText = (description: ProjectDetail['description']) => {
   if (!description) return '';
-  if (typeof description === 'string') return description;
-  return description
-    .filter((block) => block._type === 'block')
-    .map((block) => block.children?.map((child) => child.text ?? '').join('') ?? '')
-    .join('\n\n');
+  const text =
+    typeof description === 'string'
+      ? description
+      : description
+          .filter((block) => block._type === 'block')
+          .map((block) => block.children?.map((child) => child.text ?? '').join('') ?? '')
+          .join('\n\n');
+  // Text left over from a seeded placeholder is not this project's story: show none until it is written
+  return /^\s*sample project\b/i.test(text) ? '' : text;
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -54,6 +58,16 @@ export default async function ProjectDetailPage({ params }: Props) {
 
   if (!project) {
     notFound();
+  }
+  // An old or hand-typed address ("Fit%20out") moves to the project's published one
+  let asked = slug;
+  try {
+    asked = decodeURIComponent(slug);
+  } catch {
+    // Not valid encoding: compare as given
+  }
+  if (asked !== project.slug) {
+    permanentRedirect(`/projects/${encodeURIComponent(project.slug)}`);
   }
 
   const phoneNumber = resolveWhatsAppNumber(settings, project.category);

@@ -6,12 +6,27 @@ export const SITE_NAME = 'Shah Noori';
 export const SHARE_IMAGE = '/assets/images/og.jpg';
 
 /**
- * Placeholder projects seeded for the launch ("sample-…" ids) are hidden from the whole site:
- * lists, carousels, their own pages and the sitemap. The one real project made from a sample
- * document is let through. Delete this once the sample documents are gone from the dataset.
+ * Placeholder content seeded for the launch ("sample-…" ids: projects, clients, reviews) is hidden
+ * from the whole site. The real project made from a sample document, and its client, are let
+ * through. Delete this once the sample documents are gone from the dataset.
  */
-const REAL_SAMPLE_IDS = ['sample-project-dunefield-cafe'];
-export const isSampleProject = (id: string) => id.startsWith('sample-') && !REAL_SAMPLE_IDS.includes(id);
+const REAL_SAMPLE_IDS = ['sample-project-dunefield-cafe', 'sample-client-dunefield'];
+export const isSample = (id: string) => id.startsWith('sample-') && !REAL_SAMPLE_IDS.includes(id);
+export const isSampleProject = isSample;
+
+const CLEAN_SLUG = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+const slugify = (text: string) =>
+  text
+    .toLowerCase()
+    .normalize('NFKD')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+
+/**
+ * The address a project is published at. A slug typed by hand in the Studio can hold spaces or
+ * capitals ("Fit out"); the site then uses one made from the title ("le-bebe") instead.
+ */
+export const publicSlug = (slug: string, title: string) => (CLEAN_SLUG.test(slug) ? slug : slugify(title) || slugify(slug) || slug);
 
 /**
  * Search and link-preview tags for one page: its own address as the canonical link, and the

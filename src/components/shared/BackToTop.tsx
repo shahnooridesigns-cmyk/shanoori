@@ -48,7 +48,7 @@ export const BackToTop = () => {
       aria-label="Back to top"
       data-cursor="Top"
       tabIndex={visible ? 0 : -1}
-      className={`group fixed bottom-24 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-maroon text-gold shadow-lg transition-all duration-300 hover:scale-110 focus:outline-none focus-visible:ring-4 focus-visible:ring-gold ${
+      className={`group fixed bottom-[84px] right-5 z-50 flex h-12 w-12 items-center md:bottom-24 md:right-6 md:h-14 md:w-14 justify-center rounded-full bg-maroon text-gold shadow-lg transition-all duration-300 hover:scale-110 focus:outline-none focus-visible:ring-4 focus-visible:ring-gold ${
         visible ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-3 opacity-0'
       }`}
     >
@@ -67,7 +67,7 @@ export const BackToTop = () => {
           strokeDashoffset={RING_LENGTH}
         />
       </svg>
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" className="relative h-6 w-6 transition-transform group-hover:-translate-y-0.5" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" className="relative h-5 w-5 transition-transform group-hover:-translate-y-0.5 md:h-6 md:w-6" aria-hidden="true">
         <path d="M12 19V5M5 12l7-7 7 7" />
       </svg>
     </button>

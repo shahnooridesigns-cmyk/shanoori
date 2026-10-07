@@ -6,7 +6,7 @@ import { fetchClients, fetchSharedContent } from '@/lib/sanity/fetch';
 import type { ClientLogo } from '@/lib/sanity/types';
 
 /** From this many logos they glide past in rows (four on phones, two on larger screens); fewer sit still, centred. */
-const MARQUEE_FROM = 6;
+const MARQUEE_FROM = 4;
 /** Logos needed in a row to fill the widest monitors without a gap in the loop. */
 const MARQUEE_FILL = 20;
 
@@ -52,9 +52,12 @@ const Row = ({ clients, reverse = false }: { clients: ClientLogo[]; reverse?: bo
 export const TrustedBy = async () => {
   const [clients, shared] = await Promise.all([fetchClients(), fetchSharedContent()]);
   if (clients.length === 0) return null;
-  // Deal the logos out across the rows in turn, so every row stays balanced as clients are added
+  // Every row carries all the logos, each starting further along the list, so rows never match
   const rows = (count: number) =>
-    Array.from({ length: count }, (_, row) => clients.filter((_, i) => i % count === row)).filter((row) => row.length > 0);
+    Array.from({ length: count }, (_, row) => {
+      const start = Math.round((row * clients.length) / count) % clients.length;
+      return [...clients.slice(start), ...clients.slice(0, start)];
+    });
   const strip = 'relative mt-14 flex-col gap-3 overflow-hidden py-2 motion-reduce:overflow-x-auto md:mt-16 md:gap-6';
 
   return (

@@ -94,7 +94,8 @@ export const Footer = async () => {
       {/* Copyright and credits close the footer on a strip in the wordmark's white */}
       <div className="bg-white">
       <Container className="py-5">
-        <div className="flex flex-col gap-3 text-sm text-ink/70 md:flex-row md:items-center md:justify-between">
+        {/* Phones: the right side stays clear for the floating buttons */}
+        <div className="flex flex-col gap-3 pr-16 text-sm text-ink/70 md:flex-row md:pr-0 md:items-center md:justify-between">
           <p>&copy; {new Date().getFullYear()} Shah Noori. All rights reserved.</p>
           <ul className="flex flex-wrap gap-x-6 gap-y-3">
             {credits.map((credit) => (

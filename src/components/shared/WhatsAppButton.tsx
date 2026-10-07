@@ -38,10 +38,10 @@ export const WhatsAppButton = ({
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        className={`fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-green-500 text-white shadow-lg transition-transform hover:scale-110 focus:outline-none focus-visible:ring-4 focus-visible:ring-green-300 ${className}`}
+        className={`fixed bottom-6 right-5 z-50 flex h-12 w-12 items-center md:right-6 md:h-14 md:w-14 justify-center rounded-full bg-green-500 text-white shadow-lg transition-transform hover:scale-110 focus:outline-none focus-visible:ring-4 focus-visible:ring-green-300 ${className}`}
         aria-label="Chat on WhatsApp"
       >
-        <WhatsAppIcon size={28} />
+        <span className="scale-[0.86] md:scale-100"><WhatsAppIcon size={28} /></span>
       </a>
     );
   }
