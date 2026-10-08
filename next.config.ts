@@ -28,7 +28,14 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
-      // One address for the site: www moves to the bare domain
+      // One address for the site: www moves to the bare domain. The home page needs its own
+      // rule: on the Worker, an empty path leaves ":path*" unfilled in the destination.
+      {
+        source: '/',
+        has: [{ type: 'host', value: 'www.sncreatives.com' }],
+        destination: 'https://sncreatives.com/',
+        permanent: true,
+      },
       {
         source: '/:path*',
         has: [{ type: 'host', value: 'www.sncreatives.com' }],
