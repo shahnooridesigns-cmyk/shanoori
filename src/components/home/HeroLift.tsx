@@ -11,7 +11,8 @@ import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion
 export const HeroLift = ({ children }: { children: React.ReactNode }) => {
   const reduceMotion = useReducedMotion();
   const { scrollY } = useScroll();
-  const y = useTransform(scrollY, (value) => -value);
+  // Past two screens it is long gone under the page, so it is left where it is
+  const y = useTransform(scrollY, (value) => -Math.min(value, 2400));
 
   return (
     <motion.div className="relative will-change-transform" style={{ y: reduceMotion ? 0 : y }}>

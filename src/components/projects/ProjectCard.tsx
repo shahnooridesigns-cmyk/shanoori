@@ -23,14 +23,14 @@ export const ProjectCard = ({
   return (
     <Link
       href={`/projects/${encodeURIComponent(project.slug)}`}
-      className="card-lift group relative block h-full min-h-[300px] overflow-hidden rounded-[24px] bg-maroon shadow-[0_24px_48px_-20px_rgba(60,40,10,0.55)] focus-visible:outline-offset-4"
+      className="card-lift group relative block h-full min-h-[300px] overflow-clip rounded-[24px] bg-maroon shadow-[0_24px_48px_-20px_rgba(60,40,10,0.55)] focus-visible:outline-offset-4"
     >
       <Image
         src={project.imageUrl || '/assets/images/placeholder.webp'}
         alt={project.title}
         fill
         sizes={sizes}
-        className="object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-110"
+        className="img-settle object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-110"
       />
       {/* Readability fades: always at the bottom, fuller on hover */}
       <div className="absolute inset-0 bg-gradient-to-t from-maroon/95 via-maroon/30 to-transparent transition-opacity duration-500 group-hover:opacity-0" aria-hidden="true" />

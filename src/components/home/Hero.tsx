@@ -13,7 +13,9 @@ export const Hero = async () => {
     // Pinned (sticky) so the rest of the page, which the home page lifts above it, slides up over
     // it. On a screen shorter than the hero it pins once its bottom edge is reached.
     <section className="sticky top-[min(0px,calc(100svh-640px))] flex min-h-[640px] h-[100svh] max-h-[900px] flex-col overflow-hidden bg-ink motion-reduce:relative motion-reduce:top-0">
-      <Image src={hero.image} alt="" fill priority sizes="100vw" className="object-cover" />
+      <div className="absolute inset-0">
+        <Image src={hero.image} alt="" fill priority sizes="100vw" className="object-cover" />
+      </div>
       <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/50" aria-hidden="true" />
 
       {/* Stays with the photo */}

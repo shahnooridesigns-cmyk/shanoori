@@ -34,9 +34,9 @@ type Phase = 'grow' | 'cover' | 'fade';
 
 /**
  * After the destination has rendered, wait out its own entrance (the page-in view transition
- * in globals.css runs 640ms) and let images and fonts settle, so the reveal shows a still page
+ * (titles rising, see globals.css) and let images and fonts settle, so the reveal shows a still page
  */
-const SETTLE_MS = 750;
+const SETTLE_MS = 900;
 /** Never leave the screen covered: reveal whatever is there after this long */
 const GIVE_UP_MS = 6000;
 

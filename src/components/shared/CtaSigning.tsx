@@ -230,6 +230,7 @@ export const CtaSigning = ({ heading, text, buttonLabel }: { heading: string; te
       >
         {/* A solid round button here (text links elsewhere): this is the page's closing call to action */}
         <Link
+          data-no-transition
           href="/contact"
           onClick={startFlood}
           // No viewfinder brackets from the cursor layer: square corners around a round button read as a frame

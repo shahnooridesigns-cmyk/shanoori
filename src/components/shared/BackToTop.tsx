@@ -19,19 +19,34 @@ export const BackToTop = () => {
   const ringRef = useRef<SVGCircleElement>(null);
 
   useEffect(() => {
-    const onScroll = () => {
+    // How far the page can scroll. Measuring it makes the browser lay the page out, so it is
+    // done when the page's size changes, and the scroll handler only does arithmetic.
+    let scrollable = 0;
+    const measure = () => {
+      scrollable = document.documentElement.scrollHeight - window.innerHeight;
+      onScroll();
+    };
+    let frame = 0;
+    const paint = () => {
+      frame = 0;
       setVisible(window.scrollY > SHOW_AFTER);
-      const scrollable = document.documentElement.scrollHeight - window.innerHeight;
       const progress = scrollable > 0 ? Math.min(1, Math.max(0, window.scrollY / scrollable)) : 0;
       // Written straight to the ring: no re-render on every scroll tick
       if (ringRef.current) ringRef.current.style.strokeDashoffset = String(RING_LENGTH * (1 - progress));
     };
-    onScroll();
+    function onScroll() {
+      if (!frame) frame = requestAnimationFrame(paint);
+    }
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(document.body);
     window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll);
+    window.addEventListener('resize', measure);
     return () => {
+      cancelAnimationFrame(frame);
+      observer.disconnect();
       window.removeEventListener('scroll', onScroll);
-      window.removeEventListener('resize', onScroll);
+      window.removeEventListener('resize', measure);
     };
   }, []);
 

@@ -14,7 +14,7 @@ export const SectionLabel = ({
   const dot = { maroon: 'bg-maroon', gold: 'bg-gold', ink: 'bg-ink' }[tone];
   const text = { maroon: 'text-ink/80', gold: 'text-gold', ink: 'text-ink/80' }[tone];
   return (
-    <p className={`flex h-fit items-center gap-2 self-start text-sm md:text-base ${text} ${className}`}>
+    <p className={`label-reveal flex h-fit items-center gap-2 self-start text-sm md:text-base ${text} ${className}`}>
       <span className={`h-2 w-2 rounded-full ${dot}`} aria-hidden="true" />
       {children}
     </p>

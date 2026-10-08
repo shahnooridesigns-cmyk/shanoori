@@ -12,6 +12,7 @@ import { CtaBanner } from '@/components/shared/CtaBanner';
 import { ArrowUpRight, SectionLabel } from '@/components/shared/ui';
 import { ProjectGallery } from '@/components/projects/ProjectGallery';
 import { ProjectCard } from '@/components/projects/ProjectCard';
+import { RiseText } from '@/components/shared/RiseText';
 import { categoryLabel } from '@/lib/categories';
 import { SITE_NAME, SITE_URL, isSampleProject, pageMeta } from '@/lib/seo';
 
@@ -126,20 +127,22 @@ export default async function ProjectDetailPage({ params }: Props) {
         />
       )}
       {/* Full-screen hero with fact strip */}
-      <section className="relative flex h-[100svh] min-h-[620px] max-h-[960px] flex-col overflow-hidden bg-maroon">
-        <Image src={project.imageUrl || '/assets/images/placeholder.webp'} alt="" fill priority sizes="100vw" className="object-cover" />
+      <section className="relative flex h-[100svh] min-h-[620px] max-h-[960px] flex-col overflow-clip bg-maroon">
+        <div className="hero-drift absolute inset-0">
+          <Image src={project.imageUrl || '/assets/images/placeholder.webp'} alt="" fill priority sizes="100vw" className="hero-zoom object-cover" />
+        </div>
         <div className="absolute inset-0 bg-gradient-to-t from-maroon via-maroon/40 to-black/40" aria-hidden="true" />
 
         <Container className="relative flex flex-1 flex-col justify-end pt-32 pb-10">
-          <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm text-gold/80">
+          <nav aria-label="Breadcrumb" className="hero-in flex items-center gap-2 text-sm text-gold/80">
             <Link href="/projects" className="tap-area hover:text-gold">Projects</Link>
             <span aria-hidden="true">/</span>
             <span aria-current="page" className="truncate">{project.title}</span>
           </nav>
-          <h1 className="mt-6 max-w-5xl text-5xl sm:text-6xl md:text-8xl font-medium leading-[0.95] text-gold">{project.title}</h1>
+          <h1 className="mt-6 max-w-5xl text-5xl sm:text-6xl md:text-8xl font-medium leading-[0.95] text-gold"><RiseText text={project.title} /></h1>
 
           {facts.length > 0 && (
-            <dl className="mt-12 grid grid-cols-2 border-t border-gold/25 pt-6 md:grid-cols-4">
+            <dl className="hero-in mt-12 grid grid-cols-2 border-t border-gold/25 pt-6 md:grid-cols-4" style={{ '--i': 5 } as React.CSSProperties}>
               {facts.map((f) => (
                 <div key={f.label} className="py-2 pr-6 md:border-l md:border-gold/25 md:pl-6 md:first:border-l-0 md:first:pl-0">
                   <dt className="text-xs uppercase tracking-[0.2em] text-white/55">{f.label}</dt>
@@ -163,7 +166,7 @@ export default async function ProjectDetailPage({ params }: Props) {
         <Container className="grid gap-14 lg:grid-cols-[1fr_360px] lg:gap-24">
           <div>
             <SectionLabel>Project Overview</SectionLabel>
-            <p className="mt-8 whitespace-pre-wrap text-2xl md:text-4xl leading-snug text-ink">
+            <p className="text-reveal mt-8 whitespace-pre-wrap text-2xl md:text-4xl leading-snug text-ink">
               {description || 'Full project details are coming soon.'}
             </p>
           </div>

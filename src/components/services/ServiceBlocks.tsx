@@ -19,13 +19,13 @@ export const DivisionHeader = ({
 }) => (
   <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
     <div className="max-w-3xl">
-      <p className="text-sm font-semibold uppercase tracking-[0.2em] text-ink/70">{eyebrow}</p>
+      <p className="label-reveal text-sm font-semibold uppercase tracking-[0.2em] text-ink/70">{eyebrow}</p>
       <h2 className="text-brand-gradient mt-2 w-fit text-3xl md:text-[40px] font-semibold uppercase leading-tight">{title}</h2>
       <p className="text-reveal mt-3 text-lg leading-relaxed text-ink/75">{intro}</p>
     </div>
     <Link
       href={href}
-      className="tap-area group flex w-fit shrink-0 items-center gap-3 border-b-2 border-maroon pb-1 text-lg font-semibold text-maroon hover:opacity-80"
+      className="text-reveal tap-area group flex w-fit shrink-0 items-center gap-3 border-b-2 border-maroon pb-1 text-lg font-semibold text-maroon hover:opacity-80"
     >
       {linkLabel}
       <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
@@ -42,8 +42,8 @@ export interface FeatureCardData {
 
 /** Photo card with the maroon fade and caption at the bottom. */
 export const FeatureCard = ({ card, sizes, className = '' }: { card: FeatureCardData; sizes: string; className?: string }) => (
-  <article className={`card-reveal card-lift group relative min-h-[380px] overflow-hidden rounded-[28px] shadow-[0_16px_32px_-12px_rgba(0,0,0,0.4)] ${className}`}>
-    <Image src={card.image || '/assets/images/placeholder.webp'} alt={card.title} fill sizes={sizes} className="object-cover transition-transform duration-700 group-hover:scale-105" />
+  <article className={`card-reveal card-lift group relative min-h-[380px] overflow-clip rounded-[28px] shadow-[0_16px_32px_-12px_rgba(0,0,0,0.4)] ${className}`}>
+    <Image src={card.image || '/assets/images/placeholder.webp'} alt={card.title} fill sizes={sizes} className="img-settle object-cover transition-transform duration-700 group-hover:scale-105" />
     <div className="absolute inset-0 bg-gradient-to-t from-maroon via-maroon/35 to-transparent" aria-hidden="true" />
     <div className="absolute inset-x-0 bottom-0 flex flex-col items-start gap-2 p-6">
       <span className="rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-gold backdrop-blur-sm">

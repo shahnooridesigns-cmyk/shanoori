@@ -1,3 +1,4 @@
+import { RiseText, wordCount } from '@/components/shared/RiseText';
 import React from 'react';
 import type { Metadata } from 'next';
 import { pageMeta } from '@/lib/seo';
@@ -30,15 +31,17 @@ export default async function ContactPage() {
       {/* Hero + form */}
       <section className="bg-brand-gradient pt-32 pb-20">
         <Container>
-          <SectionLabel tone="gold">Contact Us</SectionLabel>
+          <div className="hero-in">
+            <SectionLabel tone="gold">Contact Us</SectionLabel>
+          </div>
           <h1 className="mt-8 text-center text-4xl sm:text-5xl md:text-6xl font-semibold leading-tight text-white">
-            {hero.heading} <span className="text-[#FFE59E]">{hero.highlight}</span>
+            <RiseText text={hero.heading} /> <RiseText text={hero.highlight} start={wordCount(hero.heading)} className="text-[#FFE59E]" />
           </h1>
-          <p className="mt-8 text-center text-lg font-medium text-white">{hero.lead}</p>
-          <p className="mt-2 text-center text-white/70">{hero.text}</p>
+          <p className="hero-in mt-8 text-center text-lg font-medium text-white" style={{ '--i': 4 } as React.CSSProperties}>{hero.lead}</p>
+          <p className="hero-in mt-2 text-center text-white/70" style={{ '--i': 5 } as React.CSSProperties}>{hero.text}</p>
           <ul className="mt-10 flex flex-wrap justify-center gap-3">
-            {hero.badges.map((b) => (
-              <li key={b} className="rounded-full bg-white/10 px-4 py-2 text-sm font-medium text-white">{b}</li>
+            {hero.badges.map((b, i) => (
+              <li key={b} className="pop-in rounded-full bg-white/10 px-4 py-2 text-sm font-medium text-white" style={{ '--i': i } as React.CSSProperties}>{b}</li>
             ))}
           </ul>
 
@@ -56,7 +59,7 @@ export default async function ContactPage() {
       {/* Location */}
       <section className="bg-brand-gradient py-24 md:py-32">
         <Container>
-          <p className="text-xs font-semibold uppercase tracking-wider text-white">{location.eyebrow}</p>
+          <p className="label-reveal text-xs font-semibold uppercase tracking-wider text-white">{location.eyebrow}</p>
           <h2 className="mt-4 max-w-3xl whitespace-pre-line text-3xl md:text-5xl font-semibold leading-tight text-gold">
             {location.heading} — {address}
           </h2>

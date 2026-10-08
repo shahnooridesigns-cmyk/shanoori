@@ -1,3 +1,4 @@
+import { RiseText } from '@/components/shared/RiseText';
 import React from 'react';
 import type { Metadata } from 'next';
 import { pageMeta } from '@/lib/seo';
@@ -34,17 +35,21 @@ export default async function ProjectsPage() {
   return (
     <main className="flex-1 w-full">
       {/* Hero */}
-      <section className="relative overflow-hidden bg-maroon">
-        <Image src="/assets/images/hero/hero-projects.webp" alt="" fill priority sizes="100vw" className="object-cover" />
+      <section className="relative overflow-clip bg-maroon">
+        <div className="hero-drift absolute inset-0">
+          <Image src="/assets/images/hero/hero-projects.webp" alt="" fill priority sizes="100vw" className="hero-zoom object-cover" />
+        </div>
         <div className="absolute inset-0 bg-gradient-to-r from-maroon via-maroon/85 to-maroon/40" aria-hidden="true" />
         <Container className="relative flex min-h-[600px] flex-col justify-end gap-10 pt-36 pb-16">
-          <SectionLabel tone="gold">Projects</SectionLabel>
-          <h1 className="max-w-4xl whitespace-pre-line text-5xl sm:text-6xl md:text-8xl font-medium leading-[0.95] text-gold">
-            {content.hero.heading}
+          <div className="hero-in">
+            <SectionLabel tone="gold">Projects</SectionLabel>
+          </div>
+          <h1 className="max-w-4xl text-5xl sm:text-6xl md:text-8xl font-medium leading-[0.95] text-gold">
+            <RiseText text={content.hero.heading} />
           </h1>
           <div className="flex flex-col gap-10 md:flex-row md:items-end md:justify-between">
-            <p className="max-w-md text-lg text-white/80">{content.hero.text}</p>
-            <dl className="flex gap-10 md:gap-14">
+            <p className="hero-in max-w-md text-lg text-white/80" style={{ '--i': 5 } as React.CSSProperties}>{content.hero.text}</p>
+            <dl className="hero-in flex gap-10 md:gap-14" style={{ '--i': 6 } as React.CSSProperties}>
               {stats.map((s) => (
                 <div key={s.label} className="flex flex-col-reverse">
                   <dt className="mt-1 text-sm text-white/60">{s.label}</dt>
@@ -62,15 +67,15 @@ export default async function ProjectsPage() {
           <Container>
             <Link
               href={`/projects/${encodeURIComponent(spotlight.slug)}`}
-              className="group grid overflow-clip rounded-[32px] bg-maroon shadow-[0_30px_60px_-25px_rgba(60,40,10,0.6)] lg:grid-cols-[1.4fr_1fr]"
+              className="card-reveal group grid overflow-clip rounded-[32px] bg-maroon shadow-[0_30px_60px_-25px_rgba(60,40,10,0.6)] lg:grid-cols-[1.4fr_1fr]"
             >
-              <div className="relative min-h-[320px] overflow-hidden lg:min-h-[460px]">
+              <div className="relative min-h-[320px] overflow-clip lg:min-h-[460px]">
                 <Image
                   src={spotlight.imageUrl || '/assets/images/placeholder.webp'}
                   alt={spotlight.title}
                   fill
                   sizes="(min-width: 1024px) 60vw, 100vw"
-                  className="object-cover transition-transform duration-[1400ms] ease-out group-hover:scale-105"
+                  className="img-settle object-cover transition-transform duration-[1400ms] ease-out group-hover:scale-105"
                 />
               </div>
               <div className="flex flex-col justify-between gap-10 p-8 md:p-12">

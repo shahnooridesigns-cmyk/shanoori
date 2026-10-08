@@ -103,7 +103,7 @@ section[id] {
 
 /*
  * Section titles (every h2 inside .scroll-titles; hero titles are h1 so they're left alone)
- * are written in by a soft diagonal sweep while rising and sharpening, scrubbed to the scroll
+ * are written in by a soft diagonal sweep while rising, scrubbed to the scroll
  * position: scrolling back up rewinds it. The mask works on gradient text too. Browsers
  * without scroll-driven animations, and reduced-motion users, just see the static title.
  * Opt a heading out with data-no-scroll-anim.
@@ -366,44 +366,23 @@ section[id] {
     -webkit-mask-position: 100% 0;
     mask-position: 100% 0;
     transform: translateY(0.45em);
-    filter: blur(10px);
     opacity: 0.2;
   }
   to {
     -webkit-mask-position: 0% 0;
     mask-position: 0% 0;
     transform: none;
-    filter: blur(0);
     opacity: 1;
   }
 }
 
 /*
- * Page-to-page transitions (template.tsx): the old page fades out and lifts away, the new one
- * fades in and settles, and the header stays put. Browsers without view transitions just swap.
+ * Page changes are animated by components/shared/PageTransition.tsx (rising shutters). The
+ * rules below only keep the header and the colour flood steady if the browser runs a view
+ * transition of its own.
  */
 ::view-transition {
   pointer-events: none;
-}
-::view-transition-old(.page-exit) {
-  animation: page-out 260ms cubic-bezier(0.4, 0, 1, 1) both;
-}
-::view-transition-new(.page-enter) {
-  animation: page-in 520ms cubic-bezier(0.16, 1, 0.3, 1) 120ms both;
-}
-@keyframes page-out {
-  to {
-    opacity: 0;
-    transform: translateY(-16px);
-    filter: blur(4px);
-  }
-}
-@keyframes page-in {
-  from {
-    opacity: 0;
-    transform: translateY(28px);
-    filter: blur(6px);
-  }
 }
 ::view-transition-group(site-header) {
   animation: none;
@@ -543,4 +522,194 @@ html[data-sn-preload="on"] {
   .footer-fill {
     min-height: 100svh;
   }
+}
+
+/*
+ * Inner-page motion. None of it changes the layout: it only decides how things arrive.
+ *
+ * On load, at the top of a page:
+ *  - .rise-word: each word of the title rises from behind its own line (RiseText.tsx), in order (--w)
+ *  - .hero-in:   the label, text and buttons fade up after it, in order (--i)
+ *  - .pop-in:    small chips pop in, in order (--i)
+ *  - .hero-zoom: the banner photo eases back from a slight zoom
+ * These wait while the first-visit preloader or the page-change shutters cover the screen, so
+ * they are seen when it is uncovered.
+ *
+ * Tied to the scroll (like the titles and cards above):
+ *  - .hero-drift:   the banner photo slides down a little as the banner leaves (parallax)
+ *  - .img-settle:   a photo eases back from a slight zoom as it comes into view. It uses the
+ *                   separate `scale` property, so hover zooms written with transform still work
+ *  - .label-reveal: the small "● Section" labels slide in from the left
+ * A frame around a scroll-linked photo must trim with overflow-clip, not overflow-hidden:
+ * a hidden-overflow box counts as its own scroll area, and the photo would follow that instead
+ * of the page.
+ */
+.rise-word {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  /* Room for letters that hang below the line (g, y, p), taken back so spacing is unchanged */
+  padding-bottom: 0.14em;
+  margin-bottom: -0.14em;
+}
+.rise-word > span {
+  display: inline-block;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .rise-word > span {
+    animation: word-rise 0.95s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: calc(var(--w, 0) * 60ms + 150ms);
+  }
+  .hero-in {
+    animation: hero-in 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: calc(var(--i, 0) * 130ms + 100ms);
+  }
+  .pop-in {
+    animation: pop-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    animation-delay: calc(var(--i, 0) * 90ms + 700ms);
+  }
+  .hero-zoom {
+    animation: hero-zoom 2.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  html[data-sn-preload="on"] .rise-word > span,
+  html[data-sn-preload="on"] .hero-in,
+  html[data-sn-preload="on"] .pop-in,
+  html[data-sn-preload="on"] .hero-zoom,
+  html[data-page-cover="on"] .rise-word > span,
+  html[data-page-cover="on"] .hero-in,
+  html[data-page-cover="on"] .pop-in,
+  html[data-page-cover="on"] .hero-zoom {
+    animation-play-state: paused;
+  }
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .hero-drift {
+      animation: hero-drift linear both;
+      animation-timeline: view();
+      animation-range: exit 0% exit 100%;
+    }
+    .img-settle {
+      animation: img-settle linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 45%;
+    }
+    .label-reveal {
+      animation: label-in linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry calc(100% + 14vh);
+    }
+  }
+}
+
+@keyframes word-rise {
+  from { transform: translateY(110%); }
+  to { transform: none; }
+}
+@keyframes hero-in {
+  from { opacity: 0; transform: translateY(26px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes pop-in {
+  from { opacity: 0; transform: scale(0.8); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes hero-zoom {
+  from { transform: scale(1.14); }
+  to { transform: none; }
+}
+@keyframes hero-drift {
+  from { transform: none; }
+  to { transform: translateY(16%); }
+}
+@keyframes img-settle {
+  from { scale: 1.18; }
+  to { scale: 1; }
+}
+@keyframes label-in {
+  from { opacity: 0; transform: translateX(-22px); }
+  to { opacity: 1; transform: none; }
+}
+/* Menu links (Header.tsx): the current page has a gold line under it, and hovering or tabbing
+   to another link draws the same line in from the left, so it takes on the current page's look.
+   In the full-screen menu the link also steps to the right and the others dim a little. */
+.nav-underline {
+  position: relative;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s;
+}
+.nav-underline::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -4px;
+  height: 2px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.nav-underline-lg::after {
+  bottom: -2px;
+  height: 4px;
+}
+.nav-underline.is-active::after,
+.nav-underline:hover::after,
+.nav-underline:focus-visible::after {
+  transform: scaleX(1);
+}
+@media (hover: hover) {
+  .nav-underline-lg:hover {
+    transform: translateX(14px);
+  }
+  nav:has(.nav-underline-lg:hover) .nav-underline-lg:not(:hover) {
+    opacity: 0.45;
+  }
+}
+
+/* The site menu bar and its drop-down panel (Header.tsx): clear glass. No colour of its own,
+   only a blur of whatever is behind it and a faint edge to mark its shape. Because nothing
+   tints it, its text changes colour to stay readable: Header.tsx sets data-tone on the header
+   from what is behind the bar (gold over dark, maroon over light). */
+.site-bar {
+  --bar: var(--color-gold);
+  --bar-ink: var(--color-maroon);
+  --bar-edge: rgba(255, 255, 255, 0.2);
+}
+.site-bar[data-tone="light"] {
+  --bar: var(--color-maroon);
+  --bar-ink: var(--color-cream);
+  --bar-edge: rgba(87, 19, 45, 0.22);
+}
+.glass-bar {
+  background: transparent;
+  border: 1px solid var(--bar-edge);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+  transition: border-color 0.35s;
+}
+.bar-text {
+  color: var(--bar);
+  transition: color 0.35s, opacity 0.3s, transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.bar-line {
+  background: var(--bar);
+  transition: background-color 0.35s, transform 0.3s;
+}
+.bar-rule {
+  border-color: var(--bar-edge);
+}
+.bar-logo {
+  background: var(--bar);
+  -webkit-mask: url('/assets/images/brand/logo-gold.webp') center / contain no-repeat;
+  mask: url('/assets/images/brand/logo-gold.webp') center / contain no-repeat;
+  transition: background-color 0.35s;
+}
+.bar-pill {
+  color: var(--bar);
+  border-color: color-mix(in srgb, var(--bar) 40%, transparent);
+}
+.bar-pill:hover {
+  background: var(--bar);
+  color: var(--bar-ink);
 }

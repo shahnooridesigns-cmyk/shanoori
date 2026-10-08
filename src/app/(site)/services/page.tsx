@@ -99,7 +99,7 @@ export default async function ServicesPage() {
             />
             <FeatureCards cards={civil.features} />
 
-            <h3 className="text-brand-gradient mt-16 w-fit text-2xl font-semibold">{civil.listHeading}</h3>
+            <h3 className="text-reveal text-brand-gradient mt-16 w-fit text-2xl font-semibold">{civil.listHeading}</h3>
             <BalancedGrid count={civil.competencies.length} gap="1.25rem" className="mt-6">
               {civil.competencies.map((c, i) => <MiniCard key={i} {...c} icon={icon(c.icon)} />)}
             </BalancedGrid>
