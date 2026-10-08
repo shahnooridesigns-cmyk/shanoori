@@ -24,18 +24,40 @@ import { isSample, publicSlug } from '../seo';
 const forSite = (projects: ProjectSummary[] | null) =>
   (projects ?? []).filter((p) => !isSample(p._id)).map((p) => ({ ...p, slug: publicSlug(p.slug, p.title) }));
 
+/**
+ * Sanity answers are kept in memory for a minute, so a visit usually needs no trip to Sanity
+ * at all. An edit published in the Studio therefore shows on the site within about a minute.
+ * Only finished answers are kept, never a request still in flight: on Cloudflare a request
+ * must not wait on work started by a different one.
+ */
+const KEEP_MS = 60_000;
+const kept = new Map<string, { at: number; value: unknown }>();
+// As loosely typed as the Sanity client's own answer: each caller names the shape it expects
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Loaded = any;
+const load = async (query: string, params: Record<string, unknown> = {}): Promise<Loaded> => {
+  const key = query + JSON.stringify(params);
+  const hit = kept.get(key);
+  if (hit && Date.now() - hit.at < KEEP_MS) return hit.value as Loaded;
+  const value = await client.fetch(query, params);
+  // A site this size asks a few dozen different questions; this only guards against runaway growth
+  if (kept.size > 300) kept.clear();
+  kept.set(key, { at: Date.now(), value });
+  return value;
+};
+
 // cache() dedupes identical calls within a single request (e.g. layout, footer and page
 // all needing site settings).
 export const fetchSiteSettings = cache(
-  async (): Promise<SiteSettings | null> => client.fetch(getSiteSettings)
+  async (): Promise<SiteSettings | null> => load(getSiteSettings)
 );
 
 export const fetchAllProjects = cache(
-  async (): Promise<ProjectSummary[]> => forSite(await client.fetch(getAllProjects))
+  async (): Promise<ProjectSummary[]> => forSite(await load(getAllProjects))
 );
 
 export const fetchFeaturedProjects = cache(
-  async (): Promise<ProjectSummary[]> => forSite(await client.fetch(getFeaturedProjects))
+  async (): Promise<ProjectSummary[]> => forSite(await load(getFeaturedProjects))
 );
 
 export const fetchProjectBySlug = cache(
@@ -47,12 +69,12 @@ export const fetchProjectBySlug = cache(
     } catch {
       // Not valid encoding: look it up as given
     }
-    let project: ProjectDetail | null = await client.fetch(getProjectBySlug, { slug: plain });
+    let project: ProjectDetail | null = await load(getProjectBySlug, { slug: plain });
     if (!project) {
       // The address may be the tidy one the site made for a project whose stored slug is not usable
-      const all: ProjectSummary[] = (await client.fetch(getAllProjects)) ?? [];
+      const all: ProjectSummary[] = (await load(getAllProjects)) ?? [];
       const match = all.find((p) => publicSlug(p.slug, p.title) === plain);
-      if (match) project = await client.fetch(getProjectBySlug, { slug: match.slug });
+      if (match) project = await load(getProjectBySlug, { slug: match.slug });
     }
     // A placeholder's address answers "page not found", like any project that does not exist
     if (!project || isSample(project._id)) return null;
@@ -66,12 +88,12 @@ export const fetchProjectBySlug = cache(
 );
 
 export const fetchClients = cache(
-  async (): Promise<ClientLogo[]> => ((await client.fetch(getAllClients)) ?? []).filter((c: ClientLogo) => !isSample(c._id))
+  async (): Promise<ClientLogo[]> => ((await load(getAllClients)) ?? []).filter((c: ClientLogo) => !isSample(c._id))
 );
 
 export const fetchFeaturedReviews = cache(
   async (): Promise<Review[]> =>
-    ((await client.fetch(getFeaturedReviews)) ?? [])
+    ((await load(getFeaturedReviews)) ?? [])
       .filter((review: Review) => !isSample(review._id))
       .map((review: Review) => {
         // A review never links to a hidden project, and links use the project's published address
@@ -87,7 +109,7 @@ export const fetchFeaturedReviews = cache(
 const pageContent = <T>(id: string, defaults: T) =>
   cache(async (): Promise<T> => {
     try {
-      return resolveContent(defaults, await client.fetch(`*[_id == $id][0]`, { id }));
+      return resolveContent(defaults, await load(`*[_id == $id][0]`, { id }));
     } catch (error) {
       console.error(`Could not load "${id}" content from Sanity, using defaults`, error);
       return defaults;

@@ -631,8 +631,7 @@ html[data-sn-preload="on"] {
   to { opacity: 1; transform: none; }
 }
 /* Menu links (Header.tsx): the current page has a gold line under it, and hovering or tabbing
-   to another link draws the same line in from the left, so it takes on the current page's look.
-   In the full-screen menu the link also steps to the right and the others dim a little. */
+   to another link draws the same line in from the left, so it takes on the current page's look. */
 .nav-underline {
   position: relative;
   transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s;
@@ -649,22 +648,10 @@ html[data-sn-preload="on"] {
   transform-origin: left;
   transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.nav-underline-lg::after {
-  bottom: -2px;
-  height: 4px;
-}
 .nav-underline.is-active::after,
 .nav-underline:hover::after,
 .nav-underline:focus-visible::after {
   transform: scaleX(1);
-}
-@media (hover: hover) {
-  .nav-underline-lg:hover {
-    transform: translateX(14px);
-  }
-  nav:has(.nav-underline-lg:hover) .nav-underline-lg:not(:hover) {
-    opacity: 0.45;
-  }
 }
 
 /* The site menu bar and its drop-down panel (Header.tsx): clear glass. No colour of its own,

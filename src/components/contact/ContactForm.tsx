@@ -14,6 +14,21 @@ const projectTypes = [
   'Turnkey Contracting',
 ];
 
+/** Dialling codes offered as suggestions; any other code can be typed */
+const COUNTRY_CODES = [
+  ['+974', 'Qatar'],
+  ['+971', 'UAE'],
+  ['+966', 'Saudi Arabia'],
+  ['+965', 'Kuwait'],
+  ['+973', 'Bahrain'],
+  ['+968', 'Oman'],
+  ['+91', 'India'],
+  ['+92', 'Pakistan'],
+  ['+20', 'Egypt'],
+  ['+44', 'United Kingdom'],
+  ['+1', 'USA / Canada'],
+];
+
 const inputClass =
   'w-full rounded-2xl bg-cream px-4 py-3.5 text-ink placeholder:text-ink/50 focus:outline-none focus:ring-2 focus:ring-maroon/60 transition-shadow';
 const labelClass = 'text-sm font-semibold text-ink';
@@ -49,7 +64,7 @@ export const ContactForm = ({ phoneNumber, email }: { phoneNumber: string; email
         'Hello Shah Noori, I would like to request a project consultation.',
         '',
         `Name: ${field('name')}`,
-        `Phone: +974 ${field('phone')}`,
+        `Phone: ${field('countryCode') || '+974'} ${field('phone')}`,
         `Email: ${field('email')}`,
         `Project type: ${projectType}`,
         field('details') ? `\n${field('details')}` : null,
@@ -66,6 +81,7 @@ export const ContactForm = ({ phoneNumber, email }: { phoneNumber: string; email
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: field('name'),
+          countryCode: field('countryCode'),
           phone: field('phone'),
           email: field('email'),
           projectType,
@@ -154,8 +170,26 @@ export const ContactForm = ({ phoneNumber, email }: { phoneNumber: string; email
             <div className="flex flex-col gap-2">
               <label htmlFor="phone" className={labelClass}>Phone <span className="text-rose">*</span></label>
               <div className="flex gap-1.5">
-                <span className="flex items-center rounded-2xl bg-[#EFE3D2] px-4 text-ink" aria-hidden="true">+974</span>
-                <input id="phone" name="phone" type="tel" required maxLength={20} pattern="[0-9 ]{7,15}" title="Qatar number, digits only" autoComplete="tel-national" placeholder="3300 0000" className={inputClass} />
+                {/* Starts as Qatar; the visitor can pick or type their own country's code */}
+                <input
+                  name="countryCode"
+                  type="tel"
+                  defaultValue="+974"
+                  required
+                  maxLength={5}
+                  pattern="\+[0-9]{1,4}"
+                  title="Country code, for example +974"
+                  aria-label="Country code"
+                  autoComplete="tel-country-code"
+                  list="country-codes"
+                  className="w-[5.5rem] shrink-0 rounded-2xl bg-[#EFE3D2] px-3 py-3.5 text-center text-ink focus:outline-none focus:ring-2 focus:ring-maroon/60 transition-shadow"
+                />
+                <datalist id="country-codes">
+                  {COUNTRY_CODES.map(([code, country]) => (
+                    <option key={code} value={code}>{country}</option>
+                  ))}
+                </datalist>
+                <input id="phone" name="phone" type="tel" required maxLength={20} pattern="[0-9 ]{6,15}" title="Phone number, digits only" autoComplete="tel-national" placeholder="3300 0000" className={inputClass} />
               </div>
             </div>
           </div>

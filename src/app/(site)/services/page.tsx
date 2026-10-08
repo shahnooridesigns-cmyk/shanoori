@@ -7,7 +7,8 @@ import { FaqSection } from '@/components/shared/FaqSection';
 import { CtaBanner } from '@/components/shared/CtaBanner';
 import { ChipCard, DivisionHeader, FeatureCard, Icons, MiniCard, type FeatureCardData } from '@/components/services/ServiceBlocks';
 import { BalancedGrid } from '@/components/shared/BalancedGrid';
-import { fetchServicesContent } from '@/lib/sanity/fetch';
+import { fetchAllProjects, fetchServicesContent } from '@/lib/sanity/fetch';
+import type { Category } from '@/lib/sanity/types';
 
 export const metadata: Metadata = pageMeta({
   title: 'Interior Fit-out, MEP & Civil Services in Qatar',
@@ -45,7 +46,12 @@ const FeatureCards = ({ cards }: { cards: FeatureCardData[] }) => {
 };
 
 export default async function ServicesPage() {
-  const { hero, interior, mep, civil, handover } = await fetchServicesContent();
+  const [{ hero, interior, mep, civil, handover }, projects] = await Promise.all([fetchServicesContent(), fetchAllProjects()]);
+  // Link to the projects of a kind only when there are some: the first of these categories that has any
+  const projectsLink = (...categories: Category[]) => {
+    const found = categories.find((category) => projects.some((project) => project.category === category));
+    return found ? `/projects?category=${found}` : undefined;
+  };
 
   return (
     <main className="flex-1 w-full">
@@ -64,7 +70,7 @@ export default async function ServicesPage() {
               title={interior.title}
               intro={interior.text}
               linkLabel={interior.linkLabel}
-              href="/projects?category=interior"
+              href={projectsLink('interior')}
             />
             <FeatureCards cards={interior.features} />
             <BalancedGrid count={interior.specialties.length} gap="1.25rem" className="mt-12">
@@ -81,7 +87,7 @@ export default async function ServicesPage() {
               title={mep.title}
               intro={mep.text}
               linkLabel={mep.linkLabel}
-              href="/projects?category=mechanical"
+              href={projectsLink('mechanical', 'electrical', 'plumbing')}
             />
             <FeatureCards cards={mep.features} />
           </Container>
@@ -95,7 +101,7 @@ export default async function ServicesPage() {
               title={civil.title}
               intro={civil.text}
               linkLabel={civil.linkLabel}
-              href="/projects?category=civil"
+              href={projectsLink('civil')}
             />
             <FeatureCards cards={civil.features} />
 

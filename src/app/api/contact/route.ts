@@ -62,18 +62,21 @@ const escapeHtml = (s: string) =>
 const clean = (v: unknown, max: number) => (typeof v === 'string' ? v.replace(/[\r\n]+/g, ' ').trim().slice(0, max) : '');
 const cleanMultiline = (v: unknown, max: number) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
 
-type Enquiry = { name: string; phone: string; email: string; projectType: string; details: string };
+type Enquiry = { name: string; countryCode: string; phone: string; email: string; projectType: string; details: string };
 
 const validate = (body: Record<string, unknown>): Enquiry | string => {
   const enquiry = {
     name: clean(body.name, 100),
+    // Qatar unless the visitor gave another country's code
+    countryCode: clean(body.countryCode, 5) || '+974',
     phone: clean(body.phone, 20),
     email: clean(body.email, 150),
     projectType: clean(body.projectType, 50),
     details: cleanMultiline(body.details, 2000),
   };
   if (!enquiry.name) return 'Please enter your name.';
-  if (!/^[0-9 ]{7,15}$/.test(enquiry.phone)) return 'Please enter a valid Qatar phone number.';
+  if (!/^\+[0-9]{1,4}$/.test(enquiry.countryCode)) return 'Please enter a valid country code, for example +974.';
+  if (!/^[0-9 ]{6,15}$/.test(enquiry.phone)) return 'Please enter a valid phone number.';
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(enquiry.email)) return 'Please enter a valid email address.';
   if (!PROJECT_TYPES.includes(enquiry.projectType)) return 'Please choose a project type.';
   return enquiry;
@@ -150,7 +153,7 @@ export async function POST(request: Request) {
 
   const e = {
     name: escapeHtml(enquiry.name),
-    phone: escapeHtml(`+974 ${enquiry.phone}`),
+    phone: escapeHtml(`${enquiry.countryCode} ${enquiry.phone}`),
     email: escapeHtml(enquiry.email),
     projectType: escapeHtml(enquiry.projectType),
     details: escapeHtml(enquiry.details).replace(/\n/g, '<br>'),
@@ -165,13 +168,13 @@ export async function POST(request: Request) {
       html: wrap(
         `<p style="margin:0 0 16px;font-size:16px;color:#0A0A0A">New project consultation request from the website.</p>
          <table style="width:100%;border-collapse:collapse;background:#F8F1E4;border-radius:12px">
-           ${row('Name', e.name)}${row('Phone', `<a href="tel:+974${escapeHtml(enquiry.phone.replace(/\s/g, ''))}">${e.phone}</a>`)}
+           ${row('Name', e.name)}${row('Phone', `<a href="tel:${escapeHtml(enquiry.countryCode + enquiry.phone.replace(/\s/g, ''))}">${e.phone}</a>`)}
            ${row('Email', `<a href="mailto:${e.email}">${e.email}</a>`)}${row('Project type', e.projectType)}
            ${row('Details', e.details || '<span style="color:#888">Not provided</span>')}
          </table>
          <p style="margin:16px 0 0;font-size:13px;color:#666">Reply to this email to answer ${e.name} directly.</p>`
       ),
-      text: `New enquiry from the website\n\nName: ${enquiry.name}\nPhone: +974 ${enquiry.phone}\nEmail: ${enquiry.email}\nProject type: ${enquiry.projectType}\n\n${enquiry.details}`,
+      text: `New enquiry from the website\n\nName: ${enquiry.name}\nPhone: ${enquiry.countryCode} ${enquiry.phone}\nEmail: ${enquiry.email}\nProject type: ${enquiry.projectType}\n\n${enquiry.details}`,
     });
   } catch (err) {
     console.error('Contact form: failed to send enquiry', err);

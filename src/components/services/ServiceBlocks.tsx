@@ -15,7 +15,8 @@ export const DivisionHeader = ({
   title: string;
   intro: string;
   linkLabel: string;
-  href: string;
+  /** Left out when there is nothing behind the link yet */
+  href?: string;
 }) => (
   <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
     <div className="max-w-3xl">
@@ -23,13 +24,15 @@ export const DivisionHeader = ({
       <h2 className="text-brand-gradient mt-2 w-fit text-3xl md:text-[40px] font-semibold uppercase leading-tight">{title}</h2>
       <p className="text-reveal mt-3 text-lg leading-relaxed text-ink/75">{intro}</p>
     </div>
-    <Link
-      href={href}
-      className="text-reveal tap-area group flex w-fit shrink-0 items-center gap-3 border-b-2 border-maroon pb-1 text-lg font-semibold text-maroon hover:opacity-80"
-    >
-      {linkLabel}
-      <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-    </Link>
+    {href && (
+      <Link
+        href={href}
+        className="text-reveal tap-area group flex w-fit shrink-0 items-center gap-3 border-b-2 border-maroon pb-1 text-lg font-semibold text-maroon hover:opacity-80"
+      >
+        {linkLabel}
+        <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+      </Link>
+    )}
   </div>
 );
 
