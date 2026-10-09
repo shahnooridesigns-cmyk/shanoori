@@ -5,8 +5,8 @@ import Image from 'next/image';
 import { motion, useReducedMotion, useScroll, useTransform, type MotionValue } from 'framer-motion';
 import type { Review } from '@/lib/sanity/types';
 
-/** Shown when a review has no photo of its own */
-const FALLBACK_IMAGE = '/assets/images/testimonials/note-4.webp';
+/** Shown when a review has no photo of its own: each card takes the next one, so neighbours differ */
+const FALLBACK_IMAGES = [1, 2, 3, 4].map((n) => `/assets/images/testimonials/note-${n}.webp`);
 /** How each card settles on the pile: a small turn and a nudge, so the cards under it still show */
 const REST = [
   { rotate: -4, x: -10 },
@@ -44,10 +44,10 @@ const AuthorMark = ({ review }: { review: Review }) => {
 };
 
 /** One testimonial as a photo card: picture on top, the client's words, then name and stars. */
-const NoteCard = ({ review }: { review: Review }) => (
+const NoteCard = ({ review, index }: { review: Review; index: number }) => (
   <figure className="w-[min(86vw,540px)] rounded-[22px] bg-cream p-3 shadow-[0_30px_60px_-20px_rgba(40,10,20,0.55)] md:p-4">
     <div className="relative aspect-[4/3] overflow-hidden rounded-[14px] bg-maroon/10">
-      <Image src={review.imageUrl || FALLBACK_IMAGE} alt="" fill sizes="(min-width: 768px) 540px, 86vw" className="object-cover" />
+      <Image src={review.imageUrl || FALLBACK_IMAGES[index % FALLBACK_IMAGES.length]} alt="" fill sizes="(min-width: 768px) 540px, 86vw" className="object-cover" />
     </div>
     <blockquote className="px-2 pt-5 text-base leading-snug text-ink md:px-3 md:pt-6 md:text-lg">&ldquo;{review.reviewText}&rdquo;</blockquote>
     <figcaption className="flex items-end justify-between gap-4 px-2 pb-2 pt-5 md:px-3 md:pb-3 md:pt-6">
@@ -76,7 +76,7 @@ const StackedCard = ({ review, index, count, progress }: { review: Review; index
     // The list item centres the card on the screen; the card inside it does the moving
     <li className="pointer-events-none absolute inset-0 flex items-center justify-center" style={{ zIndex: index + 1 }}>
       <motion.div className="pointer-events-auto will-change-transform" style={{ x: rest.x, y, rotate }}>
-        <NoteCard review={review} />
+        <NoteCard review={review} index={index} />
       </motion.div>
     </li>
   );
@@ -107,8 +107,8 @@ export const ClientNotes = ({ title, reviews }: { title: string; reviews: Review
       <div className="px-5 py-24 md:px-10">
         {heading}
         <ul className="mt-14 flex flex-wrap justify-center gap-8">
-          {reviews.map((review) => (
-            <li key={review._id}><NoteCard review={review} /></li>
+          {reviews.map((review, i) => (
+            <li key={review._id}><NoteCard review={review} index={i} /></li>
           ))}
         </ul>
       </div>
