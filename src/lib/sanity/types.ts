@@ -9,6 +9,8 @@ export interface ProjectSummary {
   year?: number;
   imageUrl?: string;
   clientName?: string;
+  /** The description as stored; cards show its first paragraph */
+  excerpt?: string | null;
 }
 
 export interface ProjectDetail extends ProjectSummary {

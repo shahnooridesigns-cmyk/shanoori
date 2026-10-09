@@ -8,7 +8,12 @@ import type { ProjectSummary } from '@/lib/sanity/types';
 import { ArrowUpRight } from '../shared/ui';
 import { useSwipe } from '@/lib/useSwipe';
 
-const caption = (p: ProjectSummary) => [p.title, p.location].filter(Boolean).join(' - ');
+const capitalise = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+/** The facts shown under the title when the card is hovered: kind of work, client, place, year */
+const facts = (p: ProjectSummary) =>
+  [p.category && capitalise(p.category), p.clientName !== p.title && p.clientName, p.location, p.year].filter(Boolean).join(' · ');
+/** First paragraph of the description, when it is plain text */
+const excerpt = (p: ProjectSummary) => (typeof p.excerpt === 'string' ? p.excerpt.split(/\n/)[0].trim() : '');
 
 const MAIN_SIZES = '(min-width: 768px) 45vw, 100vw';
 const SIDE_SIZES = '25vw';
@@ -166,11 +171,22 @@ export const WorkCarousel = ({ projects }: { projects: ProjectSummary[] }) => {
                 sizes={MAIN_SIZES}
                 className="object-cover transition-transform duration-700 group-hover:scale-105"
               />
-              <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 bg-gradient-to-t from-maroon/90 via-maroon/50 to-transparent p-5 pt-16">
-                <span className="text-lg text-white">{caption(current)}</span>
-                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white/90 text-ink">
-                  <ArrowUpRight className="h-4 w-4" />
-                </span>
+              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-maroon/95 via-maroon/60 to-transparent p-5 pt-16 transition-[padding] duration-500 group-hover:pt-28 group-focus-visible:pt-28">
+                <div className="flex items-end justify-between gap-4">
+                  <span className="text-lg text-white">{current.title}</span>
+                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white/90 text-ink">
+                    <ArrowUpRight className="h-4 w-4" />
+                  </span>
+                </div>
+                {/* Opens under the title on hover or keyboard focus; always open where there is no hover (touch) */}
+                <div className="grid grid-rows-[0fr] opacity-0 transition-all duration-500 ease-out group-hover:grid-rows-[1fr] group-hover:opacity-100 group-focus-visible:grid-rows-[1fr] group-focus-visible:opacity-100 [@media(hover:none)]:grid-rows-[1fr] [@media(hover:none)]:opacity-100">
+                  <div className="overflow-hidden">
+                    <p className="pt-2 text-[11px] uppercase tracking-[0.18em] text-gold md:pt-3 md:text-xs">{facts(current)}</p>
+                    {excerpt(current) && (
+                      <p className="mt-2 hidden max-w-[52ch] text-sm leading-relaxed text-white/85 line-clamp-2 md:block">{excerpt(current)}</p>
+                    )}
+                  </div>
+                </div>
               </div>
             </Link>
           </Screen>

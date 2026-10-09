@@ -8,7 +8,8 @@ const projectSummaryFields = groq`
   location,
   year,
   "imageUrl": coverImage.asset->url,
-  "clientName": client->name
+  "clientName": client->name,
+  "excerpt": description
 `;
 
 // A review shows the person's name and photo when given, and falls back to the linked
