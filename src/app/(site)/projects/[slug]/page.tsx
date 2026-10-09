@@ -35,14 +35,24 @@ const descriptionToText = (description: ProjectDetail['description']) => {
   return /^\s*sample project\b/i.test(text) ? '' : text;
 };
 
+/** The text search results show under the link: whole words only, ending on a sentence where one fits */
+const metaDescription = (text: string) => {
+  const flat = text.replace(/\s+/g, ' ').trim();
+  if (flat.length <= 158) return flat;
+  const cut = flat.slice(0, 158);
+  const sentenceEnd = cut.lastIndexOf('. ');
+  return sentenceEnd > 80 ? cut.slice(0, sentenceEnd + 1) : `${cut.slice(0, cut.lastIndexOf(' '))}…`;
+};
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const project = await fetchProjectBySlug(slug);
   if (!project) return {};
 
-  const description = descriptionToText(project.description).slice(0, 160) || undefined;
+  const description = metaDescription(descriptionToText(project.description)) || undefined;
   return pageMeta({
-    title: project.title,
+    // The name alone says little to a search engine: add what kind of work it is and where
+    title: `${project.title} | ${categoryLabel(project.category)} Project in ${project.location || 'Qatar'}`,
     description,
     path: `/projects/${encodeURIComponent(project.slug)}`,
     // A 1200x630 crop of the cover photo, the shape link previews use
