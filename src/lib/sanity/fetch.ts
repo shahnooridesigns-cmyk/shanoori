@@ -93,13 +93,7 @@ export const fetchClients = cache(
 
 export const fetchFeaturedReviews = cache(
   async (): Promise<Review[]> =>
-    ((await load(getFeaturedReviews)) ?? [])
-      .filter((review: Review) => !isSample(review._id))
-      .map((review: Review) => {
-        // A review never links to a hidden project, and links use the project's published address
-        if (!review.projectSlug || (review.projectId && isSample(review.projectId))) return { ...review, projectSlug: undefined, projectName: undefined };
-        return { ...review, projectSlug: publicSlug(review.projectSlug, review.projectName ?? '') };
-      })
+    ((await load(getFeaturedReviews)) ?? []).filter((review: Review) => !isSample(review._id))
 );
 
 /**

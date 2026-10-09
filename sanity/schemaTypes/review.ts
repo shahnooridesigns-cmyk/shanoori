@@ -64,26 +64,12 @@ export default defineType({
       title: 'Card Photo',
       type: 'image',
       description:
-        'The large photo on the testimonial card (the finished space). Landscape, at least 1200 px wide. If empty, the cover photo of the Related Project is used.',
+        'The large photo on the testimonial card (the finished space). Landscape, at least 1200 px wide. Use a photo that is not already a project cover, so the same picture does not appear twice on the site.',
       options: {
         hotspot: true,
         accept: 'image/jpeg,image/png,image/webp',
       },
       validation: imageRules({ preferShape: 'landscape', preferMinWidth: 1200 }),
-    }),
-    defineField({
-      name: 'relatedProject',
-      title: 'Related Project',
-      type: 'reference',
-      to: [{ type: 'project' }],
-      description: 'The project this review is about. The review is shown on that project page.',
-      // With a client picked, only list that client's projects
-      options: {
-        filter: ({ document }) => {
-          const clientId = (document?.client as { _ref?: string } | undefined)?._ref;
-          return clientId ? { filter: 'client._ref == $clientId', params: { clientId } } : {};
-        },
-      },
     }),
     defineField({
       name: 'featured',

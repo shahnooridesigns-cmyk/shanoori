@@ -14,7 +14,7 @@ const PLACEHOLDER_REVIEWS: Review[] = [
     clientCompany: 'Retail Fit-out Client',
     rating: 5,
     reviewText: 'The team handled design, joinery and MEP as one job. We opened on the date they promised, and the finish is exactly what we were shown.',
-    imageUrl: '/assets/images/services/interior-2-hd.webp',
+    imageUrl: '/assets/images/testimonials/note-1.webp',
   },
   {
     _id: 'placeholder-2',
@@ -22,7 +22,7 @@ const PLACEHOLDER_REVIEWS: Review[] = [
     clientCompany: 'Hospitality Client',
     rating: 5,
     reviewText: 'Clear communication from the first site visit to handover. Every detail we asked about was answered, and nothing was left unfinished.',
-    imageUrl: '/assets/images/about/story-2-hd.webp',
+    imageUrl: '/assets/images/testimonials/note-2.webp',
   },
   {
     _id: 'placeholder-3',
@@ -30,7 +30,7 @@ const PLACEHOLDER_REVIEWS: Review[] = [
     clientCompany: 'Villa Interior Client',
     rating: 5,
     reviewText: 'They took an empty shell and gave us a home. The lighting, the ceilings and the finishes all work together beautifully.',
-    imageUrl: '/assets/images/services/interior-1-hd.webp',
+    imageUrl: '/assets/images/testimonials/note-3.webp',
   },
 ];
 

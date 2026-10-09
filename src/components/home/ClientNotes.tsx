@@ -6,7 +6,7 @@ import { motion, useReducedMotion, useScroll, useTransform, type MotionValue } f
 import type { Review } from '@/lib/sanity/types';
 
 /** Shown when a review has no photo of its own */
-const FALLBACK_IMAGE = '/assets/images/services/interior-1-hd.webp';
+const FALLBACK_IMAGE = '/assets/images/testimonials/note-4.webp';
 /** How each card settles on the pile: a small turn and a nudge, so the cards under it still show */
 const REST = [
   { rotate: -4, x: -10 },
@@ -26,6 +26,23 @@ const Stars = ({ rating }: { rating: number }) => (
   </span>
 );
 
+/**
+ * Beside the name: the client's logo, drawn in the brand maroon whatever colour the file is (the
+ * logo is used as a mask), or the person's photo when the review has one. Nothing when neither.
+ */
+const AuthorMark = ({ review }: { review: Review }) => {
+  if (!review.photoUrl) return null;
+  if (!review.photoIsLogo) {
+    return (
+      <span className="relative h-11 w-11 shrink-0 overflow-hidden rounded-full bg-maroon/10 md:h-12 md:w-12">
+        <Image src={review.photoUrl} alt="" fill sizes="48px" className="object-cover" />
+      </span>
+    );
+  }
+  const mask = `url("${review.photoUrl}?w=160&fit=max&auto=format") center / contain no-repeat`;
+  return <span aria-hidden="true" className="h-12 w-12 shrink-0 bg-maroon md:h-14 md:w-14" style={{ mask, WebkitMask: mask }} />;
+};
+
 /** One testimonial as a photo card: picture on top, the client's words, then name and stars. */
 const NoteCard = ({ review }: { review: Review }) => (
   <figure className="w-[min(86vw,540px)] rounded-[22px] bg-cream p-3 shadow-[0_30px_60px_-20px_rgba(40,10,20,0.55)] md:p-4">
@@ -34,9 +51,12 @@ const NoteCard = ({ review }: { review: Review }) => (
     </div>
     <blockquote className="px-2 pt-5 text-base leading-snug text-ink md:px-3 md:pt-6 md:text-lg">&ldquo;{review.reviewText}&rdquo;</blockquote>
     <figcaption className="flex items-end justify-between gap-4 px-2 pb-2 pt-5 md:px-3 md:pb-3 md:pt-6">
-      <span>
-        <span className="block text-lg font-medium text-ink md:text-xl">{review.clientName}</span>
-        {review.clientCompany && <span className="mt-0.5 block text-sm text-ink/60">{review.clientCompany}</span>}
+      <span className="flex min-w-0 items-center gap-3">
+        <AuthorMark review={review} />
+        <span className="min-w-0">
+          <span className="block text-lg font-medium text-ink md:text-xl">{review.clientName}</span>
+          {review.clientCompany && <span className="mt-0.5 block text-sm text-ink/60">{review.clientCompany}</span>}
+        </span>
       </span>
       <Stars rating={review.rating ?? 5} />
     </figcaption>

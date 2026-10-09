@@ -39,11 +39,8 @@ export interface Review {
   photoUrl?: string;
   /** photoUrl is the client's logo (show it whole) rather than a person's photo (crop to a circle) */
   photoIsLogo?: boolean;
-  /** Large photo for the testimonial card: the review's own, else its project's cover */
+  /** Large photo for the testimonial card. Always the review's own, never a project's */
   imageUrl?: string;
-  projectId?: string;
-  projectSlug?: string;
-  projectName?: string;
 }
 
 export interface SiteSettings {

@@ -21,10 +21,7 @@ const reviewFields = groq`
   reviewText,
   "photoUrl": coalesce(clientPhoto.asset->url, client->logo.asset->url),
   "photoIsLogo": !defined(clientPhoto.asset) && defined(client->logo.asset),
-  "imageUrl": coalesce(image.asset->url, relatedProject->coverImage.asset->url),
-  "projectId": relatedProject._ref,
-  "projectSlug": relatedProject->slug.current,
-  "projectName": relatedProject->title
+  "imageUrl": image.asset->url
 `;
 
 export const getAllProjects = groq`
@@ -43,11 +40,8 @@ export const getProjectBySlug = groq`
   *[_type == "project" && slug.current == $slug][0] {
     ${projectSummaryFields},
     client->{name, "logoUrl": logo.asset->url},
-    // The review written for this project, else one from the same client with no project picked
-    "review": coalesce(
-      *[_type == "review" && relatedProject._ref == ^._id] | order(_createdAt desc)[0] { ${reviewFields} },
-      *[_type == "review" && !defined(relatedProject) && defined(client) && client._ref == ^.client._ref] | order(_createdAt desc)[0] { ${reviewFields} }
-    ),
+    // Reviews belong to a client, not a project: the page shows the newest one from this project's client
+    "review": *[_type == "review" && defined(client) && client._ref == ^.client._ref] | order(_createdAt desc)[0] { ${reviewFields} },
     description,
     gallery[] {
       _key,
