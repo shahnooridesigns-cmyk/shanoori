@@ -46,7 +46,9 @@ export const getProjectBySlug = groq`
     description,
     gallery[] {
       _key,
-      "url": asset->url
+      "url": asset->url,
+      "width": asset->metadata.dimensions.width,
+      "height": asset->metadata.dimensions.height
     }
   }
 `;

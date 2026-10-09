@@ -19,6 +19,9 @@ import { SITE_NAME, SITE_URL, isSampleProject, pageMeta } from '@/lib/seo';
 type Props = { params: Promise<{ slug: string }> };
 
 /** The schema stores plain text, but older imported documents hold Portable Text blocks. */
+/** Narrower than this, a photo looks soft when it fills the screen */
+const FEATURE_MIN_WIDTH = 1500;
+
 const descriptionToText = (description: ProjectDetail['description']) => {
   if (!description) return '';
   const text =
@@ -73,9 +76,13 @@ export default async function ProjectDetailPage({ params }: Props) {
 
   const phoneNumber = resolveWhatsAppNumber(settings, project.category);
   const description = descriptionToText(project.description);
-  const gallery = (project.gallery ?? [])
-    .filter((img): img is { _key?: string; url: string } => Boolean(img?.url))
-    .map((img, i) => ({ key: img._key ?? `${i}-${img.url}`, url: img.url }));
+  const photos = (project.gallery ?? []).filter((img): img is { _key?: string; url: string; width?: number; height?: number } => Boolean(img?.url));
+  const gallery = photos.map((img, i) => ({ key: img._key ?? `${i}-${img.url}`, url: img.url }));
+  // The photo given the whole screen: the sharpest wide one. A tall or small photo would be
+  // cropped hard or look soft at that size, so without a suitable one the section is left out.
+  const feature = photos
+    .filter((img) => (img.width ?? 0) >= FEATURE_MIN_WIDTH && (img.width ?? 0) / (img.height || 1) >= 1.2)
+    .sort((a, b) => (b.width ?? 0) * (b.height ?? 0) - (a.width ?? 0) * (a.height ?? 0))[0];
 
   const facts = [
     { label: 'Category', value: categoryLabel(project.category) },
@@ -188,6 +195,14 @@ export default async function ProjectDetailPage({ params }: Props) {
           </aside>
         </Container>
       </section>
+
+      {/* One photo across the whole screen, easing back from a slight zoom as it scrolls in.
+          overflow-clip (not hidden) keeps the zoom tied to the page's scroll. */}
+      {feature && (
+        <section className="relative h-[100svh] min-h-[480px] overflow-clip bg-black" aria-label="Featured photo">
+          <Image src={feature.url} alt={`${project.title}, featured photo`} fill sizes="100vw" className="img-settle object-cover" />
+        </section>
+      )}
 
       {/* What the client said about this project */}
       {review && (

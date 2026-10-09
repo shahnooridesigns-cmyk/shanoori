@@ -18,7 +18,7 @@ export interface ProjectDetail extends ProjectSummary {
   review?: Review | null;
   /** Plain text per the schema; older imported documents may still hold Portable Text blocks. */
   description?: string | PortableTextBlock[] | null;
-  gallery?: { _key?: string; url?: string }[] | null;
+  gallery?: { _key?: string; url?: string; width?: number; height?: number }[] | null;
 }
 
 export interface PortableTextBlock {
