@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Cabin, IBM_Plex_Sans_Arabic } from "next/font/google";
+import { Cabin, Tajawal } from "next/font/google";
 import "./globals.css";
 import { SITE_URL, pageMeta } from "@/lib/seo";
 
@@ -9,10 +9,11 @@ const cabin = Cabin({
   weight: ["400", "500", "600", "700"],
 });
 
-const arabic = IBM_Plex_Sans_Arabic({
+const arabic = Tajawal({
   variable: "--font-arabic",
   subsets: ["arabic"],
-  weight: ["400", "500", "600", "700"],
+  // Tajawal has no 600: semibold text uses its 700
+  weight: ["400", "500", "700", "800"],
 });
 
 const DESCRIPTION =

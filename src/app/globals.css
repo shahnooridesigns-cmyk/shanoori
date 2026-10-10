@@ -951,6 +951,16 @@ html[data-sn-preload="on"] {
    - Arabic letters join up, so spacing them apart (tracking) breaks the words: switched off
    - Arabic needs taller lines than Latin capitals, or marks above and below the letters clip
    - words that rise in from behind their line get more room for the same reason */
+/* The Arabic typeface leads on the Arabic site. It cannot simply follow Cabin in the list: the
+   fallback that stands in for Cabin while it loads is a system font that has Arabic letters of
+   its own, so the Arabic typeface would never be reached. */
+[dir="rtl"] {
+  font-family: var(--font-arabic), var(--font-cabin), ui-sans-serif, system-ui, sans-serif;
+}
+/* The brand name, phone numbers and other left-to-right pieces keep the Latin typeface */
+[dir="rtl"] [dir="ltr"] {
+  font-family: var(--font-cabin), var(--font-arabic), ui-sans-serif, system-ui, sans-serif;
+}
 [dir="rtl"] * {
   letter-spacing: 0 !important;
 }
