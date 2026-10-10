@@ -118,13 +118,15 @@ export default async function ProjectDetailPage({ params }: Props) {
   const kind = projectKind(project, locale);
 
   // Tells search engines what this page is: a piece of work by the company, and where it sits in the site
-  const url = `${SITE_URL}/projects/${encodeURIComponent(project.slug)}`;
+  // (in the page's own language: its address, the menu names, and the language of the text)
+  const url = `${SITE_URL}${localePath(locale, `/projects/${encodeURIComponent(project.slug)}`)}`;
   const structuredData = [
     {
       '@context': 'https://schema.org',
       '@type': 'CreativeWork',
       name: project.title,
       url,
+      inLanguage: locale,
       ...(description ? { description: description.slice(0, 300) } : {}),
       ...(project.imageUrl ? { image: [project.imageUrl, ...gallery.slice(0, 5).map((img) => img.url)] } : {}),
       ...(project.location ? { locationCreated: { '@type': 'Place', name: project.location } } : {}),
@@ -136,8 +138,8 @@ export default async function ProjectDetailPage({ params }: Props) {
       '@context': 'https://schema.org',
       '@type': 'BreadcrumbList',
       itemListElement: [
-        { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_URL },
-        { '@type': 'ListItem', position: 2, name: 'Projects', item: `${SITE_URL}/projects` },
+        { '@type': 'ListItem', position: 1, name: t('nav.home'), item: `${SITE_URL}${localePath(locale, '/')}` },
+        { '@type': 'ListItem', position: 2, name: t('nav.projects'), item: `${SITE_URL}${localePath(locale, '/projects')}` },
         { '@type': 'ListItem', position: 3, name: project.title, item: url },
       ],
     },
