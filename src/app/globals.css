@@ -964,7 +964,8 @@ html[data-sn-preload="on"] {
 [dir="rtl"] * {
   letter-spacing: 0 !important;
 }
-[dir="rtl"] :is(h1, h2, h3, h4) {
+/* (not the brand wordmark, a left-to-right heading that sits on the edge of its photo) */
+[dir="rtl"] :is(h1, h2, h3, h4):not([dir="ltr"]) {
   line-height: 1.35;
 }
 [dir="rtl"] .rise-word {
