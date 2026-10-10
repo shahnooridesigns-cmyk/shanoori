@@ -69,8 +69,10 @@ export const TrustedBy = async () => {
           </ul>
         </Container>
       ) : (
-        // Reduced motion: no sliding, the line scrolls sideways by hand instead
-        <div className="relative mt-10 overflow-hidden motion-reduce:overflow-x-auto md:mt-12 md:[mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
+        // Reduced motion: no sliding, the line scrolls sideways by hand instead.
+        // Left to right in both languages: the strip is wider than the screen and scrolls leftwards;
+        // in a right-to-left box it would start from its far end, with the logos off screen.
+        <div dir="ltr" className="relative mt-10 overflow-hidden motion-reduce:overflow-x-auto md:mt-12 md:[mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
           <Row clients={clients} />
         </div>
       )}
