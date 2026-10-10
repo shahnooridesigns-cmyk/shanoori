@@ -25,3 +25,7 @@ export const resolveContact = (settings: SiteSettings | null) => ({
   email: settings?.email || FALLBACK_CONTACT.email,
   whatsapp: resolveWhatsAppNumber(settings),
 });
+
+/** A wa.me link that opens a chat with the message already typed */
+export const whatsAppHref = (phoneNumber: string | undefined, message: string) =>
+  `https://wa.me/${toWhatsAppDigits(phoneNumber) || WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;

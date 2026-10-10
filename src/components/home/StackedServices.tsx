@@ -2,7 +2,7 @@
 
 import React, { useRef } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
+import { LocaleLink as Link } from '@/components/shared/LocaleProvider';
 import { motion, useReducedMotion, useScroll, useTransform, type MotionValue } from 'framer-motion';
 import type { Division } from '@/lib/services';
 import { ArrowUpRight } from '../shared/ui';

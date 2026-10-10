@@ -1,5 +1,5 @@
 import React from 'react';
-import Link from 'next/link';
+import { LocaleLink as Link } from '@/components/shared/LocaleProvider';
 
 /** "◆ About Us" style eyebrow label used at the top of most sections: a small diamond that turns over now and then. */
 export const SectionLabel = ({

@@ -1,9 +1,12 @@
+import { T } from '@/components/shared/T';
+import { tr } from '@/lib/content/ui';
+import { getLocale } from '@/lib/locale.server';
 import { RiseText } from '@/components/shared/RiseText';
+import { metaFor } from '@/lib/meta.server';
 import React from 'react';
 import type { Metadata } from 'next';
-import { pageMeta } from '@/lib/seo';
 import Image from 'next/image';
-import Link from 'next/link';
+import { LocaleLink as Link } from '@/components/shared/LocaleProvider';
 import { Container } from '@/components/shared/Container';
 import { ArrowLink, ArrowUpRight, SectionLabel } from '@/components/shared/ui';
 import { ProjectsGrid } from '@/components/projects/ProjectsGrid';
@@ -12,24 +15,20 @@ import { CountUp } from '@/components/shared/CountUp';
 import { projectKind } from '@/lib/categories';
 import { fetchAllProjects, fetchFeaturedProjects, fetchProjectsContent } from '@/lib/sanity/fetch';
 
-export const metadata: Metadata = pageMeta({
-  title: 'Projects | Interior & Fit-out Work in Qatar',
-  description:
-    'Interior fit-out, MEP and civil projects completed by Shah Noori across Qatar: offices, shops, cafes, villas and more.',
-  path: '/projects',
-});
+export const generateMetadata = (): Metadata => metaFor('projects', '/projects');
 
 export default async function ProjectsPage() {
   const [projects, featured, content] = await Promise.all([fetchAllProjects(), fetchFeaturedProjects(), fetchProjectsContent()]);
   const spotlight = featured[0] ?? projects[0];
+  const locale = getLocale();
   const categoryCount = new Set(projects.map((p) => p.spaceType || p.category)).size;
   const years = projects.map((p) => p.year).filter((y): y is number => typeof y === 'number');
   const since = years.length ? Math.min(...years) : undefined;
 
   const stats = [
-    { value: String(projects.length).padStart(2, '0'), label: 'Projects showcased' },
-    { value: String(categoryCount).padStart(2, '0'), label: 'Types of space' },
-    ...(since ? [{ value: String(since), label: 'Portfolio since' }] : []),
+    { value: String(projects.length).padStart(2, '0'), label: tr(locale, 'projects.statShown') },
+    { value: String(categoryCount).padStart(2, '0'), label: tr(locale, 'projects.statTypes') },
+    ...(since ? [{ value: String(since), label: tr(locale, 'projects.statSince') }] : []),
   ];
 
   return (
@@ -42,7 +41,7 @@ export default async function ProjectsPage() {
         <div className="absolute inset-0 bg-gradient-to-r from-maroon via-maroon/85 to-maroon/40" aria-hidden="true" />
         <Container className="relative flex min-h-[600px] flex-col justify-end gap-10 pt-36 pb-16">
           <div className="hero-in">
-            <SectionLabel tone="gold">Projects</SectionLabel>
+            <SectionLabel tone="gold"><T k="label.projects" /></SectionLabel>
           </div>
           <h1 className="max-w-4xl text-5xl sm:text-6xl md:text-8xl font-medium leading-[0.95] text-gold">
             <RiseText text={content.hero.heading} />
@@ -80,16 +79,16 @@ export default async function ProjectsPage() {
               </div>
               <div className="flex flex-col justify-between gap-10 p-8 md:p-12">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.25em] text-gold/70">Featured Project</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.25em] text-gold/70"><T k="projects.featured" /></p>
                   <h2 className="mt-5 text-4xl md:text-5xl font-semibold leading-tight text-gold">{spotlight.title}</h2>
                   {spotlight.location && <p className="mt-3 text-lg text-white/75">{spotlight.location}</p>}
                 </div>
                 <div className="flex items-end justify-between gap-6">
                   <dl className="grid grid-cols-2 gap-x-10 gap-y-4 text-white">
                     {[
-                      { label: 'Category', value: projectKind(spotlight) },
-                      { label: 'Client', value: spotlight.clientName },
-                      { label: 'Year', value: spotlight.year?.toString() },
+                      { label: tr(locale, 'fact.category'), value: projectKind(spotlight, locale) },
+                      { label: tr(locale, 'fact.client'), value: spotlight.clientName },
+                      { label: tr(locale, 'fact.year'), value: spotlight.year?.toString() },
                     ]
                       .filter((f) => f.value)
                       .map((f) => (

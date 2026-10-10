@@ -1,11 +1,14 @@
+import { T } from '@/components/shared/T';
+import { tr } from '@/lib/content/ui';
+import { getLocale } from '@/lib/locale.server';
 import { RiseText, wordCount } from '@/components/shared/RiseText';
+import { metaFor } from '@/lib/meta.server';
 import React from 'react';
 import type { Metadata } from 'next';
-import { pageMeta } from '@/lib/seo';
 import { Container } from '@/components/shared/Container';
 import { SectionLabel } from '@/components/shared/ui';
 import { ContactForm } from '@/components/contact/ContactForm';
-import { whatsAppHref } from '@/components/shared/WhatsAppButton';
+import { whatsAppHref } from '@/lib/constants';
 import { FaqSection } from '@/components/shared/FaqSection';
 import { CountUp } from '@/components/shared/CountUp';
 import { CtaBanner } from '@/components/shared/CtaBanner';
@@ -13,17 +16,15 @@ import { BalancedGrid } from '@/components/shared/BalancedGrid';
 import { resolveContact, toTelHref } from '@/lib/constants';
 import { fetchContactContent, fetchSiteSettings } from '@/lib/sanity/fetch';
 
-export const metadata: Metadata = pageMeta({
-  title: 'Contact | Fit-out Contractor in Doha, Qatar',
-  description:
-    'Request a project consultation with Shah Noori: interior fit-out, MEP and civil works in Doha, Qatar. Call, WhatsApp or send us a message.',
-  path: '/contact',
-});
+export const generateMetadata = (): Metadata => metaFor('contact', '/contact');
 
 export default async function ContactPage() {
   const [settings, { hero, form, location, whatsapp: chat }] = await Promise.all([fetchSiteSettings(), fetchContactContent()]);
-  const { address, phone, email, whatsapp } = resolveContact(settings);
-  const mapsQuery = encodeURIComponent(address);
+  const { address: storedAddress, phone, email, whatsapp } = resolveContact(settings);
+  const locale = getLocale();
+  // The map is always searched with the stored address; what is shown follows the language
+  const mapsQuery = encodeURIComponent(storedAddress);
+  const address = settings?.address?.trim() ? storedAddress : tr(locale, 'footer.address');
   const displayPhone = `+${whatsapp.slice(0, 3)} ${whatsapp.slice(3, 7)} ${whatsapp.slice(7)}`.trim();
 
   return (
@@ -32,7 +33,7 @@ export default async function ContactPage() {
       <section className="bg-brand-gradient pt-32 pb-20">
         <Container>
           <div className="hero-in">
-            <SectionLabel tone="gold">Contact Us</SectionLabel>
+            <SectionLabel tone="gold"><T k="label.contact" /></SectionLabel>
           </div>
           <h1 className="mt-8 text-center text-4xl sm:text-5xl md:text-6xl font-semibold leading-tight text-white">
             <RiseText text={hero.heading} /> <RiseText text={hero.highlight} start={wordCount(hero.heading)} className="text-[#FFE59E]" />
@@ -68,7 +69,7 @@ export default async function ContactPage() {
           <div className="mt-12 grid gap-5 lg:grid-cols-[1.25fr_1fr]">
             <div className="card-reveal overflow-hidden rounded-[32px] bg-white">
               <iframe
-                title="Shah Noori location map"
+                title={tr(locale, 'contact.mapTitle')}
                 src={`https://www.google.com/maps?q=${mapsQuery}&output=embed`}
                 className="h-80 w-full border-0"
                 loading="lazy"
@@ -98,14 +99,14 @@ export default async function ContactPage() {
                   </div>
                 </div>
                 <div className="flex flex-wrap items-center justify-between gap-3 bg-cream px-8 py-4">
-                  <a href={toTelHref(phone)} className="tap-area text-sm text-ink/80 hover:text-ink">{phone}</a>
+                  <a href={toTelHref(phone)} dir="ltr" className="tap-area text-sm text-ink/80 hover:text-ink">{phone}</a>
                   <a
                     href={`https://www.google.com/maps/search/?api=1&query=${mapsQuery}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="rounded-full bg-maroon px-5 py-3 text-sm font-semibold text-white hover:bg-[#6d1a3a]"
                   >
-                    Map: Find Our Location →
+                    {tr(locale, 'contact.mapLink')} <span aria-hidden="true" className="inline-block rtl:-scale-x-100">→</span>
                   </a>
                 </div>
               </div>
@@ -121,12 +122,12 @@ export default async function ContactPage() {
                 <h3 className="mt-4 text-3xl font-semibold text-ink">{chat.heading}</h3>
                 <p className="mt-3 text-ink/75">{chat.text}</p>
                 <a
-                  href={whatsAppHref(whatsapp, 'Hello Shah Noori, I would like to discuss a project.')}
+                  href={whatsAppHref(whatsapp, tr(locale, 'whatsapp.discuss'))}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="mt-6 flex items-center justify-center gap-3 rounded-full bg-maroon px-6 py-3.5 font-semibold text-white hover:bg-[#6d1a3a]"
                 >
-                  {displayPhone} (Open WhatsApp)
+                  <span dir="ltr">{displayPhone}</span> {tr(locale, 'contact.openWhatsapp')}
                 </a>
               </div>
             </div>

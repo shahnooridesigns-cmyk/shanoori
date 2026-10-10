@@ -4,7 +4,10 @@ import React, { Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSearchParams } from 'next/navigation';
 import type { ProjectSummary } from '@/lib/sanity/types';
-import { services, spaceTypes } from '@/lib/categories';
+import { serviceLabel, services, spaceTypeLabel, spaceTypes } from '@/lib/categories';
+import { localePath } from '@/lib/locale';
+import { T } from '../shared/T';
+import { useLocale, useT } from '../shared/LocaleProvider';
 import { ProjectCard } from './ProjectCard';
 
 interface ProjectsGridProps {
@@ -56,6 +59,9 @@ const Chip = ({
 
 function ProjectsGridInner({ initialProjects }: ProjectsGridProps) {
   const searchParams = useSearchParams();
+  const locale = useLocale();
+  const t = useT();
+  const base = localePath(locale, '/projects');
 
   // Two filters that work together: the service (?service=mep) and the kind of place (?type=retail).
   // Links from the Services page still arrive as ?category=interior and pick that service.
@@ -73,14 +79,14 @@ function ProjectsGridInner({ initialProjects }: ProjectsGridProps) {
     return acc;
   }, {});
   // Only kinds of place that have projects get a button
-  const typeFilters = [{ label: 'All', value: 'all', count: ofService.length }].concat(
-    spaceTypes.filter((t) => typeCounts[t.value]).map((t) => ({ ...t, count: typeCounts[t.value] }))
+  const typeFilters = [{ label: t('projects.all'), value: 'all', count: ofService.length }].concat(
+    spaceTypes.filter((s) => typeCounts[s.value]).map((s) => ({ label: spaceTypeLabel(s.value, locale), value: s.value, count: typeCounts[s.value] }))
   );
-  const activeType = typeFilters.some((t) => t.value === typeParam) ? typeParam! : 'all';
+  const activeType = typeFilters.some((f) => f.value === typeParam) ? typeParam! : 'all';
 
   const ofType = activeType === 'all' ? initialProjects : initialProjects.filter((p) => p.spaceType === activeType);
-  const serviceFilters = [{ label: 'All', value: 'all', count: ofType.length }].concat(
-    services.map((sv) => ({ label: sv.label, value: sv.value, count: ofType.filter((p) => inService(p, sv.value)).length }))
+  const serviceFilters = [{ label: t('projects.all'), value: 'all', count: ofType.length }].concat(
+    services.map((sv) => ({ label: serviceLabel(sv.value, locale), value: sv.value, count: ofType.filter((p) => inService(p, sv.value)).length }))
   );
 
   const setFilters = (service: string, type: string) => {
@@ -90,7 +96,7 @@ function ProjectsGridInner({ initialProjects }: ProjectsGridProps) {
     if (service !== 'all') params.set('service', service);
     if (type !== 'all') params.set('type', type);
     const query = params.toString();
-    window.history.pushState(null, '', query ? `/projects?${query}` : '/projects');
+    window.history.pushState(null, '', query ? `${base}?${query}` : base);
   };
 
   const filteredProjects = ofService.filter((p) => activeType === 'all' || p.spaceType === activeType);
@@ -102,8 +108,8 @@ function ProjectsGridInner({ initialProjects }: ProjectsGridProps) {
         <div className="absolute inset-0 bg-beige/85 backdrop-blur-md [mask-image:linear-gradient(to_bottom,black_70%,transparent)]" aria-hidden="true" />
         <div className="relative flex flex-col gap-3">
           {[
-            { name: 'Space', group: 'type', label: 'Filter projects by type of space', items: typeFilters, active: activeType, pick: (v: string) => setFilters(activeService, v) },
-            { name: 'Service', group: 'service', label: 'Filter projects by service', items: serviceFilters, active: activeService, pick: (v: string) => setFilters(v, activeType) },
+            { name: t('projects.space'), group: 'type', label: t('projects.filterSpace'), items: typeFilters, active: activeType, pick: (v: string) => setFilters(activeService, v) },
+            { name: t('projects.service'), group: 'service', label: t('projects.filterService'), items: serviceFilters, active: activeService, pick: (v: string) => setFilters(v, activeType) },
           ].map((row) => (
             <div key={row.group} className="flex items-center gap-3">
               <span className="w-14 shrink-0 text-[11px] font-semibold uppercase tracking-[0.18em] text-maroon/60 md:w-16 md:text-xs">{row.name}</span>
@@ -113,8 +119,8 @@ function ProjectsGridInner({ initialProjects }: ProjectsGridProps) {
                 ))}
               </div>
               {row.group === 'type' && (
-                <p className="ml-auto hidden shrink-0 text-sm text-ink/60 lg:block" aria-live="polite">
-                  Showing {filteredProjects.length} {filteredProjects.length === 1 ? 'project' : 'projects'}
+                <p className="ms-auto hidden shrink-0 text-sm text-ink/60 lg:block" aria-live="polite">
+                  {t('projects.showing')} {filteredProjects.length} {filteredProjects.length === 1 ? t('projects.one') : t('projects.many')}
                 </p>
               )}
             </div>
@@ -148,9 +154,9 @@ function ProjectsGridInner({ initialProjects }: ProjectsGridProps) {
         </motion.ul>
       ) : (
         <div className="rounded-[28px] border border-dashed border-maroon/30 py-24 text-center">
-          <p className="text-2xl text-maroon">No projects match these filters yet</p>
+          <p className="text-2xl text-maroon">{t('projects.none')}</p>
           <button type="button" onClick={() => setFilters('all', 'all')} className="mt-4 text-maroon underline underline-offset-4 hover:opacity-75">
-            View all projects
+            {t('projects.viewAll')}
           </button>
         </div>
       )}
@@ -160,7 +166,7 @@ function ProjectsGridInner({ initialProjects }: ProjectsGridProps) {
 
 export function ProjectsGrid(props: ProjectsGridProps) {
   return (
-    <Suspense fallback={<div className="py-20 text-center text-ink/60">Loading projects…</div>}>
+    <Suspense fallback={<div className="py-20 text-center text-ink/60"><T k="projects.loading" /></div>}>
       <ProjectsGridInner {...props} />
     </Suspense>
   );

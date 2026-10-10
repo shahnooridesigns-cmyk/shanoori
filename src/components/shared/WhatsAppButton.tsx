@@ -1,5 +1,8 @@
+"use client";
+
 import React from 'react';
-import { WHATSAPP_NUMBER, toWhatsAppDigits } from '@/lib/constants';
+import { WHATSAPP_NUMBER, whatsAppHref } from '@/lib/constants';
+import { useT } from './LocaleProvider';
 
 interface WhatsAppButtonProps {
   variant?: 'default' | 'floating';
@@ -21,16 +24,14 @@ const WhatsAppIcon = ({ size }: { size: number }) => (
   </svg>
 );
 
-export const whatsAppHref = (phoneNumber: string | undefined, message: string) =>
-  `https://wa.me/${toWhatsAppDigits(phoneNumber) || WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
-
 export const WhatsAppButton = ({
   variant = 'default',
-  message = 'Hello Shah Noori, I would like to make an enquiry.',
+  message,
   className = '',
   phoneNumber = WHATSAPP_NUMBER
 }: WhatsAppButtonProps) => {
-  const href = whatsAppHref(phoneNumber, message);
+  const t = useT();
+  const href = whatsAppHref(phoneNumber, message ?? t('whatsapp.default'));
 
   if (variant === 'floating') {
     return (
@@ -38,8 +39,8 @@ export const WhatsAppButton = ({
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        className={`fixed bottom-6 right-5 z-50 flex h-12 w-12 items-center md:right-6 md:h-14 md:w-14 justify-center rounded-full border border-white/40 bg-green-500/60 text-white shadow-lg backdrop-blur-md transition-all hover:scale-110 hover:bg-green-500/80 focus:outline-none focus-visible:ring-4 focus-visible:ring-green-300 ${className}`}
-        aria-label="Chat on WhatsApp"
+        className={`fixed bottom-6 end-5 z-50 flex h-12 w-12 items-center md:end-6 md:h-14 md:w-14 justify-center rounded-full border border-white/40 bg-green-500/60 text-white shadow-lg backdrop-blur-md transition-all hover:scale-110 hover:bg-green-500/80 focus:outline-none focus-visible:ring-4 focus-visible:ring-green-300 ${className}`}
+        aria-label={t('action.whatsappChat')}
       >
         <span className="scale-[0.86] md:scale-100"><WhatsAppIcon size={28} /></span>
       </a>
@@ -54,7 +55,7 @@ export const WhatsAppButton = ({
       className={`inline-flex items-center gap-2 rounded-full bg-green-500 px-6 py-3 font-medium text-white transition-colors hover:bg-green-600 focus:outline-none focus-visible:ring-4 focus-visible:ring-green-300 ${className}`}
     >
       <WhatsAppIcon size={20} />
-      Enquire on WhatsApp
+      {t('action.whatsapp')}
     </a>
   );
 };

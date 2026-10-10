@@ -8,7 +8,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-cabin), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-cabin), var(--font-arabic), ui-sans-serif, system-ui, sans-serif;
 
   /* Brand palette (sampled from the Figma designs) */
   --color-maroon: #57132D; /* Dark maroon: buttons, headings, gradient start */
@@ -748,7 +748,8 @@ html[data-sn-preload="on"] {
   gap: 0.9rem;
   overflow: hidden;
   border-radius: 999px;
-  padding: calc(0.4rem + 1px) calc(0.4rem + 1px) calc(0.4rem + 1px) calc(1.35rem + 1px);
+  padding-block: calc(0.4rem + 1px);
+  padding-inline: calc(1.35rem + 1px) calc(0.4rem + 1px);
   font-size: 1rem;
   font-weight: 500;
   line-height: 1.2;
@@ -793,7 +794,7 @@ html[data-sn-preload="on"] {
   position: absolute;
   z-index: -1;
   top: 50%;
-  right: 0.4rem;
+  inset-inline-end: 0.4rem;
   width: 2.5rem;
   height: 2.5rem;
   border-radius: 50%;
@@ -866,7 +867,8 @@ html[data-sn-preload="on"] {
   align-items: center;
   gap: 0.6rem;
   border-radius: 999px;
-  padding: 0.5rem 0.55rem 0.5rem 1.15rem;
+  padding-block: 0.5rem;
+  padding-inline: 1.15rem 0.55rem;
   font-size: 0.9rem;
   font-weight: 500;
   color: var(--color-maroon);
@@ -942,4 +944,45 @@ html[data-sn-preload="on"] {
 }
 @media (prefers-reduced-motion: reduce) {
   .filter-chip { transition: none; }
+}
+
+/* The Arabic site (the wrapper in SiteShell carries dir="rtl"). Layout flips by itself because
+   the components use start/end spacing; these rules cover what direction alone does not:
+   - Arabic letters join up, so spacing them apart (tracking) breaks the words: switched off
+   - Arabic needs taller lines than Latin capitals, or marks above and below the letters clip
+   - words that rise in from behind their line get more room for the same reason */
+[dir="rtl"] * {
+  letter-spacing: 0 !important;
+}
+[dir="rtl"] :is(h1, h2, h3, h4) {
+  line-height: 1.35;
+}
+[dir="rtl"] .rise-word {
+  padding-block: 0.3em;
+  margin-block: -0.3em;
+}
+/* Latin text kept inside an Arabic page (the brand name, phone numbers, client names) */
+[dir="rtl"] [dir="ltr"] {
+  unicode-bidi: isolate;
+}
+
+/* Right to left, "forward" points the other way: the arrow in a pill button is mirrored and
+   turns the opposite way on hover, and the menu underline grows from the right. */
+[dir="rtl"] .btn-pill-arrow svg {
+  scale: -1 1;
+}
+[dir="rtl"] .btn-pill:hover .btn-pill-arrow,
+[dir="rtl"] .btn-pill:focus-visible .btn-pill-arrow {
+  rotate: -45deg;
+}
+[dir="rtl"] .nav-underline::after {
+  transform-origin: right;
+}
+/* Section labels slide in from the side the text starts on */
+@keyframes label-in-rtl {
+  from { opacity: 0; transform: translateX(22px); }
+  to { opacity: 1; transform: none; }
+}
+[dir="rtl"] .label-reveal {
+  animation-name: label-in-rtl;
 }

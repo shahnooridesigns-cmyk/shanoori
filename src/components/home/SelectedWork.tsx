@@ -1,3 +1,4 @@
+import { T } from '@/components/shared/T';
 import React from 'react';
 import { Container } from '../shared/Container';
 import { ArrowLink, SectionLabel } from '../shared/ui';
@@ -12,7 +13,7 @@ export const SelectedWork = async () => {
       <Container>
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <div className="flex flex-col gap-4">
-            <SectionLabel>Projects</SectionLabel>
+            <SectionLabel><T k="label.projects" /></SectionLabel>
             <h2 className="text-brand-gradient w-fit whitespace-pre-line text-5xl md:text-7xl font-medium leading-none">{work.heading}</h2>
           </div>
           <p className="text-reveal max-w-xs text-lg leading-snug text-maroon">{work.text}</p>

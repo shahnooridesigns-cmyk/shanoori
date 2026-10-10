@@ -1,6 +1,8 @@
+import { tr } from '@/lib/content/ui';
+import { getLocale } from '@/lib/locale.server';
 import React from 'react';
+import { metaFor } from '@/lib/meta.server';
 import type { Metadata } from 'next';
-import { pageMeta } from '@/lib/seo';
 import { Container } from '@/components/shared/Container';
 import { PageHero } from '@/components/shared/PageHero';
 import { FaqSection } from '@/components/shared/FaqSection';
@@ -10,12 +12,7 @@ import { BalancedGrid } from '@/components/shared/BalancedGrid';
 import { fetchAllProjects, fetchServicesContent } from '@/lib/sanity/fetch';
 import type { Category } from '@/lib/sanity/types';
 
-export const metadata: Metadata = pageMeta({
-  title: 'Interior Fit-out, MEP & Civil Services in Qatar',
-  description:
-    'Interior fit-out, MEP (mechanical, electrical, plumbing) and civil construction services in Doha, Qatar, delivered end to end by one team.',
-  path: '/services',
-});
+export const generateMetadata = (): Metadata => metaFor('services', '/services');
 
 /** Icon picked in Studio (SERVICE_ICONS in lib/content/defaults.ts) */
 const icon = (name: string) => Icons[name as keyof typeof Icons] ?? Icons.grid;
@@ -56,7 +53,7 @@ export default async function ServicesPage() {
   return (
     <main className="flex-1 w-full">
       <PageHero
-        label="Our Services"
+        label={tr(getLocale(), 'label.ourServices')}
         image={hero.image}
         title={hero.title}
       />

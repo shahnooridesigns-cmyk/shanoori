@@ -1,5 +1,6 @@
 "use client";
 
+import { T } from '@/components/shared/T';
 import React, { useRef } from 'react';
 import { motion, useInView, useReducedMotion } from 'framer-motion';
 import { Container } from '../shared/Container';
@@ -72,7 +73,7 @@ export const ServicesReveal = ({
       <Container className="relative grid gap-16 lg:grid-cols-[1fr_1.1fr]">
         <div className="lg:sticky lg:top-32 lg:self-start">
           <motion.div variants={rise} custom={0} initial={false} animate={state}>
-            <SectionLabel tone="gold">Services</SectionLabel>
+            <SectionLabel tone="gold"><T k="label.services" /></SectionLabel>
           </motion.div>
           {/* The rise goes on a wrapper: section headings already carry the site's own scroll
               reveal (.scroll-titles in globals.css), which would override it on the h2 itself */}

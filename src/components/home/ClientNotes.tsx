@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from '../shared/LocaleProvider';
 import React, { useRef } from 'react';
 import Image from 'next/image';
 import { motion, useReducedMotion, useScroll, useTransform, type MotionValue } from 'framer-motion';
@@ -16,15 +17,18 @@ const REST = [
   { rotate: -5, x: -12 },
 ];
 
-const Stars = ({ rating }: { rating: number }) => (
-  <span className="flex shrink-0 gap-1 text-maroon" role="img" aria-label={`${rating} out of 5 stars`}>
+const Stars = ({ rating }: { rating: number }) => {
+  const t = useT();
+  return (
+  <span className="flex shrink-0 gap-1 text-maroon" role="img" aria-label={`${rating} ${t('stars.outOf')}`}>
     {Array.from({ length: 5 }, (_, i) => (
       <svg key={i} viewBox="0 0 24 24" className={`h-4 w-4 md:h-5 md:w-5 ${i < rating ? '' : 'opacity-20'}`} fill="currentColor" aria-hidden="true">
         <path d="M12 2.5l2.9 6.2 6.6.8-4.9 4.6 1.3 6.6L12 17.4 6.1 20.7l1.3-6.6L2.5 9.5l6.6-.8L12 2.5z" />
       </svg>
     ))}
   </span>
-);
+  );
+};
 
 /**
  * Beside the name: the client's logo, drawn in the brand maroon whatever colour the file is (the

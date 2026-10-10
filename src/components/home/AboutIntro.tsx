@@ -1,3 +1,4 @@
+import { T } from '@/components/shared/T';
 import React from 'react';
 import { Container } from '../shared/Container';
 import { SectionLabel } from '../shared/ui';
@@ -19,12 +20,12 @@ export const AboutIntro = async () => {
   return (
   <section className="bg-beige pt-24 md:pt-32">
     <Container className="grid gap-10 lg:grid-cols-[250px_1fr]">
-      <SectionLabel className="pt-2">About Us</SectionLabel>
+      <SectionLabel className="pt-2"><T k="label.about" /></SectionLabel>
       <div>
         <p className="text-reveal max-w-3xl text-3xl md:text-[40px] leading-[1.1] text-ink">{about.text}</p>
         <dl className={`mt-16 md:mt-24 grid gap-x-8 gap-y-14 ${layout.grid}`}>
           {about.stats.map((stat, i) => (
-            <div key={i} className="flex flex-col items-start gap-2 text-left">
+            <div key={i} className="flex flex-col items-start gap-2 text-start">
               <dt className="order-2 text-base md:text-lg text-ink/90">{stat.label}</dt>
               <dd className={`order-1 font-medium leading-none text-ink ${layout.number}`}><CountUp value={stat.value} /></dd>
             </div>

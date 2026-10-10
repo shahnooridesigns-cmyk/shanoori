@@ -1,7 +1,7 @@
 import React from 'react';
 import type { Metadata } from 'next';
 import Image from 'next/image';
-import Link from 'next/link';
+import { LocaleLink as Link } from '@/components/shared/LocaleProvider';
 import { notFound, permanentRedirect } from 'next/navigation';
 import { Container } from '@/components/shared/Container';
 import { WhatsAppButton } from '@/components/shared/WhatsAppButton';
@@ -14,6 +14,9 @@ import { ProjectGallery } from '@/components/projects/ProjectGallery';
 import { ProjectCard } from '@/components/projects/ProjectCard';
 import { RiseText } from '@/components/shared/RiseText';
 import { categoryLabel, projectKind } from '@/lib/categories';
+import { tr, type UiKey } from '@/lib/content/ui';
+import { localePath } from '@/lib/locale';
+import { getLocale } from '@/lib/locale.server';
 import { SITE_NAME, SITE_URL, isSampleProject, pageMeta } from '@/lib/seo';
 
 type Props = { params: Promise<{ slug: string }> };
@@ -49,10 +52,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const project = await fetchProjectBySlug(slug);
   if (!project) return {};
 
+  const locale = getLocale();
   const description = metaDescription(descriptionToText(project.description)) || undefined;
   return pageMeta({
     // The name alone says little to a search engine: add what kind of work it is and where
-    title: `${project.title} | ${categoryLabel(project.category)} Project in ${project.location || 'Qatar'}`,
+    title: `${project.title} | ${projectKind(project, locale)} · ${tr(locale, 'project.metaKind')} ${project.location || tr(locale, 'project.qatar')}`,
+    locale,
     description,
     path: `/projects/${encodeURIComponent(project.slug)}`,
     // A 1200x630 crop of the cover photo, the shape link previews use
@@ -62,6 +67,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ProjectDetailPage({ params }: Props) {
+  const locale = getLocale();
   const { slug } = await params;
 
   const [project, settings, all] = await Promise.all([
@@ -81,9 +87,10 @@ export default async function ProjectDetailPage({ params }: Props) {
     // Not valid encoding: compare as given
   }
   if (asked !== project.slug) {
-    permanentRedirect(`/projects/${encodeURIComponent(project.slug)}`);
+    permanentRedirect(localePath(locale, `/projects/${encodeURIComponent(project.slug)}`));
   }
 
+  const t = (key: UiKey) => tr(locale, key);
   const phoneNumber = resolveWhatsAppNumber(settings, project.category);
   const description = descriptionToText(project.description);
   const photos = (project.gallery ?? []).filter((img): img is { _key?: string; url: string; width?: number; height?: number } => Boolean(img?.url));
@@ -95,10 +102,10 @@ export default async function ProjectDetailPage({ params }: Props) {
     .sort((a, b) => (b.width ?? 0) * (b.height ?? 0) - (a.width ?? 0) * (a.height ?? 0))[0];
 
   const facts = [
-    { label: 'Category', value: projectKind(project) },
-    { label: 'Client', value: project.client?.name, logoUrl: project.client?.logoUrl },
-    { label: 'Location', value: project.location },
-    { label: 'Year', value: project.year?.toString() },
+    { label: t('fact.category'), value: projectKind(project, locale) },
+    { label: t('fact.client'), value: project.client?.name, logoUrl: project.client?.logoUrl },
+    { label: t('fact.location'), value: project.location },
+    { label: t('fact.year'), value: project.year?.toString() },
   ].filter((f): f is { label: string; value: string; logoUrl?: string } => Boolean(f.value));
   const review = project.review;
 
@@ -108,6 +115,7 @@ export default async function ProjectDetailPage({ params }: Props) {
   const next = all.length > 1 && index !== -1 ? all[(index + 1) % all.length] : undefined;
   const related = all.filter((p) => p._id !== project._id && p.category === project.category).slice(0, 3);
   const discipline = categoryLabel(project.category);
+  const kind = projectKind(project, locale);
 
   // Tells search engines what this page is: a piece of work by the company, and where it sits in the site
   const url = `${SITE_URL}/projects/${encodeURIComponent(project.slug)}`;
@@ -151,8 +159,8 @@ export default async function ProjectDetailPage({ params }: Props) {
         <div className="absolute inset-0 bg-gradient-to-t from-maroon via-maroon/40 to-black/40" aria-hidden="true" />
 
         <Container className="relative flex flex-1 flex-col justify-end pt-32 pb-10">
-          <nav aria-label="Breadcrumb" className="hero-in flex items-center gap-2 text-sm text-gold/80">
-            <Link href="/projects" className="tap-area hover:text-gold">Projects</Link>
+          <nav aria-label={t('project.breadcrumb')} className="hero-in flex items-center gap-2 text-sm text-gold/80">
+            <Link href="/projects" className="tap-area hover:text-gold">{t('nav.projects')}</Link>
             <span aria-hidden="true">/</span>
             <span aria-current="page" className="truncate">{project.title}</span>
           </nav>
@@ -161,7 +169,7 @@ export default async function ProjectDetailPage({ params }: Props) {
           {facts.length > 0 && (
             <dl className="hero-in mt-12 grid grid-cols-2 border-t border-gold/25 pt-6 md:grid-cols-4" style={{ '--i': 5 } as React.CSSProperties}>
               {facts.map((f) => (
-                <div key={f.label} className="py-2 pr-6 md:border-l md:border-gold/25 md:pl-6 md:first:border-l-0 md:first:pl-0">
+                <div key={f.label} className="py-2 pe-6 md:border-s md:border-gold/25 md:ps-6 md:first:border-s-0 md:first:ps-0">
                   <dt className="text-xs uppercase tracking-[0.2em] text-white/55">{f.label}</dt>
                   <dd className="mt-2 flex items-center gap-3 text-lg text-white">
                     {f.logoUrl && (
@@ -182,23 +190,23 @@ export default async function ProjectDetailPage({ params }: Props) {
       <section className="bg-beige py-24 md:py-32">
         <Container className="grid gap-14 lg:grid-cols-[1fr_360px] lg:gap-24">
           <div>
-            <SectionLabel>Project Overview</SectionLabel>
+            <SectionLabel>{t('project.overview')}</SectionLabel>
             <p className="text-reveal mt-8 whitespace-pre-wrap text-2xl md:text-4xl leading-snug text-ink">
-              {description || 'Full project details are coming soon.'}
+              {description || t('project.comingSoon')}
             </p>
           </div>
           <aside className="h-fit lg:sticky lg:top-28">
             <div className="card-reveal bg-brand-gradient rounded-[28px] p-8 shadow-[0_24px_48px_-20px_rgba(87,19,45,0.6)]">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold/70">Planning something similar?</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold/70">{t('project.similar')}</p>
               <p className="mt-4 text-2xl leading-snug text-gold">
-                Talk to our team about your {discipline.toLowerCase()} project.
+                {t('project.talk')}
               </p>
               <WhatsAppButton
                 className="mt-8 w-full justify-center"
-                message={`Hello Shah Noori, I saw your project "${project.title}" and would like to discuss something similar.`}
+                message={`${t('project.waSimilarBefore')} "${project.title}" ${t('project.waSimilarAfter')}`}
                 phoneNumber={phoneNumber}
               />
-              <ArrowLink href="/contact" className="mt-4 w-full justify-between text-gold">Request a consultation</ArrowLink>
+              <ArrowLink href="/contact" className="mt-4 w-full justify-between text-gold">{t('project.consultation')}</ArrowLink>
             </div>
           </aside>
         </Container>
@@ -207,7 +215,7 @@ export default async function ProjectDetailPage({ params }: Props) {
       {/* One photo across the whole screen, easing back from a slight zoom as it scrolls in.
           overflow-clip (not hidden) keeps the zoom tied to the page's scroll. */}
       {feature && (
-        <section className="relative h-[100svh] min-h-[480px] overflow-clip bg-black" aria-label="Featured photo">
+        <section className="relative h-[100svh] min-h-[480px] overflow-clip bg-black" aria-label={t('project.featuredPhoto')}>
           <Image src={feature.url} alt={`${project.title}, featured photo`} fill sizes="100vw" className="img-settle object-cover" />
         </section>
       )}
@@ -216,7 +224,7 @@ export default async function ProjectDetailPage({ params }: Props) {
       {review && (
         <section className="bg-brand-gradient py-24 md:py-32">
           <Container>
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold/70">From the client</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold/70">{t('project.fromClient')}</p>
             <blockquote className="mt-8 max-w-4xl text-2xl md:text-4xl leading-snug text-gold">
               &ldquo;{review.reviewText}&rdquo;
             </blockquote>
@@ -248,21 +256,21 @@ export default async function ProjectDetailPage({ params }: Props) {
         <section className="bg-white py-24 md:py-32">
           <Container>
             <div className="mb-12 flex items-end justify-between gap-6">
-              <h2 className="text-brand-gradient w-fit text-5xl md:text-7xl font-medium leading-none">Gallery</h2>
+              <h2 className="text-brand-gradient w-fit text-5xl md:text-7xl font-medium leading-none">{t('project.gallery')}</h2>
               <p className="text-ink/60">
-                {gallery.length} {gallery.length === 1 ? 'photo' : 'photos'} · click to enlarge
+                {gallery.length} {gallery.length === 1 ? t('project.photo') : t('project.photos')} · {t('project.enlarge')}
               </p>
             </div>
             <ProjectGallery images={gallery} title={project.title} />
             {/* Asked at the moment someone has just looked through the photos; the message names this project */}
             <div className="card-reveal mt-16 flex flex-col items-start justify-between gap-6 rounded-[28px] bg-cream p-8 md:flex-row md:items-center md:p-10">
               <div>
-                <p className="text-2xl font-medium text-maroon md:text-3xl">Like what you see?</p>
-                <p className="mt-2 text-ink/70">Ask us about {project.title} on WhatsApp. We usually reply the same day.</p>
+                <p className="text-2xl font-medium text-maroon md:text-3xl">{t('project.like')}</p>
+                <p className="mt-2 text-ink/70">{t('project.askBefore')} {project.title} {t('project.askAfter')}</p>
               </div>
               <WhatsAppButton
                 className="shrink-0"
-                message={`Hello Shah Noori, I just looked at your project "${project.title}" on your website and would like to know more.`}
+                message={`${t('project.waLookedBefore')} "${project.title}" ${t('project.waLookedAfter')}`}
                 phoneNumber={phoneNumber}
               />
             </div>
@@ -272,15 +280,15 @@ export default async function ProjectDetailPage({ params }: Props) {
 
       {/* Previous / next */}
       {prev && next && (
-        <nav aria-label="More projects" className="grid bg-black md:grid-cols-2">
+        <nav aria-label={t('project.more')} className="grid bg-black md:grid-cols-2">
           {[
-            { p: prev, label: '← Previous project', alignEnd: false },
-            { p: next, label: 'Next project →', alignEnd: true },
+            { p: prev, label: locale === 'ar' ? `→ ${t('project.previous')}` : `← ${t('project.previous')}`, alignEnd: false },
+            { p: next, label: locale === 'ar' ? `${t('project.next')} ←` : `${t('project.next')} →`, alignEnd: true },
           ].map(({ p, label, alignEnd }) => (
             <Link
               key={label}
               href={`/projects/${encodeURIComponent(p.slug)}`}
-              className={`group relative flex min-h-[260px] flex-col justify-end overflow-hidden p-8 md:min-h-[340px] md:p-12 ${alignEnd ? 'md:items-end md:text-right' : ''}`}
+              className={`group relative flex min-h-[260px] flex-col justify-end overflow-hidden p-8 md:min-h-[340px] md:p-12 ${alignEnd ? 'md:items-end md:text-end' : ''}`}
             >
               <Image
                 src={p.imageUrl || '/assets/images/placeholder.webp'}
@@ -304,11 +312,11 @@ export default async function ProjectDetailPage({ params }: Props) {
           <Container>
             <div className="mb-12 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
               <div>
-                <SectionLabel>More {discipline} Work</SectionLabel>
-                <h2 className="mt-4 text-4xl md:text-5xl font-semibold text-maroon">Related Projects</h2>
+                <SectionLabel>{t('project.moreWork')} · {kind}</SectionLabel>
+                <h2 className="mt-4 text-4xl md:text-5xl font-semibold text-maroon">{t('project.related')}</h2>
               </div>
               <ArrowLink href={`/projects?category=${project.category}`} className="w-fit text-maroon">
-                View all {discipline.toLowerCase()} projects
+                {t('project.viewAllKind')}
               </ArrowLink>
             </div>
             <div className="grid auto-rows-[340px] gap-6 md:grid-cols-2 lg:grid-cols-3">

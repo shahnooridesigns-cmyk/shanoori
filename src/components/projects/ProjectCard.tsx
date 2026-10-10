@@ -1,8 +1,8 @@
 import React from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
+import { LocaleLink as Link } from '@/components/shared/LocaleProvider';
 import type { ProjectSummary } from '@/lib/sanity/types';
-import { projectKind } from '@/lib/categories';
+import { ProjectKind } from './ProjectKind';
 import { ArrowUpRight } from '../shared/ui';
 
 /** Photo card: zooms on hover and slides up client/year details (always shown on touch screens, which can't hover). Fills its parent's height. */
@@ -38,7 +38,7 @@ export const ProjectCard = ({
 
       <div className="absolute inset-x-0 top-0 flex items-start justify-between p-5">
         <span className="rounded-full bg-black/25 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-gold backdrop-blur-md">
-          {projectKind(project)}
+          <ProjectKind project={project} />
         </span>
         {index !== undefined && (
           <span className="text-sm font-medium text-white/70">{String(index + 1).padStart(2, '0')}</span>

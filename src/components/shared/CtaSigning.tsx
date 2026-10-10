@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { motion, useInView, useReducedMotion } from 'framer-motion';
 import { Container } from './Container';
-import Link from 'next/link';
+import { LocaleLink as Link } from '@/components/shared/LocaleProvider';
 import { ArrowUpRight } from './ui';
 import { startPageFlood } from './PageFlood';
 

@@ -27,6 +27,7 @@ export const HeroTitle = ({ title }: { title: string }) => {
 
   return (
     <motion.h1
+      dir="ltr"
       className="relative select-none whitespace-nowrap text-center font-medium leading-[0.78] text-gold will-change-transform"
       style={{
         fontSize: `min(${size}vw, ${Math.round(14.75 * size)}px)`,

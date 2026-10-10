@@ -1,3 +1,4 @@
+import { T } from '@/components/shared/T';
 import React from 'react';
 import Image from 'next/image';
 import { Container } from './Container';
@@ -32,6 +33,7 @@ const Row = ({ clients, reverse = false }: { clients: ClientLogo[]; reverse?: bo
   return (
     <div
       className={`logo-marquee flex w-max ${reverse ? 'logo-marquee-reverse' : ''}`}
+      dir="ltr"
       style={{ '--marquee-duration': `${clients.length * 5}s`, '--marquee-shift': `${-100 / copies}%` } as React.CSSProperties}
     >
       {Array.from({ length: copies }, (_, copy) => (
@@ -56,7 +58,7 @@ export const TrustedBy = async () => {
       <div className="pointer-events-none absolute left-1/2 top-1/2 h-[420px] w-[820px] max-w-[120vw] -translate-x-1/2 -translate-y-1/3 rounded-full bg-gold/15 blur-[110px]" aria-hidden="true" />
 
       <Container className="relative flex flex-col items-center">
-        <SectionLabel tone="gold" className="!self-center">Our Clients</SectionLabel>
+        <SectionLabel tone="gold" className="!self-center"><T k="label.ourClients" /></SectionLabel>
         <h2 className="mt-5 text-center text-4xl md:text-5xl font-semibold text-gold">{shared.clients.heading}</h2>
       </Container>
 

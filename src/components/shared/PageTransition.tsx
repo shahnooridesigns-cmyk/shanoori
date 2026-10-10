@@ -1,5 +1,7 @@
 "use client";
 
+import { ui, type UiKey } from '@/lib/content/ui';
+import { localeOfPath, stripLocale } from '@/lib/locale';
 import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
@@ -29,14 +31,18 @@ const SETTLE_MS = 380;
 /** Never leave the screen covered: uncover whatever is there after this long */
 const GIVE_UP_MS = 7000;
 
-const PAGE_NAMES: Record<string, string> = {
-  '/': 'Home',
-  '/about': 'About',
-  '/services': 'Services',
-  '/projects': 'Projects',
-  '/contact': 'Contact',
+const PAGE_NAMES: Record<string, UiKey> = {
+  '/': 'nav.home',
+  '/about': 'nav.about',
+  '/services': 'nav.services',
+  '/projects': 'nav.projects',
+  '/contact': 'nav.contact',
 };
-const nameFor = (path: string) => PAGE_NAMES[path] ?? (path.startsWith('/projects/') ? 'Project' : '');
+/** The label for an address, whichever language it is in ("/ar/about" and "/about" are the same page) */
+const nameKeyFor = (fullPath: string): UiKey | null => {
+  const path = stripLocale(fullPath);
+  return PAGE_NAMES[path] ?? (path.startsWith('/projects/') ? 'page.project' : null);
+};
 
 /** idle: off screen below. cover: panels rising. hold: covered, waiting for the page. reveal: panels leaving upwards. */
 type Phase = 'idle' | 'cover' | 'hold' | 'reveal';
@@ -113,7 +119,8 @@ export const PageTransition = () => {
 
   const covering = phase === 'cover' || phase === 'hold';
   const y = phase === 'idle' ? '101%' : covering ? '0%' : '-101%';
-  const name = target ? nameFor(target.path) : '';
+  const nameKey = target ? nameKeyFor(target.path) : null;
+  const name = nameKey ? ui[localeOfPath(target!.path)][nameKey] : '';
 
   return (
     <div

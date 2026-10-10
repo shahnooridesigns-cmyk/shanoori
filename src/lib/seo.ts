@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 
 export const SITE_URL = 'https://sncreatives.com';
 export const SITE_NAME = 'Shah Noori';
+import { localePath, type Locale } from './locale';
 /** Picture shown when a link to the site is shared (1200x630, in /public/assets/images) */
 export const SHARE_IMAGE = '/assets/images/og.jpg';
 
@@ -38,27 +39,38 @@ export const publicSlug = (slug: string, title: string) => (CLEAN_SLUG.test(slug
 export const pageMeta = ({
   title,
   description,
-  path,
+  path: plainPath,
   image = SHARE_IMAGE,
   noIndex = false,
+  locale = 'en',
+  absoluteTitle = false,
 }: {
   title?: string;
   description?: string;
+  /** The page's English address, e.g. "/about"; the Arabic one is worked out from it */
   path: string;
   image?: string;
   /** true keeps the page out of search results */
   noIndex?: boolean;
+  locale?: Locale;
+  /** true when the title is already complete and must not get "| Shah Noori" added (home page) */
+  absoluteTitle?: boolean;
 }): Metadata => {
-  const shareTitle = title ? `${title} | ${SITE_NAME}` : undefined;
+  const shareTitle = title ? (absoluteTitle ? title : `${title} | ${SITE_NAME}`) : undefined;
+  const path = localePath(locale, plainPath);
   return {
-    ...(title ? { title } : {}),
+    ...(title ? { title: absoluteTitle ? { absolute: title } : title } : {}),
     ...(description ? { description } : {}),
-    alternates: { canonical: path },
+    // Each language names itself as the address to index, and points to the other one
+    alternates: {
+      canonical: path,
+      languages: { en: localePath('en', plainPath), ar: localePath('ar', plainPath), 'x-default': localePath('en', plainPath) },
+    },
     ...(noIndex ? { robots: { index: false, follow: true } } : {}),
     openGraph: {
       type: 'website',
       siteName: SITE_NAME,
-      locale: 'en_QA',
+      locale: locale === 'ar' ? 'ar_QA' : 'en_QA',
       url: path,
       ...(shareTitle ? { title: shareTitle } : {}),
       ...(description ? { description } : {}),

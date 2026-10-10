@@ -2,16 +2,18 @@
 
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
+import { LocaleLink as Link } from '@/components/shared/LocaleProvider';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import type { ProjectSummary } from '@/lib/sanity/types';
 import { ArrowUpRight } from '../shared/ui';
 import { useSwipe } from '@/lib/useSwipe';
 import { projectKind } from '@/lib/categories';
+import type { Locale } from '@/lib/locale';
+import { useLocale, useT } from '../shared/LocaleProvider';
 
 /** The facts shown under the title when the card is hovered: kind of work, client, place, year */
-const facts = (p: ProjectSummary) =>
-  [projectKind(p), p.clientName !== p.title && p.clientName, p.location, p.year].filter(Boolean).join(' · ');
+const facts = (p: ProjectSummary, locale: Locale) =>
+  [projectKind(p, locale), p.clientName !== p.title && p.clientName, p.location, p.year].filter(Boolean).join(' · ');
 /** First paragraph of the description, when it is plain text */
 const excerpt = (p: ProjectSummary) => (typeof p.excerpt === 'string' ? p.excerpt.split(/\n/)[0].trim() : '');
 
@@ -68,19 +70,22 @@ const SideCard = ({
   direction,
   reduceMotion,
   label,
+  cursor,
   onClick,
 }: {
   project: ProjectSummary;
   direction: number;
   reduceMotion: boolean;
   label: string;
+  /** The word the custom cursor shows over the card */
+  cursor: string;
   onClick: () => void;
 }) => (
   <button
     type="button"
     onClick={onClick}
     aria-label={label}
-    data-cursor="Show"
+    data-cursor={cursor}
     data-cursor-tone="ink"
     className="relative hidden aspect-[275/225] w-full overflow-hidden rounded-2xl bg-maroon shadow-[0_24px_40px_-12px_rgba(60,40,10,0.45)] md:block"
   >
@@ -91,16 +96,16 @@ const SideCard = ({
 );
 
 /** Large round arrow on the outer edge of the carousel (over the photo's edge on phones, where there are no side cards). */
-const EdgeArrow = ({ dir, onClick }: { dir: 'prev' | 'next'; onClick: () => void }) => (
+const EdgeArrow = ({ dir, label, onClick }: { dir: 'prev' | 'next'; label: string; onClick: () => void }) => (
   <button
     type="button"
     onClick={onClick}
-    aria-label={dir === 'prev' ? 'Previous project' : 'Next project'}
+    aria-label={label}
     className={`absolute top-1/2 z-10 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white text-maroon shadow-[0_10px_30px_-8px_rgba(60,40,10,0.55)] transition-all hover:scale-110 hover:bg-maroon hover:text-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-maroon md:h-16 md:w-16 ${
-      dir === 'prev' ? 'left-2 md:-left-8' : 'right-2 md:-right-8'
+      dir === 'prev' ? 'start-2 md:-start-8' : 'end-2 md:-end-8'
     }`}
   >
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6 md:h-7 md:w-7" aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6 rtl:-scale-x-100 md:h-7 md:w-7" aria-hidden="true">
       {dir === 'prev' ? <path d="m15 5-7 7 7 7" /> : <path d="m9 5 7 7-7 7" />}
     </svg>
   </button>
@@ -110,6 +115,8 @@ export const WorkCarousel = ({ projects }: { projects: ProjectSummary[] }) => {
   const [[index, direction], setSlide] = useState<[number, number]>([0, 1]);
   const [paused, setPaused] = useState(false);
   const reduceMotion = Boolean(useReducedMotion());
+  const locale = useLocale();
+  const t = useT();
   const count = projects.length;
   // Swipe left for the next project, right for the previous one
   const swipe = useSwipe((dir) => count > 1 && setSlide(([i]) => [(i + dir + count) % count, dir]), setPaused);
@@ -123,12 +130,14 @@ export const WorkCarousel = ({ projects }: { projects: ProjectSummary[] }) => {
   }, [index, count, paused, reduceMotion]);
 
   if (count === 0) {
-    return <p className="py-16 text-center text-ink/60">Featured projects will appear here once they are marked as featured in the Studio.</p>;
+    return <p className="py-16 text-center text-ink/60">{t('projects.noFeatured')}</p>;
   }
 
   const at = (offset: number) => projects[(index + offset + count) % count];
   const go = (offset: number) => setSlide(([i]) => [(i + offset + count) % count, offset]);
   const current = projects[index];
+  // Right to left, "next" arrives from the left: the slide direction is mirrored
+  const flow = locale === 'ar' ? -direction : direction;
   // Photos that could be asked for next, fetched ahead so they are ready when they slide in
   const upcoming = count > 1 ? [...new Map([at(1), at(-1), at(2)].map((p) => [p._id, p])).values()].filter((p) => p._id !== current._id) : [];
 
@@ -142,10 +151,10 @@ export const WorkCarousel = ({ projects }: { projects: ProjectSummary[] }) => {
       {...swipe}
     >
       <div className="relative grid w-full items-center gap-8 md:grid-cols-[1fr_1.65fr_1fr]">
-        {count > 1 && <EdgeArrow dir="prev" onClick={() => go(-1)} />}
-        {count > 1 && <EdgeArrow dir="next" onClick={() => go(1)} />}
+        {count > 1 && <EdgeArrow dir="prev" label={t('action.previousProject')} onClick={() => go(-1)} />}
+        {count > 1 && <EdgeArrow dir="next" label={t('action.nextProject')} onClick={() => go(1)} />}
         {count > 1 ? (
-          <SideCard project={at(-1)} direction={direction} reduceMotion={reduceMotion} label={`Show ${at(-1).title}`} onClick={() => go(-1)} />
+          <SideCard project={at(-1)} direction={flow} reduceMotion={reduceMotion} cursor={t('action.show')} label={`${t('action.show')} ${at(-1).title}`} onClick={() => go(-1)} />
         ) : (
           <div className="hidden md:block" />
         )}
@@ -162,8 +171,8 @@ export const WorkCarousel = ({ projects }: { projects: ProjectSummary[] }) => {
             ))}
           </div>
 
-          <Screen project={current} direction={direction} reduceMotion={reduceMotion}>
-            <Link href={`/projects/${encodeURIComponent(current.slug)}`} data-cursor="View project" className="group relative block h-full w-full">
+          <Screen project={current} direction={flow} reduceMotion={reduceMotion}>
+            <Link href={`/projects/${encodeURIComponent(current.slug)}`} data-cursor={t('action.viewProject')} className="group relative block h-full w-full">
               <Image
                 src={current.imageUrl || '/assets/images/placeholder.webp'}
                 alt={current.title}
@@ -181,7 +190,7 @@ export const WorkCarousel = ({ projects }: { projects: ProjectSummary[] }) => {
                 {/* Opens under the title on hover or keyboard focus; always open where there is no hover (touch) */}
                 <div className="grid grid-rows-[0fr] opacity-0 transition-all duration-500 ease-out group-hover:grid-rows-[1fr] group-hover:opacity-100 group-focus-visible:grid-rows-[1fr] group-focus-visible:opacity-100 [@media(hover:none)]:grid-rows-[1fr] [@media(hover:none)]:opacity-100">
                   <div className="overflow-hidden">
-                    <p className="pt-2 text-[11px] uppercase tracking-[0.18em] text-gold md:pt-3 md:text-xs">{facts(current)}</p>
+                    <p className="pt-2 text-[11px] uppercase tracking-[0.18em] text-gold md:pt-3 md:text-xs">{facts(current, locale)}</p>
                     {excerpt(current) && (
                       <p className="mt-2 hidden max-w-[52ch] text-sm leading-relaxed text-white/85 line-clamp-2 md:block">{excerpt(current)}</p>
                     )}
@@ -193,7 +202,7 @@ export const WorkCarousel = ({ projects }: { projects: ProjectSummary[] }) => {
         </div>
 
         {count > 1 ? (
-          <SideCard project={at(1)} direction={direction} reduceMotion={reduceMotion} label={`Show ${at(1).title}`} onClick={() => go(1)} />
+          <SideCard project={at(1)} direction={flow} reduceMotion={reduceMotion} cursor={t('action.show')} label={`${t('action.show')} ${at(1).title}`} onClick={() => go(1)} />
         ) : (
           <div className="hidden md:block" />
         )}

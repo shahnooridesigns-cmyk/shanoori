@@ -1,11 +1,17 @@
 import type { Metadata } from "next";
-import { Cabin } from "next/font/google";
+import { Cabin, IBM_Plex_Sans_Arabic } from "next/font/google";
 import "./globals.css";
 import { SITE_URL, pageMeta } from "@/lib/seo";
 
 const cabin = Cabin({
   variable: "--font-cabin",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+});
+
+const arabic = IBM_Plex_Sans_Arabic({
+  variable: "--font-arabic",
+  subsets: ["arabic"],
   weight: ["400", "500", "600", "700"],
 });
 
@@ -39,7 +45,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     // suppressHydrationWarning: the preloader's boot script sets data-sn-preload on <html> before hydration
     <html
       lang="en"
-      className={`${cabin.variable} h-full antialiased`}
+      className={`${cabin.variable} ${arabic.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       {/* Extensions like Grammarly add attributes to <body> before React hydrates; ignore those

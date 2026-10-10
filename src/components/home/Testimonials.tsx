@@ -1,3 +1,5 @@
+import { tr } from '@/lib/content/ui';
+import { getLocale } from '@/lib/locale.server';
 import React from 'react';
 import { ClientNotes } from './ClientNotes';
 import { fetchFeaturedReviews, fetchHomeContent } from '@/lib/sanity/fetch';
@@ -8,7 +10,7 @@ export const Testimonials = async () => {
   if (reviews.length === 0) return null;
 
   return (
-    <section className="relative bg-beige" aria-label="Client testimonials">
+    <section className="relative bg-beige" aria-label={tr(getLocale(), 'label.testimonials')}>
       <ClientNotes title={testimonials.heading} reviews={reviews} />
     </section>
   );

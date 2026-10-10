@@ -8,6 +8,10 @@ import { Testimonials } from "@/components/home/Testimonials";
 import { TrustedBy } from "@/components/shared/TrustedBy";
 import { FaqSection } from "@/components/shared/FaqSection";
 import { CtaBanner } from "@/components/shared/CtaBanner";
+import type { Metadata } from "next";
+import { metaFor } from "@/lib/meta.server";
+
+export const generateMetadata = (): Metadata => metaFor('home', '/');
 
 export default function Home() {
   return (

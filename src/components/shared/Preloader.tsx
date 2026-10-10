@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from 'react';
+import type { UiKey } from '@/lib/content/ui';
+import { useLocale, useT } from './LocaleProvider';
 import { Caveat } from 'next/font/google';
 import { AnimatePresence, animate, motion, useMotionValue, useMotionValueEvent, useReducedMotion } from 'framer-motion';
 
@@ -22,8 +24,8 @@ const MIN_MS = 2400; // long enough for the sketch to finish drawing
 const MAX_MS = 6000; // stop waiting for slow images after this
 
 // Follows a Shah Noori project from plan to handover
-const NOTES = ['Planning the space…', 'Drafting the design…', 'Building with care…', 'Fitting out the interiors…'];
-const FINAL_NOTE = 'Welcome to Shah Noori.';
+const NOTES: UiKey[] = ['preloader.note1', 'preloader.note2', 'preloader.note3', 'preloader.note4'];
+const FINAL_NOTE: UiKey = 'preloader.final';
 
 // Each stroke of the sketch, with when it starts drawing (s) and how long it takes.
 const STROKES: { d: string; at: number; dur: number }[] = [
@@ -78,6 +80,8 @@ const InlineScript = ({ html }: { html: string }) => (
 
 export const Preloader = () => {
   const reduceMotion = useReducedMotion();
+  const t = useT();
+  const locale = useLocale();
   const [phase, setPhase] = useState<Phase>('drawing');
   const [note, setNote] = useState(0);
   const progress = useMotionValue(0);
@@ -164,7 +168,7 @@ export const Preloader = () => {
         className="sn-preloader fixed inset-0 z-[200] flex-col items-center justify-center bg-ink text-gold"
         role="status"
         aria-live="polite"
-        aria-label="Loading Shah Noori"
+        aria-label={t('preloader.label')}
         initial={false}
         animate={{ clipPath: leaving ? 'inset(0% 0% 100% 0%)' : 'inset(0% 0% 0% 0%)' }}
         transition={{ duration: reduceMotion ? 0.3 : 0.95, ease: [0.76, 0, 0.24, 1] }}
@@ -244,7 +248,7 @@ export const Preloader = () => {
           </svg>
 
           {/* Handwritten note with a scribbled underline that redraws for each one */}
-          <div className={`${hand.className} relative mt-8 h-12 text-[26px] leading-none sm:text-[34px]`}>
+          <div className={`${locale === 'ar' ? '' : hand.className} relative mt-8 h-12 text-[26px] leading-none sm:text-[34px]`}>
             <AnimatePresence mode="wait" initial={false}>
               <motion.p
                 key={lit ? 'final' : note}
@@ -254,7 +258,7 @@ export const Preloader = () => {
                 exit={{ opacity: 0, y: -8, rotate: -1 }}
                 transition={{ duration: 0.28, ease: 'easeOut' }}
               >
-                {lit ? FINAL_NOTE : NOTES[note]}
+                {t(lit ? FINAL_NOTE : NOTES[note])}
                 <svg viewBox="0 0 140 10" preserveAspectRatio="none" className="mx-auto mt-1 h-2.5 w-[85%]" aria-hidden="true">
                   <motion.path
                     d="M2 6 C30 2 60 9 95 5 C110 3 125 5 138 4"
@@ -280,7 +284,7 @@ export const Preloader = () => {
         >
           <span>
             Shah Noori
-            <span className="hidden sm:inline"> · Interior &amp; Fit-out · Doha</span>
+            <span className="hidden sm:inline"> {t('preloader.tagline')}</span>
           </span>
           <span className="text-2xl font-medium tracking-normal tabular-nums text-gold sm:text-3xl">
             <span ref={countRef}>000</span>

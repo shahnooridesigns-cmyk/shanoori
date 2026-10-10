@@ -18,11 +18,26 @@ import {
   sharedDefaults,
 } from '../content/defaults';
 import { resolveContent } from '../content/resolve';
+import { localize } from '../content/localize';
+import { aboutAr, contactAr, homeAr, projectsAr, servicesAr, sharedAr } from '../content/defaults.ar';
+import { getLocale } from '../locale.server';
 import { isSample, publicSlug } from '../seo';
 
 /** Placeholder projects are not shown anywhere, and every project carries its published address. */
 const forSite = (projects: ProjectSummary[] | null) =>
-  (projects ?? []).filter((p) => !isSample(p._id)).map((p) => ({ ...p, slug: publicSlug(p.slug, p.title) }));
+  (projects ?? []).filter((p) => !isSample(p._id)).map((p) => inLanguage({ ...p, slug: publicSlug(p.slug, p.title) }));
+
+/** On the Arabic site a project shows its Arabic title, location and description where the Studio has them */
+const inLanguage = <P extends ProjectSummary>(project: P): P => {
+  if (getLocale() !== 'ar') return project;
+  const description = project.descriptionAr?.trim();
+  return {
+    ...project,
+    title: project.titleAr?.trim() || project.title,
+    location: project.locationAr?.trim() || project.location,
+    ...(description ? { excerpt: description, description } : {}),
+  };
+};
 
 /**
  * Sanity answers are kept in memory for a minute, so a visit usually needs no trip to Sanity
@@ -79,7 +94,7 @@ export const fetchProjectBySlug = cache(
     // A placeholder's address answers "page not found", like any project that does not exist
     if (!project || isSample(project._id)) return null;
     return {
-      ...project,
+      ...inLanguage(project),
       slug: publicSlug(project.slug, project.title),
       // A placeholder review is not this project's
       review: project.review && !isSample(project.review._id) ? project.review : null,
@@ -100,8 +115,8 @@ export const fetchFeaturedReviews = cache(
  * Page copy: the Studio document (a singleton whose _id is its type name) laid over the
  * built-in defaults. If Sanity can't be reached the page still renders with the defaults.
  */
-const pageContent = <T>(id: string, defaults: T) =>
-  cache(async (): Promise<T> => {
+const pageContent = <T>(id: string, defaults: T, arabic: unknown) => {
+  const english = cache(async (): Promise<T> => {
     try {
       return resolveContent(defaults, await load(`*[_id == $id][0]`, { id }));
     } catch (error) {
@@ -109,10 +124,13 @@ const pageContent = <T>(id: string, defaults: T) =>
       return defaults;
     }
   });
+  // On the Arabic site the wording comes from defaults.ar.ts; photos and icons stay as resolved
+  return async (): Promise<T> => (getLocale() === 'ar' ? localize(await english(), arabic) : english());
+};
 
-export const fetchSharedContent = pageContent('sharedContent', sharedDefaults);
-export const fetchHomeContent = pageContent('homePage', homeDefaults);
-export const fetchAboutContent = pageContent('aboutPage', aboutDefaults);
-export const fetchServicesContent = pageContent('servicesPage', servicesDefaults);
-export const fetchProjectsContent = pageContent('projectsPage', projectsDefaults);
-export const fetchContactContent = pageContent('contactPage', contactDefaults);
+export const fetchSharedContent = pageContent('sharedContent', sharedDefaults, sharedAr);
+export const fetchHomeContent = pageContent('homePage', homeDefaults, homeAr);
+export const fetchAboutContent = pageContent('aboutPage', aboutDefaults, aboutAr);
+export const fetchServicesContent = pageContent('servicesPage', servicesDefaults, servicesAr);
+export const fetchProjectsContent = pageContent('projectsPage', projectsDefaults, projectsAr);
+export const fetchContactContent = pageContent('contactPage', contactDefaults, contactAr);

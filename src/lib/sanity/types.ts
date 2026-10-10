@@ -13,6 +13,10 @@ export interface ProjectSummary {
   clientName?: string;
   /** The description as stored; cards show its first paragraph */
   excerpt?: string | null;
+  /** Arabic wording from the Studio, used on the Arabic site where filled in */
+  titleAr?: string | null;
+  locationAr?: string | null;
+  descriptionAr?: string | null;
 }
 
 export interface ProjectDetail extends ProjectSummary {

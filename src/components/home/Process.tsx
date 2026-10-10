@@ -1,3 +1,4 @@
+import { T } from '@/components/shared/T';
 import React from 'react';
 import { Container } from '../shared/Container';
 import { ArrowLink, SectionLabel } from '../shared/ui';
@@ -15,7 +16,7 @@ export const Process = async () => {
     // of its own edge, which showed as a thin beige line between the two
     <section className="relative -mt-px bg-black" aria-labelledby="process-heading">
       <Container>
-        <SectionLabel tone="gold">Process</SectionLabel>
+        <SectionLabel tone="gold"><T k="label.process" /></SectionLabel>
         <div className="mt-6 flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
           <div>
             <h2 id="process-heading" className="whitespace-pre-line text-5xl md:text-7xl font-medium text-gold">{process.heading}</h2>

@@ -1,3 +1,4 @@
+import { T } from '@/components/shared/T';
 import React from 'react';
 import { Container } from './Container';
 import { CurtainHold } from './CurtainHold';
@@ -17,7 +18,7 @@ export const FaqSection = async () => {
     <CurtainHold />
     <Container className="grid gap-12 lg:grid-cols-2 lg:gap-20">
       <div className="flex flex-col gap-6">
-        <SectionLabel>FAQ</SectionLabel>
+        <SectionLabel><T k="label.faq" /></SectionLabel>
         <h2 className="whitespace-pre-line text-5xl md:text-6xl font-semibold leading-[1.05] text-ink">{faq.heading}</h2>
         <p className="text-reveal max-w-md text-lg text-ink/90">{faq.text}</p>
       </div>

@@ -111,6 +111,24 @@ export default defineType({
       type: 'text',
     }),
     defineField({
+      name: 'titleAr',
+      title: 'Title (Arabic)',
+      type: 'string',
+      description: 'Shown on the Arabic site (sncreatives.com/ar). Leave empty to use the English title.',
+    }),
+    defineField({
+      name: 'locationAr',
+      title: 'Location (Arabic)',
+      type: 'string',
+      description: 'Shown on the Arabic site. Leave empty to use the English location.',
+    }),
+    defineField({
+      name: 'descriptionAr',
+      title: 'Description (Arabic)',
+      type: 'text',
+      description: 'Shown on the Arabic site. Leave empty to use the English description.',
+    }),
+    defineField({
       name: 'featured',
       title: 'Featured',
       type: 'boolean',

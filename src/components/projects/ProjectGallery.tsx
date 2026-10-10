@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from '../shared/LocaleProvider';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import Image from 'next/image';
@@ -20,6 +21,7 @@ const ArrowIcon = ({ dir }: { dir: 'left' | 'right' }) => (
 );
 
 export const ProjectGallery = ({ images, title }: { images: GalleryImage[]; title: string }) => {
+  const t = useT();
   const [open, setOpen] = useState<number | null>(null);
   const [direction, setDirection] = useState(0);
   // The viewer is added to the page (at the end of <body>) the first time a photo is opened
@@ -83,7 +85,7 @@ export const ProjectGallery = ({ images, title }: { images: GalleryImage[]; titl
               ref={(el) => { triggerRefs.current[i] = el; }}
               onClick={() => { setDirection(0); setViewerUsed(true); setOpen(i); }}
               className="group relative block h-full w-full overflow-hidden rounded-[20px] bg-maroon/10"
-              aria-label={`Open photo ${i + 1} of ${count}`}
+              aria-label={`${t('gallery.open')} ${i + 1} ${t('gallery.of')} ${count}`}
             >
               <Image
                 src={img.url}
@@ -109,7 +111,7 @@ export const ProjectGallery = ({ images, title }: { images: GalleryImage[]; titl
           <motion.div
             role="dialog"
             aria-modal="true"
-            aria-label={`${title} photo viewer`}
+            aria-label={`${title}: ${t('gallery.viewer')}`}
             data-lenis-prevent
             className="fixed inset-0 z-[60] flex flex-col bg-black/95 backdrop-blur-sm"
             initial={{ opacity: 0 }}
@@ -120,13 +122,13 @@ export const ProjectGallery = ({ images, title }: { images: GalleryImage[]; titl
             <div className="flex items-center justify-between px-5 py-4 text-white md:px-8">
               <p className="text-sm text-white/70">
                 <span className="text-gold">{String(open + 1).padStart(2, '0')}</span> / {String(count).padStart(2, '0')}
-                <span className="ml-3 hidden sm:inline">{title}</span>
+                <span className="ms-3 hidden sm:inline">{title}</span>
               </p>
               <button
                 type="button"
                 ref={closeRef}
                 onClick={close}
-                aria-label="Close photo viewer"
+                aria-label={t('gallery.close')}
                 className="flex h-11 w-11 items-center justify-center rounded-full bg-white/10 transition-colors hover:bg-white/20"
               >
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-5 w-5" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" /></svg>
@@ -157,10 +159,10 @@ export const ProjectGallery = ({ images, title }: { images: GalleryImage[]; titl
 
               {count > 1 && (
                 <>
-                  <button type="button" onClick={() => go(-1)} aria-label="Previous photo" className="absolute left-3 top-1/2 z-10 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-gold hover:text-maroon md:flex">
+                  <button type="button" onClick={() => go(-1)} aria-label={t('gallery.previous')} className="absolute left-3 top-1/2 z-10 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-gold hover:text-maroon md:flex">
                     <ArrowIcon dir="left" />
                   </button>
-                  <button type="button" onClick={() => go(1)} aria-label="Next photo" className="absolute right-3 top-1/2 z-10 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-gold hover:text-maroon md:flex">
+                  <button type="button" onClick={() => go(1)} aria-label={t('gallery.next')} className="absolute right-3 top-1/2 z-10 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-gold hover:text-maroon md:flex">
                     <ArrowIcon dir="right" />
                   </button>
                 </>
@@ -178,7 +180,7 @@ export const ProjectGallery = ({ images, title }: { images: GalleryImage[]; titl
                     ref={(el) => { thumbRefs.current[i] = el; }}
                     type="button"
                     onClick={() => { setDirection(i > open ? 1 : -1); setOpen(i); }}
-                    aria-label={`Show photo ${i + 1}`}
+                    aria-label={`${t('gallery.show')} ${i + 1}`}
                     aria-current={i === open ? 'true' : undefined}
                     className={`relative h-14 w-20 shrink-0 overflow-hidden rounded-lg transition-all ${i === open ? 'ring-2 ring-gold' : 'opacity-50 hover:opacity-90'}`}
                   >

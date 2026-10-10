@@ -27,6 +27,7 @@ export const FooterWordmark = ({ children }: { children: string }) => {
     <p
       ref={ref}
       aria-hidden="true"
+      dir="ltr"
       className="mt-6 select-none whitespace-nowrap text-center font-medium leading-[0.8] text-white"
       style={{ fontSize: FONT_SIZE }}
     >

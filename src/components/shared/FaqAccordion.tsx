@@ -28,7 +28,7 @@ export const FaqAccordion = ({ faqs }: { faqs: { q: string; a: string }[] }) => 
                 aria-expanded={isOpen}
                 aria-controls={`${id}-a${i}`}
                 onClick={() => toggle(i)}
-                className="flex w-full cursor-pointer items-center justify-between gap-6 py-8 text-left text-lg text-ink/80 transition-colors hover:text-ink"
+                className="flex w-full cursor-pointer items-center justify-between gap-6 py-8 text-start text-lg text-ink/80 transition-colors hover:text-ink"
               >
                 {faq.q}
                 <span className="relative h-4 w-4 shrink-0" aria-hidden="true">
@@ -52,7 +52,7 @@ export const FaqAccordion = ({ faqs }: { faqs: { q: string; a: string }[] }) => 
                     initial={{ y: -8 }}
                     animate={{ y: 0, transition: { duration: 0.5, ease } }}
                     exit={{ y: -8, transition: { duration: 0.3 } }}
-                    className="-mt-2 pb-8 pr-10 text-lg text-ink/75"
+                    className="-mt-2 pb-8 pe-10 text-lg text-ink/75"
                   >
                     {faq.a}
                   </motion.p>

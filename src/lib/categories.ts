@@ -1,4 +1,6 @@
 import type { Category } from './sanity/types';
+import { tr, type UiKey } from './content/ui';
+import type { Locale } from './locale';
 
 export const categories: { label: string; value: Category }[] = [
   { label: 'Interior', value: 'interior' },
@@ -27,7 +29,12 @@ export const spaceTypes: { label: string; value: string }[] = [
 ];
 
 /** The word shown on a project for what it is: its kind of place when set, else its discipline */
-export const projectKind = (p: { spaceType?: string | null; category?: string }) =>
-  spaceTypes.find((t) => t.value === p.spaceType)?.label ?? categoryLabel(p.category);
+export const projectKind = (p: { spaceType?: string | null; category?: string }, locale: Locale = 'en') => {
+  if (spaceTypes.some((t) => t.value === p.spaceType)) return tr(locale, `space.${p.spaceType}` as UiKey);
+  return categories.some((c) => c.value === p.category) ? tr(locale, `category.${p.category}` as UiKey) : (p.category ?? '');
+};
+
+export const spaceTypeLabel = (value: string, locale: Locale) => tr(locale, `space.${value}` as UiKey);
+export const serviceLabel = (value: string, locale: Locale) => tr(locale, `service.${value}` as UiKey);
 
 export const categoryLabel = (value?: string) => categories.find((c) => c.value === value)?.label ?? value ?? '';

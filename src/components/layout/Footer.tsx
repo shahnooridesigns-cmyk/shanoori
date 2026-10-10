@@ -1,17 +1,19 @@
 import React from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
+import { LocaleLink as Link } from '@/components/shared/LocaleProvider';
 import { Container } from '../shared/Container';
 import { FooterWordmark } from './FooterWordmark';
 import { resolveContact, toTelHref } from '@/lib/constants';
 import { fetchSiteSettings } from '@/lib/sanity/fetch';
+import { tr, type UiKey } from '@/lib/content/ui';
+import { getLocale } from '@/lib/locale.server';
 
-const navLinks = [
-  { name: 'Home', href: '/' },
-  { name: 'About', href: '/about' },
-  { name: 'Projects', href: '/projects' },
-  { name: 'Services', href: '/services' },
-  { name: 'Contact', href: '/contact' },
+const navLinks: { key: UiKey; href: string }[] = [
+  { key: 'nav.home', href: '/' },
+  { key: 'nav.about', href: '/about' },
+  { key: 'nav.projects', href: '/projects' },
+  { key: 'nav.services', href: '/services' },
+  { key: 'nav.contact', href: '/contact' },
 ];
 
 const badgeIcon = { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2.2, strokeLinecap: 'round', strokeLinejoin: 'round', className: 'h-3 w-3' } as const;
@@ -33,16 +35,21 @@ const badges = {
 };
 
 /** Who made the site, shown beside the copyright line */
-const credits: { role: string; name: string; href: string; badge?: keyof typeof badges; flowing?: boolean }[] = [
-  { role: 'Designed by', name: 'Aadhil', href: 'https://www.linkedin.com/in/aaaadhileyyy', badge: 'design' },
-  { role: 'Developed by', name: 'Arshak P', href: 'https://www.linkedin.com/in/arshak-p', badge: 'code' },
+const credits: { role: UiKey; name: string; href: string; badge?: keyof typeof badges; flowing?: boolean }[] = [
+  { role: 'footer.designedBy', name: 'Aadhil', href: 'https://www.linkedin.com/in/aaaadhileyyy', badge: 'design' },
+  { role: 'footer.developedBy', name: 'Arshak P', href: 'https://www.linkedin.com/in/arshak-p', badge: 'code' },
   // flowing: the name is painted with the moving parrot-colour gradient (.flowing-colours in globals.css)
-  { role: 'Powered by', name: 'Colourparrot', href: 'https://colourparrot.com/', badge: 'advertising', flowing: true },
+  { role: 'footer.poweredBy', name: 'Colourparrot', href: 'https://colourparrot.com/', badge: 'advertising', flowing: true },
 ];
 
 export const Footer = async () => {
   const settings = await fetchSiteSettings();
-  const { address, phone, email } = resolveContact(settings);
+  const locale = getLocale();
+  const t = (key: UiKey) => tr(locale, key);
+  const contact = resolveContact(settings);
+  const { phone, email } = contact;
+  // The built-in address ("Doha, Qatar") has an Arabic form; an address typed in the Studio is shown as typed
+  const address = settings?.address?.trim() ? contact.address : t('footer.address');
   const socials = [
     { name: 'Instagram', href: settings?.instagramUrl },
     { name: 'Facebook', href: settings?.facebookUrl },
@@ -53,15 +60,15 @@ export const Footer = async () => {
     <footer className="footer-fill flex flex-col overflow-hidden bg-black text-gold">
       <Container className="flex flex-1 flex-col pt-20">
         <div className="flex flex-col gap-12 md:flex-row md:justify-between">
-          <Link href="/" aria-label="Shah Noori home" className="w-fit">
+          <Link href="/" aria-label={t('nav.homeLink')} className="w-fit">
             <Image src="/assets/images/brand/logo-gold.webp" alt="Shah Noori" width={104} height={124} className="h-28 w-auto" />
           </Link>
 
           <div className="grid grid-cols-2 gap-x-16 gap-y-10 sm:grid-cols-3">
-            <nav className="flex flex-col gap-2 text-lg" aria-label="Footer">
+            <nav className="flex flex-col gap-2 text-lg" aria-label={t('nav.footer')}>
               {navLinks.map((link) => (
                 <Link key={link.href} href={link.href} className="tap-area w-fit hover:opacity-75">
-                  {link.name}
+                  {t(link.key)}
                 </Link>
               ))}
             </nav>
@@ -78,7 +85,7 @@ export const Footer = async () => {
 
             <div className="col-span-2 flex flex-col gap-2 sm:col-span-1">
               <a href={`mailto:${email}`} className="tap-area w-fit text-lg hover:opacity-75">{email}</a>
-              <a href={toTelHref(phone)} className="tap-area w-fit hover:opacity-75">{phone}</a>
+              <a href={toTelHref(phone)} dir="ltr" className="tap-area w-fit hover:opacity-75">{phone}</a>
               <p className="whitespace-pre-line text-gold/80">{address}</p>
             </div>
           </div>
@@ -95,12 +102,12 @@ export const Footer = async () => {
       <div className="bg-white">
       <Container className="py-5">
         {/* Phones: the right side stays clear for the floating buttons */}
-        <div className="flex flex-col gap-3 pr-16 text-sm text-ink/70 md:flex-row md:pr-0 md:items-center md:justify-between">
-          <p>&copy; {new Date().getFullYear()} Shah Noori. All rights reserved.</p>
+        <div className="flex flex-col gap-3 pe-16 text-sm text-ink/70 md:flex-row md:pe-0 md:items-center md:justify-between">
+          <p>&copy; {new Date().getFullYear()} Shah Noori. {t('footer.rights')}</p>
           <ul className="flex flex-wrap gap-x-6 gap-y-3">
             {credits.map((credit) => (
               <li key={credit.role}>
-                {credit.role}{' '}
+                {t(credit.role)}{' '}
                 <a
                   href={credit.href}
                   target="_blank"
@@ -111,7 +118,7 @@ export const Footer = async () => {
                 >
                   {credit.name}
                   {credit.badge && (
-                    <span className="credit-badge pointer-events-none absolute -right-5 -top-5 flex h-6 w-6 items-center justify-center rounded-full bg-maroon text-gold shadow-lg" aria-hidden="true">
+                    <span className="credit-badge pointer-events-none absolute -end-5 -top-5 flex h-6 w-6 items-center justify-center rounded-full bg-maroon text-gold shadow-lg" aria-hidden="true">
                       {badges[credit.badge]}
                     </span>
                   )}

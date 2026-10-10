@@ -1,6 +1,9 @@
+import { T } from '@/components/shared/T';
+import { tr } from '@/lib/content/ui';
+import { getLocale } from '@/lib/locale.server';
 import React from 'react';
+import { metaFor } from '@/lib/meta.server';
 import type { Metadata } from 'next';
-import { pageMeta } from '@/lib/seo';
 import Image from 'next/image';
 import { Container } from '@/components/shared/Container';
 import { PageHero } from '@/components/shared/PageHero';
@@ -13,12 +16,7 @@ import { CtaBanner } from '@/components/shared/CtaBanner';
 import { fetchAboutContent } from '@/lib/sanity/fetch';
 import { paragraphs } from '@/lib/content/resolve';
 
-export const metadata: Metadata = pageMeta({
-  title: 'About Us | Interior Fit-out Company in Doha',
-  description:
-    'Shah Noori is an integrated construction and contracting company in Doha, Qatar, with 15+ years of experience in interior fit-out, MEP and civil works.',
-  path: '/about',
-});
+export const generateMetadata = (): Metadata => metaFor('about', '/about');
 
 export default async function AboutPage() {
   const { hero, story, approach, stats, mission, vision, services } = await fetchAboutContent();
@@ -26,7 +24,7 @@ export default async function AboutPage() {
   return (
     <main className="flex-1 w-full">
       <PageHero
-        label="About Us"
+        label={tr(getLocale(), 'label.about')}
         image={hero.image}
         title={hero.title}
       >
@@ -36,7 +34,7 @@ export default async function AboutPage() {
       {/* Our Story */}
       <section className="bg-beige py-24 md:py-32">
         <Container>
-          <SectionLabel tone="ink">Our Story</SectionLabel>
+          <SectionLabel tone="ink"><T k="label.ourStory" /></SectionLabel>
           <div className="mt-8 grid gap-10 lg:grid-cols-[400px_1fr] lg:gap-28">
             <div className="card-reveal relative aspect-[443/644] overflow-clip rounded-[32px] lg:max-h-[470px]">
               <Image src={story.image1} alt="" fill sizes="(min-width: 1024px) 400px, 100vw" className="img-settle object-cover" />
@@ -45,7 +43,7 @@ export default async function AboutPage() {
               <div className="space-y-4 text-xl md:text-2xl leading-snug text-ink">
                 {paragraphs(story.text).map((p, i) => <p key={i} className="text-reveal">{p}</p>)}
               </div>
-              <div className="card-reveal relative aspect-square max-h-[440px] overflow-clip rounded-[32px] lg:-ml-8">
+              <div className="card-reveal relative aspect-square max-h-[440px] overflow-clip rounded-[32px] lg:-ms-8">
                 <Image src={story.image2} alt="" fill sizes="(min-width: 1024px) 620px, 100vw" className="img-settle object-cover" />
               </div>
             </div>
@@ -62,7 +60,7 @@ export default async function AboutPage() {
       <section className="bg-white py-24 md:py-32">
         <Container>
           <h2 className="text-brand-gradient w-fit whitespace-pre-line text-4xl md:text-5xl font-semibold leading-tight">{stats.heading}</h2>
-          <dl className="mt-12 flex flex-col gap-10 lg:ml-[35%]">
+          <dl className="mt-12 flex flex-col gap-10 lg:ms-[35%]">
             {stats.items.map((s, i) => (
               <div key={i} className="grid items-center gap-4 sm:grid-cols-[320px_1fr]">
                 <dt className="text-reveal text-8xl md:text-[128px] font-medium leading-none tracking-tight text-ink"><CountUp value={s.value} /></dt>
@@ -82,7 +80,7 @@ export default async function AboutPage() {
             </div>
           </div>
 
-          <SectionLabel className="mt-28">Our Services</SectionLabel>
+          <SectionLabel className="mt-28"><T k="label.ourServices" /></SectionLabel>
           <h2 className="text-brand-gradient mt-10 w-fit text-3xl md:text-4xl font-semibold">{services.heading}</h2>
           <div className="mt-14">
             <DivisionCards />

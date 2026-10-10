@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from './LocaleProvider';
 import React, { useEffect, useRef, useState } from 'react';
 
 /** Asked for by the button; SmoothScrollProvider answers it when smooth scrolling is running. */
@@ -15,6 +16,7 @@ const RING_LENGTH = 2 * Math.PI * RING_RADIUS;
  * around it fills as the page is scrolled: empty at the top, a full circle at the bottom.
  */
 export const BackToTop = () => {
+  const t = useT();
   const [visible, setVisible] = useState(false);
   const ringRef = useRef<SVGCircleElement>(null);
 
@@ -60,10 +62,10 @@ export const BackToTop = () => {
     <button
       type="button"
       onClick={toTop}
-      aria-label="Back to top"
-      data-cursor="Top"
+      aria-label={t('action.backToTop')}
+      data-cursor={t('action.top')}
       tabIndex={visible ? 0 : -1}
-      className={`group fixed bottom-[84px] right-5 z-50 flex h-12 w-12 items-center md:bottom-24 md:right-6 md:h-14 md:w-14 justify-center rounded-full border border-white/35 bg-maroon/55 text-white shadow-lg backdrop-blur-md transition-all duration-300 hover:scale-110 hover:bg-maroon/75 focus:outline-none focus-visible:ring-4 focus-visible:ring-gold ${
+      className={`group fixed bottom-[84px] end-5 z-50 flex h-12 w-12 items-center md:bottom-24 md:end-6 md:h-14 md:w-14 justify-center rounded-full border border-white/35 bg-maroon/55 text-white shadow-lg backdrop-blur-md transition-all duration-300 hover:scale-110 hover:bg-maroon/75 focus:outline-none focus-visible:ring-4 focus-visible:ring-gold ${
         visible ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-3 opacity-0'
       }`}
     >

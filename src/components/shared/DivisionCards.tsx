@@ -21,7 +21,7 @@ export const DivisionCards = async () => {
       <article key={d.id} className="card-reveal card-lift flex flex-col overflow-clip rounded-[32px] bg-white shadow-[0_20px_40px_-12px_rgba(0,0,0,0.25)]">
         <div className="relative aspect-[340/220] overflow-clip">
           <Image src={d.image || '/assets/images/placeholder.webp'} alt={d.title} fill sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw" className="img-settle object-cover" />
-          <span className="absolute left-5 top-5 rounded-full bg-maroon px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-gold">
+          <span className="absolute start-5 top-5 rounded-full bg-maroon px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-gold">
             {d.pill}
           </span>
         </div>
