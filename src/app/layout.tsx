@@ -9,11 +9,15 @@ const cabin = Cabin({
   weight: ["400", "500", "600", "700"],
 });
 
+// Not fetched ahead here: English pages only show a word or two of Arabic (the language switch),
+// and four font files at the top of every page held back everything else. The Arabic site
+// fetches them ahead in its own layout, src/app/(ar)/layout.tsx.
 const arabic = Tajawal({
   variable: "--font-arabic",
   subsets: ["arabic"],
   // Tajawal has no 600: semibold text uses its 700
   weight: ["400", "500", "700", "800"],
+  preload: false,
 });
 
 const DESCRIPTION =

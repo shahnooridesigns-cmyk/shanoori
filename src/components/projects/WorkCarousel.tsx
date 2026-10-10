@@ -164,10 +164,10 @@ export const WorkCarousel = ({ projects }: { projects: ProjectSummary[] }) => {
           data-cursor-tone="ink"
           className="relative aspect-[3/2] w-full overflow-hidden rounded-2xl bg-maroon shadow-[0_30px_50px_-15px_rgba(60,40,10,0.55)]"
         >
-          {/* Out of sight, but loaded at the size the main photo uses */}
+          {/* Out of sight, but loaded at the size the main photo uses, once the frame nears the screen */}
           <div className="absolute inset-0 opacity-0" aria-hidden="true">
             {upcoming.map((p) => (
-              <Image key={p._id} src={p.imageUrl || '/assets/images/placeholder.webp'} alt="" fill sizes={MAIN_SIZES} loading="eager" className="object-cover" />
+              <Image key={p._id} src={p.imageUrl || '/assets/images/placeholder.webp'} alt="" fill sizes={MAIN_SIZES} className="object-cover" />
             ))}
           </div>
 

@@ -3,6 +3,7 @@ import React from 'react';
 import Image from 'next/image';
 import { Container } from './Container';
 import { CurtainHold } from './CurtainHold';
+import { LoadWhenNear } from './LoadWhenNear';
 import { SectionLabel } from './ui';
 import { fetchClients, fetchSharedContent } from '@/lib/sanity/fetch';
 import type { ClientLogo } from '@/lib/sanity/types';
@@ -19,8 +20,9 @@ const MARQUEE_FILL = 14;
 const Logo = ({ client, className = '' }: { client: ClientLogo; className?: string }) => (
   <li className={`relative flex h-[34vw] w-[43vw] shrink-0 items-center justify-center sm:h-44 sm:w-60 md:h-60 md:w-80 ${className}`} title={client.name}>
     {client.logoUrl ? (
-      // Eager: the line repeats each logo many times and keeps moving, so lazy loading would leave gaps
-      <Image src={client.logoUrl} alt={client.name} fill sizes="(min-width: 768px) 320px, 45vw" loading="eager" className="object-contain brightness-0 invert" />
+      // Not fetched at the top of the page: LoadWhenNear (in the section) fetches them all together
+      // when the strip nears the screen, so none is missing as the line slides
+      <Image src={client.logoUrl} alt={client.name} fill sizes="(min-width: 768px) 320px, 45vw" className="object-contain brightness-0 invert" />
     ) : (
       <span className="px-2 text-center text-base font-semibold text-white md:text-xl">{client.name}</span>
     )}
@@ -68,6 +70,7 @@ export const TrustedBy = async ({ reveal = false }: { reveal?: boolean }) => {
       {/* Soft glow behind the logos */}
       <div className="pointer-events-none absolute left-1/2 top-1/2 h-[420px] w-[820px] max-w-[120vw] -translate-x-1/2 -translate-y-1/3 rounded-full bg-gold/15 blur-[110px]" aria-hidden="true" />
 
+      <LoadWhenNear />
       <Container className="relative flex flex-col items-center">
         <SectionLabel tone="gold" className="!self-center"><T k="label.ourClients" /></SectionLabel>
         <h2 className="mt-5 text-center text-4xl md:text-5xl font-semibold text-gold">{shared.clients.heading}</h2>
