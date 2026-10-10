@@ -27,6 +27,8 @@ export { DOQueueHandler, DOShardedTagCache, BucketCachePurge } from './.open-nex
 const FRESH_SECONDS = 60;
 /** After this long a copy is thrown away rather than served */
 const KEEP_SECONDS = 24 * 60 * 60;
+/** How long a resized photo is kept, at Cloudflare and in the visitor's browser */
+const IMAGE_SECONDS = 7 * 24 * 60 * 60;
 const BUILT_AT = 'x-sn-built-at';
 
 /** Pages only: not the Studio, the contact endpoint, Next's own files, or anything with a file extension */
@@ -76,12 +78,18 @@ export default {
 
       const cache = caches.default;
 
-      // Resized photos (/_next/image) say themselves how long they may be kept: reuse them too
+      // Resized photos (/_next/image) arrive from the image service without saying how long they
+      // may be kept, so browsers fetched them again on every page. A photo at a given address
+      // does not change (Studio photos get a new address when replaced), so it is kept for a
+      // week, here and in the visitor's browser, like the files under /assets.
       if (url.pathname === '/_next/image') {
         const hit = await cache.match(request);
         if (hit) return hit;
-        const response = await handler.fetch(request, env, ctx);
-        if (response.status === 200) ctx.waitUntil(cache.put(request, response.clone()).catch(() => {}));
+        const answer = await handler.fetch(request, env, ctx);
+        if (answer.status !== 200) return answer;
+        const response = new Response(answer.body, answer);
+        response.headers.set('cache-control', `public, max-age=${IMAGE_SECONDS}, stale-while-revalidate=${IMAGE_SECONDS}`);
+        ctx.waitUntil(cache.put(request, response.clone()).catch(() => {}));
         return response;
       }
 
