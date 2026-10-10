@@ -52,7 +52,8 @@ export const TrustedBy = async () => {
 
   return (
     // Slides up over the section before it (CurtainHold)
-    <section className="bg-brand-gradient relative overflow-hidden py-24 md:py-32">
+    // A full screen tall, its content centred, so nothing of the section before shows above it
+    <section className="bg-brand-gradient relative flex min-h-[100svh] flex-col justify-center overflow-hidden py-24 md:py-32">
       <CurtainHold />
       {/* Soft glow behind the logos */}
       <div className="pointer-events-none absolute left-1/2 top-1/2 h-[420px] w-[820px] max-w-[120vw] -translate-x-1/2 -translate-y-1/3 rounded-full bg-gold/15 blur-[110px]" aria-hidden="true" />
