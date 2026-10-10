@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
-import { motion, useInView, useReducedMotion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { Container } from './Container';
 import { LocaleLink as Link } from '@/components/shared/LocaleProvider';
 import { ArrowUpRight } from './ui';
@@ -103,10 +103,45 @@ const Arm = ({ photo, side }: { photo: 'paper' | 'pen'; side: 'left' | 'right' }
   </>
 );
 
+/**
+ * True while at least `amount` of the banner can really be seen. The banner waits behind the
+ * section before it (see CtaBanner), so being inside the screen is not enough: the part still
+ * covered by that section does not count.
+ */
+const useUncovered = (ref: React.RefObject<HTMLElement | null>, amount: number) => {
+  const [uncovered, setUncovered] = useState(false);
+
+  useEffect(() => {
+    const section = ref.current?.closest('section');
+    if (!section) return;
+    let frame = 0;
+    const check = () => {
+      frame = 0;
+      const box = section.getBoundingClientRect();
+      const coverEnd = section.previousElementSibling?.getBoundingClientRect().bottom ?? 0;
+      const seen = Math.min(box.bottom, window.innerHeight) - Math.max(box.top, coverEnd, 0);
+      setUncovered(box.height > 0 && seen / box.height >= amount);
+    };
+    const queue = () => {
+      if (!frame) frame = requestAnimationFrame(check);
+    };
+    check();
+    window.addEventListener('scroll', queue, { passive: true });
+    window.addEventListener('resize', queue);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener('scroll', queue);
+      window.removeEventListener('resize', queue);
+    };
+  }, [ref, amount]);
+
+  return uncovered;
+};
+
 export const CtaSigning = ({ heading, text, buttonLabel }: { heading: string; text: string; buttonLabel: string }) => {
   const sceneRef = useRef<HTMLDivElement>(null);
   const reduceMotion = Boolean(useReducedMotion());
-  const inView = useInView(sceneRef, { amount: 0.3 });
+  const inView = useUncovered(sceneRef, 0.3);
   const [hovered, setHovered] = useState(false);
   const [vw, setVw] = useState(0);
   const [autoSign, setAutoSign] = useState(false);
