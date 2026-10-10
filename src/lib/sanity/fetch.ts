@@ -25,7 +25,21 @@ import { isSample, publicSlug } from '../seo';
 
 /** Placeholder projects are not shown anywhere, and every project carries its published address. */
 const forSite = (projects: ProjectSummary[] | null) =>
-  (projects ?? []).filter((p) => !isSample(p._id)).map((p) => inLanguage({ ...p, slug: publicSlug(p.slug, p.title) }));
+  (projects ?? []).filter((p) => !isSample(p._id)).map((p) => slim(inLanguage({ ...p, slug: publicSlug(p.slug, p.title) })));
+
+/**
+ * Project lists are handed to components that run in the browser, so everything in them is
+ * written into the page. A card only shows the first lines of the description, in one language:
+ * the full text and the other language's wording are left out to keep pages small and quick to build.
+ */
+const slim = (project: ProjectSummary): ProjectSummary => {
+  const rest: ProjectSummary = { ...project };
+  delete rest.titleAr;
+  delete rest.locationAr;
+  delete rest.descriptionAr;
+  const firstParagraph = typeof project.excerpt === 'string' ? project.excerpt.split('\n')[0].trim() : '';
+  return { ...rest, excerpt: firstParagraph.length > 220 ? `${firstParagraph.slice(0, firstParagraph.lastIndexOf(' ', 220))}…` : firstParagraph };
+};
 
 /** On the Arabic site a testimonial shows its Arabic text and name where the Studio has them */
 const reviewInLanguage = (review: Review): Review =>
