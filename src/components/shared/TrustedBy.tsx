@@ -45,16 +45,26 @@ const Row = ({ clients, reverse = false }: { clients: ClientLogo[]; reverse?: bo
   );
 };
 
-/** "Trusted by Businesses & Brands": client logos from Sanity in one line, with the client count under it. */
-export const TrustedBy = async () => {
+/**
+ * "Trusted by Businesses & Brands": client logos from Sanity in one line, with the client count under it.
+ * With `reveal` it does not slide over the section before it: it waits behind that section, fixed to
+ * the screen, and is uncovered as the section scrolls away. The section before must then sit above
+ * it (a z-index) inside a shared box, as on the home page.
+ */
+export const TrustedBy = async ({ reveal = false }: { reveal?: boolean }) => {
   const [clients, shared] = await Promise.all([fetchClients(), fetchSharedContent()]);
   if (clients.length === 0) return null;
 
   return (
-    // Slides up over the section before it (CurtainHold)
-    // A full screen tall, its content centred, so nothing of the section before shows above it
-    <section className="bg-brand-gradient relative flex min-h-[100svh] flex-col justify-center overflow-hidden py-24 md:py-32">
-      <CurtainHold />
+    // Slides up over the section before it (CurtainHold), or is uncovered by it (reveal).
+    // A full screen tall, its content centred, so nothing of the section before shows above it.
+    // Waiting behind only works while the section fits the screen, hence the height condition.
+    <section
+      className={`bg-brand-gradient relative flex min-h-[100svh] flex-col justify-center overflow-hidden py-16 md:py-20 ${
+        reveal ? 'motion-safe:[@media(min-height:600px)]:sticky motion-safe:[@media(min-height:600px)]:bottom-0' : ''
+      }`}
+    >
+      {!reveal && <CurtainHold />}
       {/* Soft glow behind the logos */}
       <div className="pointer-events-none absolute left-1/2 top-1/2 h-[420px] w-[820px] max-w-[120vw] -translate-x-1/2 -translate-y-1/3 rounded-full bg-gold/15 blur-[110px]" aria-hidden="true" />
 

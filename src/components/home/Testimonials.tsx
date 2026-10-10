@@ -2,6 +2,7 @@ import { tr } from '@/lib/content/ui';
 import { getLocale } from '@/lib/locale.server';
 import React from 'react';
 import { ClientNotes } from './ClientNotes';
+import { CurtainHold } from '../shared/CurtainHold';
 import { fetchFeaturedReviews, fetchHomeContent } from '@/lib/sanity/fetch';
 
 /** Every card comes from the Studio (Testimonials, Featured on). With none, the section is left out. */
@@ -10,7 +11,9 @@ export const Testimonials = async () => {
   if (reviews.length === 0) return null;
 
   return (
+    // Slides up over the client logos before it (CurtainHold)
     <section className="relative bg-beige" aria-label={tr(getLocale(), 'label.testimonials')}>
+      <CurtainHold />
       <ClientNotes title={testimonials.heading} reviews={reviews} />
     </section>
   );

@@ -23,8 +23,12 @@ export default function Home() {
         <SelectedWork />
         <WhyChooseUs />
         <ServicesShowcase />
-        <Process />
-        <TrustedBy />
+        {/* The client logos wait behind the process section, which scrolls away to uncover them.
+            One box around both: the section after it holds the box in place and slides over the logos */}
+        <div className="relative isolate flex flex-col">
+          <Process />
+          <TrustedBy reveal />
+        </div>
         <Testimonials />
         <FaqSection />
         <CtaBanner />

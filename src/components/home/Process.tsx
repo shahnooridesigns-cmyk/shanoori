@@ -14,7 +14,7 @@ export const Process = async () => {
   return (
     // Overlaps the section above by a pixel: on some screens its black backdrop stops a hair short
     // of its own edge, which showed as a thin beige line between the two
-    <section className="relative -mt-px bg-black" aria-labelledby="process-heading">
+    <section className="relative z-10 -mt-px bg-black" aria-labelledby="process-heading">
       <Container>
         <SectionLabel tone="gold"><T k="label.process" /></SectionLabel>
         <div className="mt-6 flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
