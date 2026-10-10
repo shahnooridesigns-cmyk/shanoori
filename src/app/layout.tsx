@@ -9,9 +9,10 @@ const cabin = Cabin({
   weight: ["400", "500", "600", "700"],
 });
 
-// Not fetched ahead here: English pages only show a word or two of Arabic (the language switch),
-// and four font files at the top of every page held back everything else. The Arabic site
-// fetches them ahead in its own layout, src/app/(ar)/layout.tsx.
+// Not fetched ahead: four font files at the top of every page held back everything else, and
+// English pages only show a word or two of Arabic (the language switch). The browser fetches a
+// weight when Arabic text needs it. (Declaring it again with preload in the Arabic layout did
+// not help: its files were then fetched ahead on English pages too.)
 const arabic = Tajawal({
   variable: "--font-arabic",
   subsets: ["arabic"],
