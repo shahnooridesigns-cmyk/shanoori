@@ -89,7 +89,7 @@ export const ProjectGallery = ({ images, title }: { images: GalleryImage[]; titl
             >
               <Image
                 src={img.url}
-                alt={`${title}, photo ${i + 1}`}
+                alt={`${title}, ${t('project.photo')} ${i + 1}`}
                 fill
                 sizes={i % 5 === 0 ? '(min-width: 768px) 50vw, 100vw' : '(min-width: 768px) 25vw, (min-width: 640px) 50vw, 100vw'}
                 className="object-cover transition-transform duration-700 group-hover:scale-105"
@@ -153,7 +153,7 @@ export const ProjectGallery = ({ images, title }: { images: GalleryImage[]; titl
                     else if (info.offset.x > 80) go(-1);
                   }}
                 >
-                  <Image src={images[open].url} alt={`${title}, photo ${open + 1}`} fill sizes="100vw" className="pointer-events-none select-none object-contain" />
+                  <Image src={images[open].url} alt={`${title}, ${t('project.photo')} ${open + 1}`} fill sizes="100vw" className="pointer-events-none select-none object-contain" />
                 </motion.div>
               </AnimatePresence>
 

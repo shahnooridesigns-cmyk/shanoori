@@ -216,7 +216,7 @@ export default async function ProjectDetailPage({ params }: Props) {
           overflow-clip (not hidden) keeps the zoom tied to the page's scroll. */}
       {feature && (
         <section className="relative h-[100svh] min-h-[480px] overflow-clip bg-black" aria-label={t('project.featuredPhoto')}>
-          <Image src={feature.url} alt={`${project.title}, featured photo`} fill sizes="100vw" className="img-settle object-cover" />
+          <Image src={feature.url} alt={`${project.title}, ${t('project.featuredPhoto')}`} fill sizes="100vw" className="img-settle object-cover" />
         </section>
       )}
 
