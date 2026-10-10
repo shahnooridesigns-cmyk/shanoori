@@ -27,6 +27,12 @@ import { isSample, publicSlug } from '../seo';
 const forSite = (projects: ProjectSummary[] | null) =>
   (projects ?? []).filter((p) => !isSample(p._id)).map((p) => inLanguage({ ...p, slug: publicSlug(p.slug, p.title) }));
 
+/** On the Arabic site a testimonial shows its Arabic text and name where the Studio has them */
+const reviewInLanguage = (review: Review): Review =>
+  getLocale() !== 'ar'
+    ? review
+    : { ...review, reviewText: review.reviewTextAr?.trim() || review.reviewText, clientName: review.clientNameAr?.trim() || review.clientName };
+
 /** On the Arabic site a project shows its Arabic title, location and description where the Studio has them */
 const inLanguage = <P extends ProjectSummary>(project: P): P => {
   if (getLocale() !== 'ar') return project;
@@ -97,7 +103,7 @@ export const fetchProjectBySlug = cache(
       ...inLanguage(project),
       slug: publicSlug(project.slug, project.title),
       // A placeholder review is not this project's
-      review: project.review && !isSample(project.review._id) ? project.review : null,
+      review: project.review && !isSample(project.review._id) ? reviewInLanguage(project.review) : null,
     };
   }
 );
@@ -108,7 +114,7 @@ export const fetchClients = cache(
 
 export const fetchFeaturedReviews = cache(
   async (): Promise<Review[]> =>
-    ((await load(getFeaturedReviews)) ?? []).filter((review: Review) => !isSample(review._id))
+    ((await load(getFeaturedReviews)) ?? []).filter((review: Review) => !isSample(review._id)).map(reviewInLanguage)
 );
 
 /**
@@ -124,8 +130,22 @@ const pageContent = <T>(id: string, defaults: T, arabic: unknown) => {
       return defaults;
     }
   });
-  // On the Arabic site the wording comes from defaults.ar.ts; photos and icons stay as resolved
-  return async (): Promise<T> => (getLocale() === 'ar' ? localize(await english(), arabic) : english());
+  // The Arabic form in the Studio (same id plus "Ar"); nothing there yet is not an error
+  const arabicDoc = cache(async (): Promise<unknown> => {
+    try {
+      return await load(`*[_id == $id][0]`, { id: `${id}Ar` });
+    } catch (error) {
+      console.error(`Could not load "${id}Ar" content from Sanity, using the built-in Arabic`, error);
+      return null;
+    }
+  });
+  // On the Arabic site: the built-in Arabic wording (defaults.ar.ts) over the page, then the
+  // Studio's Arabic form over that. Photos and icons stay as resolved for the English page.
+  return async (): Promise<T> => {
+    if (getLocale() !== 'ar') return english();
+    const [content, studioArabic] = await Promise.all([english(), arabicDoc()]);
+    return localize(localize(content, arabic), studioArabic);
+  };
 };
 
 export const fetchSharedContent = pageContent('sharedContent', sharedDefaults, sharedAr);

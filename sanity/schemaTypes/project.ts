@@ -127,6 +127,10 @@ export default defineType({
       title: 'Description (Arabic)',
       type: 'text',
       description: 'Shown on the Arabic site. Leave empty to use the English description.',
+      validation: (Rule) =>
+        Rule.custom((value, context) =>
+          value || !context.document?.description ? true : 'Arabic not filled in yet: the Arabic site shows this description in English.'
+        ).warning(),
     }),
     defineField({
       name: 'featured',

@@ -44,6 +44,9 @@ export interface Review {
   clientCompany?: string;
   rating?: number;
   reviewText: string;
+  /** Arabic wording from the Studio, used on the Arabic site where filled in */
+  reviewTextAr?: string | null;
+  clientNameAr?: string | null;
   photoUrl?: string;
   /** photoUrl is the client's logo (show it whole) rather than a person's photo (crop to a circle) */
   photoIsLogo?: boolean;

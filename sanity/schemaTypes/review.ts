@@ -49,6 +49,22 @@ export default defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
+      name: 'reviewTextAr',
+      title: 'Review Text (Arabic)',
+      type: 'text',
+      description: 'Shown on the Arabic site (sncreatives.com/ar). Leave empty to show the English text there.',
+      validation: (Rule) =>
+        Rule.custom((value, context) =>
+          value || !context.document?.reviewText ? true : 'Arabic not filled in yet: the Arabic site shows this review in English.'
+        ).warning(),
+    }),
+    defineField({
+      name: 'clientNameAr',
+      title: 'Person Name (Arabic)',
+      type: 'string',
+      description: 'Optional. The person\'s name in Arabic letters, for the Arabic site.',
+    }),
+    defineField({
       name: 'clientPhoto',
       title: 'Person Photo',
       type: 'image',

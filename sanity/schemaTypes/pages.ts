@@ -10,6 +10,8 @@ import {
   servicesDefaults,
   sharedDefaults,
 } from '../../src/lib/content/defaults';
+import { aboutAr, contactAr, homeAr, projectsAr, servicesAr, sharedAr } from '../../src/lib/content/defaults.ar';
+import { SHARED_KEY, localize } from '../../src/lib/content/localize';
 
 /**
  * Editable page copy. Each document below is generated from the matching defaults object
@@ -179,7 +181,26 @@ const divisionNotes = (key: string) => ({
   [`${key}.highlights`]: 'Tick list on the About page service card.',
 });
 
-export const pageTypes = [
+/** The wording of a page with photos and icons left out: what the Arabic form holds */
+const textOnly = (value: Json): Json => {
+  if (typeof value === 'string') return value;
+  if (Array.isArray(value)) return (value as readonly Json[]).map(textOnly);
+  return Object.fromEntries(
+    Object.entries(value as { [key: string]: Json })
+      .filter(([key]) => !SHARED_KEY.test(key))
+      .map(([key, v]) => [key, textOnly(v)])
+  );
+};
+
+/**
+ * The Arabic twin of a page form: same tabs and fields, text only, opening pre-filled with the
+ * Arabic wording the site already uses (src/lib/content/defaults.ar.ts). Its document id is the
+ * page's name plus "Ar". Photos and icons are edited once, on the English form, for both languages.
+ */
+const arabicPage = (name: string, title: string, defaults: { [key: string]: Json }, arabic: unknown, hints: Hints = {}) =>
+  page(`${name}Ar`, `${title} (Arabic)`, localize(textOnly(defaults), arabic) as { [key: string]: Json }, hints);
+
+const englishPages = [
   page('homePage', 'Home Page', homeDefaults, {
     icons: WHY_ICONS,
     shapes: { 'hero.image': 'wide' },
@@ -277,5 +298,18 @@ export const pageTypes = [
     },
   }),
 ];
+
+/** Field names and help text are shared with the English forms; only the wording differs */
+const ARABIC_NOTE = { labels: { hero: 'Hero' } };
+const arabicPages = [
+  arabicPage('homePage', 'Home Page', homeDefaults, homeAr, { ...ARABIC_NOTE, fixed: { 'process.steps': 4 } }),
+  arabicPage('aboutPage', 'About Page', aboutDefaults, aboutAr, ARABIC_NOTE),
+  arabicPage('servicesPage', 'Services Page', servicesDefaults, servicesAr, ARABIC_NOTE),
+  arabicPage('projectsPage', 'Projects Page', projectsDefaults, projectsAr, ARABIC_NOTE),
+  arabicPage('contactPage', 'Contact Page', contactDefaults, contactAr, ARABIC_NOTE),
+  arabicPage('sharedContent', 'Shared Content', sharedDefaults, sharedAr, { labels: { faq: 'FAQ', cta: 'Bottom banner', clients: 'Client logos' } }),
+];
+
+export const pageTypes = [...englishPages, ...arabicPages];
 
 export const PAGE_TYPE_NAMES = pageTypes.map((type) => type.name);

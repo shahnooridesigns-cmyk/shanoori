@@ -24,6 +24,8 @@ const reviewFields = groq`
   "clientCompany": select(defined(clientName) && defined(client) => client->name, clientCompany),
   rating,
   reviewText,
+  reviewTextAr,
+  clientNameAr,
   "photoUrl": coalesce(clientPhoto.asset->url, client->logo.asset->url),
   "photoIsLogo": !defined(clientPhoto.asset) && defined(client->logo.asset),
   "imageUrl": image.asset->url

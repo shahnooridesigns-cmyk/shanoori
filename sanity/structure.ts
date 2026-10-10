@@ -23,5 +23,23 @@ export const structure: StructureResolver = (S) =>
       singleton(S, 'contactPage', 'Contact Page', '✉️'),
       singleton(S, 'sharedContent', 'Shared Content (FAQ, banner, services)', '🧩'),
       S.divider(),
+      // The Arabic wording of each page (sncreatives.com/ar). Photos are set on the English forms.
+      S.listItem()
+        .id('arabic')
+        .title('Arabic text (عربي)')
+        .icon(() => '🌙')
+        .child(
+          S.list()
+            .title('Arabic text')
+            .items([
+              singleton(S, 'homePageAr', 'Home Page (Arabic)', '🏠'),
+              singleton(S, 'aboutPageAr', 'About Page (Arabic)', '📖'),
+              singleton(S, 'servicesPageAr', 'Services Page (Arabic)', '🛠️'),
+              singleton(S, 'projectsPageAr', 'Projects Page (Arabic)', '🖼️'),
+              singleton(S, 'contactPageAr', 'Contact Page (Arabic)', '✉️'),
+              singleton(S, 'sharedContentAr', 'Shared Content (Arabic)', '🧩'),
+            ])
+        ),
+      S.divider(),
       S.documentTypeListItem('siteSettings').title('Site Settings').icon(() => '⚙️'),
     ]);
