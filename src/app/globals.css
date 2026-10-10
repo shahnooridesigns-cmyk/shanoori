@@ -747,9 +747,8 @@ html[data-sn-preload="on"] {
   align-items: center;
   gap: 0.9rem;
   overflow: hidden;
-  border: 1px solid currentColor;
   border-radius: 999px;
-  padding: 0.4rem 0.4rem 0.4rem 1.35rem;
+  padding: calc(0.4rem + 1px) calc(0.4rem + 1px) calc(0.4rem + 1px) calc(1.35rem + 1px);
   font-size: 1rem;
   font-weight: 500;
   line-height: 1.2;
@@ -758,6 +757,36 @@ html[data-sn-preload="on"] {
   transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s;
 }
 .btn-pill.text-maroon { --btn-ink: var(--color-cream); }
+/* The border: a faint ring with a streak of light that keeps travelling round it. Drawn as a
+   ring-shaped mask over a turning gradient, so it follows the pill's curve. Without support for
+   animating the angle (@property) the ring simply stays still. */
+@property --btn-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+.btn-pill::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  padding: 1.5px;
+  pointer-events: none;
+  background:
+    conic-gradient(from var(--btn-angle), transparent 0deg 235deg, currentColor 320deg, #fff 345deg, transparent 360deg),
+    linear-gradient(color-mix(in srgb, currentColor 38%, transparent) 0 0);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .btn-pill::after { animation: btn-border-run 3.2s linear infinite; }
+  .btn-pill:hover::after { animation-duration: 1.4s; }
+}
+@keyframes btn-border-run {
+  to { --btn-angle: 360deg; }
+}
 /* The flood: a disc sitting under the arrow badge that grows until it covers the pill */
 .btn-pill::before {
   content: '';
