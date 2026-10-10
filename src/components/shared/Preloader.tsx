@@ -3,10 +3,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 import type { UiKey } from '@/lib/content/ui';
 import { useLocale, useT } from './LocaleProvider';
-import { Caveat } from 'next/font/google';
+import localFont from 'next/font/local';
 import { AnimatePresence, animate, motion, useMotionValue, useMotionValueEvent, useReducedMotion } from 'framer-motion';
 
-const hand = Caveat({ subsets: ['latin'], weight: ['500', '600'] });
+// The handwriting (Caveat, weight 500), cut down to the letters the notes use: small letters, the
+// capitals P D B F W S N I Q C and basic punctuation. 22 KB instead of 74 KB, and it is fetched
+// before anything is shown. A note using another capital or a digit shows that one character in
+// the plain fallback font: add it to the font file then (it was made with the subset-font tool).
+const hand = localFont({ src: '../../fonts/caveat-notes.woff2', weight: '500', display: 'swap' });
 
 /**
  * First-visit preloader: a pencil sketch of a room (arched window, plant, armchair, pendant
