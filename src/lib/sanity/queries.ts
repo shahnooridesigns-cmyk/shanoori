@@ -5,6 +5,7 @@ const projectSummaryFields = groq`
   title,
   "slug": slug.current,
   category,
+  spaceType,
   location,
   year,
   "imageUrl": coverImage.asset->url,

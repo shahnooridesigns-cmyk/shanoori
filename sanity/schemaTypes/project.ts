@@ -44,6 +44,23 @@ export default defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
+      name: 'spaceType',
+      title: 'Type of space',
+      type: 'string',
+      description: 'What kind of place it is. Visitors use this to filter the Projects page.',
+      options: {
+        list: [
+          { title: 'Retail', value: 'retail' },
+          { title: 'Office', value: 'office' },
+          { title: 'Exhibition', value: 'exhibition' },
+          { title: 'Café & Restaurant', value: 'cafe' },
+          { title: 'Hospitality', value: 'hospitality' },
+          { title: 'Healthcare', value: 'healthcare' },
+          { title: 'Residential', value: 'residential' },
+        ],
+      },
+    }),
+    defineField({
       name: 'client',
       title: 'Client',
       type: 'reference',
@@ -104,7 +121,7 @@ export default defineType({
   preview: {
     select: {
       title: 'title',
-      subtitle: 'category',
+      subtitle: 'spaceType',
       media: 'coverImage',
     },
   },

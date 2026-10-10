@@ -5,6 +5,8 @@ export interface ProjectSummary {
   title: string;
   slug: string;
   category: Category;
+  /** Kind of place (retail, office, …); what the Projects page filters by */
+  spaceType?: string | null;
   location?: string;
   year?: number;
   imageUrl?: string;

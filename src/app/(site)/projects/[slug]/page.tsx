@@ -13,7 +13,7 @@ import { ArrowLink, SectionLabel } from '@/components/shared/ui';
 import { ProjectGallery } from '@/components/projects/ProjectGallery';
 import { ProjectCard } from '@/components/projects/ProjectCard';
 import { RiseText } from '@/components/shared/RiseText';
-import { categoryLabel } from '@/lib/categories';
+import { categoryLabel, projectKind } from '@/lib/categories';
 import { SITE_NAME, SITE_URL, isSampleProject, pageMeta } from '@/lib/seo';
 
 type Props = { params: Promise<{ slug: string }> };
@@ -95,7 +95,7 @@ export default async function ProjectDetailPage({ params }: Props) {
     .sort((a, b) => (b.width ?? 0) * (b.height ?? 0) - (a.width ?? 0) * (a.height ?? 0))[0];
 
   const facts = [
-    { label: 'Category', value: categoryLabel(project.category) },
+    { label: 'Category', value: projectKind(project) },
     { label: 'Client', value: project.client?.name, logoUrl: project.client?.logoUrl },
     { label: 'Location', value: project.location },
     { label: 'Year', value: project.year?.toString() },
@@ -254,6 +254,18 @@ export default async function ProjectDetailPage({ params }: Props) {
               </p>
             </div>
             <ProjectGallery images={gallery} title={project.title} />
+            {/* Asked at the moment someone has just looked through the photos; the message names this project */}
+            <div className="card-reveal mt-16 flex flex-col items-start justify-between gap-6 rounded-[28px] bg-cream p-8 md:flex-row md:items-center md:p-10">
+              <div>
+                <p className="text-2xl font-medium text-maroon md:text-3xl">Like what you see?</p>
+                <p className="mt-2 text-ink/70">Ask us about {project.title} on WhatsApp. We usually reply the same day.</p>
+              </div>
+              <WhatsAppButton
+                className="shrink-0"
+                message={`Hello Shah Noori, I just looked at your project "${project.title}" on your website and would like to know more.`}
+                phoneNumber={phoneNumber}
+              />
+            </div>
           </Container>
         </section>
       )}

@@ -9,7 +9,7 @@ import { ArrowLink, ArrowUpRight, SectionLabel } from '@/components/shared/ui';
 import { ProjectsGrid } from '@/components/projects/ProjectsGrid';
 import { CtaBanner } from '@/components/shared/CtaBanner';
 import { CountUp } from '@/components/shared/CountUp';
-import { categoryLabel } from '@/lib/categories';
+import { projectKind } from '@/lib/categories';
 import { fetchAllProjects, fetchFeaturedProjects, fetchProjectsContent } from '@/lib/sanity/fetch';
 
 export const metadata: Metadata = pageMeta({
@@ -22,13 +22,13 @@ export const metadata: Metadata = pageMeta({
 export default async function ProjectsPage() {
   const [projects, featured, content] = await Promise.all([fetchAllProjects(), fetchFeaturedProjects(), fetchProjectsContent()]);
   const spotlight = featured[0] ?? projects[0];
-  const categoryCount = new Set(projects.map((p) => p.category)).size;
+  const categoryCount = new Set(projects.map((p) => p.spaceType || p.category)).size;
   const years = projects.map((p) => p.year).filter((y): y is number => typeof y === 'number');
   const since = years.length ? Math.min(...years) : undefined;
 
   const stats = [
     { value: String(projects.length).padStart(2, '0'), label: 'Projects showcased' },
-    { value: String(categoryCount).padStart(2, '0'), label: 'Disciplines' },
+    { value: String(categoryCount).padStart(2, '0'), label: 'Types of space' },
     ...(since ? [{ value: String(since), label: 'Portfolio since' }] : []),
   ];
 
@@ -87,7 +87,7 @@ export default async function ProjectsPage() {
                 <div className="flex items-end justify-between gap-6">
                   <dl className="grid grid-cols-2 gap-x-10 gap-y-4 text-white">
                     {[
-                      { label: 'Category', value: categoryLabel(spotlight.category) },
+                      { label: 'Category', value: projectKind(spotlight) },
                       { label: 'Client', value: spotlight.clientName },
                       { label: 'Year', value: spotlight.year?.toString() },
                     ]

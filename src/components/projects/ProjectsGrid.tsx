@@ -4,7 +4,7 @@ import React, { Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSearchParams } from 'next/navigation';
 import type { ProjectSummary } from '@/lib/sanity/types';
-import { categories } from '@/lib/categories';
+import { categories, spaceTypes } from '@/lib/categories';
 import { ProjectCard } from './ProjectCard';
 
 interface ProjectsGridProps {
@@ -28,25 +28,35 @@ const tileClass = (i: number) => {
 
 function ProjectsGridInner({ initialProjects }: ProjectsGridProps) {
   const searchParams = useSearchParams();
+  // Links from the Services page arrive as ?category=interior: they narrow the list to one
+  // discipline. The buttons themselves filter by kind of place (?type=retail).
   const categoryParam = searchParams.get('category');
-  const activeFilter = categories.some((c) => c.value === categoryParam) ? categoryParam! : 'all';
+  const discipline = categories.some((c) => c.value === categoryParam) ? categoryParam : null;
+  const inDiscipline = discipline ? initialProjects.filter((p) => p.category === discipline) : initialProjects;
 
-  const handleFilterChange = (category: string) => {
-    // Native history updates useSearchParams without a server round trip or scroll jump,
-    // since all projects are already loaded and filtering is client-side.
-    window.history.pushState(null, '', category === 'all' ? '/projects' : `/projects?category=${category}`);
-  };
-
-  const counts = initialProjects.reduce<Record<string, number>>((acc, p) => {
-    acc[p.category] = (acc[p.category] ?? 0) + 1;
+  const counts = inDiscipline.reduce<Record<string, number>>((acc, p) => {
+    if (p.spaceType) acc[p.spaceType] = (acc[p.spaceType] ?? 0) + 1;
     return acc;
   }, {});
-  const filters = [{ label: 'All', value: 'all', count: initialProjects.length }].concat(
-    categories.map((c) => ({ ...c, count: counts[c.value] ?? 0 }))
+  // Only kinds of place that have projects get a button
+  const filters = [{ label: 'All', value: 'all', count: inDiscipline.length }].concat(
+    spaceTypes.filter((t) => counts[t.value]).map((t) => ({ ...t, count: counts[t.value] }))
   );
 
-  const filteredProjects =
-    activeFilter === 'all' ? initialProjects : initialProjects.filter((p) => p.category === activeFilter);
+  const typeParam = searchParams.get('type');
+  const activeFilter = filters.some((f) => f.value === typeParam) ? typeParam! : 'all';
+
+  const handleFilterChange = (type: string) => {
+    // Native history updates useSearchParams without a server round trip or scroll jump,
+    // since all projects are already loaded and filtering is client-side.
+    const params = new URLSearchParams();
+    if (discipline) params.set('category', discipline);
+    if (type !== 'all') params.set('type', type);
+    const query = params.toString();
+    window.history.pushState(null, '', query ? `/projects?${query}` : '/projects');
+  };
+
+  const filteredProjects = activeFilter === 'all' ? inDiscipline : inDiscipline.filter((p) => p.spaceType === activeFilter);
 
   return (
     <div className="w-full">
@@ -54,7 +64,7 @@ function ProjectsGridInner({ initialProjects }: ProjectsGridProps) {
       <div className="sticky top-20 z-20 -mx-5 mb-12 px-5 py-4 md:-mx-10 md:px-10 lg:-mx-[60px] lg:px-[60px]">
         <div className="absolute inset-0 bg-beige/85 backdrop-blur-md [mask-image:linear-gradient(to_bottom,black_70%,transparent)]" aria-hidden="true" />
         <div className="relative flex items-center justify-between gap-6">
-          <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none]" role="group" aria-label="Filter projects by category">
+          <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none]" role="group" aria-label="Filter projects by type of space">
             {filters.map((f) => {
               const isActive = activeFilter === f.value;
               return (
@@ -117,7 +127,7 @@ function ProjectsGridInner({ initialProjects }: ProjectsGridProps) {
         </motion.ul>
       ) : (
         <div className="rounded-[28px] border border-dashed border-maroon/30 py-24 text-center">
-          <p className="text-2xl text-maroon">No projects in this category yet</p>
+          <p className="text-2xl text-maroon">No projects of this kind yet</p>
           <button type="button" onClick={() => handleFilterChange('all')} className="mt-4 text-maroon underline underline-offset-4 hover:opacity-75">
             View all projects
           </button>

@@ -7,11 +7,11 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import type { ProjectSummary } from '@/lib/sanity/types';
 import { ArrowUpRight } from '../shared/ui';
 import { useSwipe } from '@/lib/useSwipe';
+import { projectKind } from '@/lib/categories';
 
-const capitalise = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 /** The facts shown under the title when the card is hovered: kind of work, client, place, year */
 const facts = (p: ProjectSummary) =>
-  [p.category && capitalise(p.category), p.clientName !== p.title && p.clientName, p.location, p.year].filter(Boolean).join(' · ');
+  [projectKind(p), p.clientName !== p.title && p.clientName, p.location, p.year].filter(Boolean).join(' · ');
 /** First paragraph of the description, when it is plain text */
 const excerpt = (p: ProjectSummary) => (typeof p.excerpt === 'string' ? p.excerpt.split(/\n/)[0].trim() : '');
 
