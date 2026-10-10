@@ -1,3 +1,4 @@
+import { HeroImage } from '@/components/shared/HeroImage';
 import { T } from '@/components/shared/T';
 import { tr } from '@/lib/content/ui';
 import { getLocale } from '@/lib/locale.server';
@@ -36,7 +37,7 @@ export default async function ProjectsPage() {
       {/* Hero */}
       <section className="relative overflow-clip bg-maroon">
         <div className="hero-drift absolute inset-0">
-          <Image src="/assets/images/hero/hero-projects.webp" alt="" fill priority sizes="100vw" className="hero-zoom object-cover" />
+          <HeroImage src="/assets/images/hero/hero-projects.webp" className="hero-zoom object-cover" />
         </div>
         <div className="absolute inset-0 bg-gradient-to-r from-maroon via-maroon/85 to-maroon/40" aria-hidden="true" />
         <Container className="relative flex min-h-[600px] flex-col justify-end gap-10 pt-36 pb-16">

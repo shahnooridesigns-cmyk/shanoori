@@ -1,5 +1,5 @@
 import React from 'react';
-import Image from 'next/image';
+import { HeroImage } from './HeroImage';
 import { Container } from './Container';
 import { RiseText } from './RiseText';
 import { SectionLabel } from './ui';
@@ -20,7 +20,7 @@ export const PageHero = ({
     {/* The photo eases back from a slight zoom on load and drifts as the banner scrolls away */}
     {image && (
       <div className="hero-drift absolute inset-0">
-        <Image src={image} alt="" fill priority sizes="100vw" className="hero-zoom object-cover" />
+        <HeroImage src={image} className="hero-zoom object-cover" />
       </div>
     )}
     <div

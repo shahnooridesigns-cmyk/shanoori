@@ -1,5 +1,5 @@
 import React from 'react';
-import Image from 'next/image';
+import { HeroImage } from '@/components/shared/HeroImage';
 import { Container } from '../shared/Container';
 import { ArrowLink } from '../shared/ui';
 import { HeroLift } from './HeroLift';
@@ -14,7 +14,7 @@ export const Hero = async () => {
     // it. On a screen shorter than the hero it pins once its bottom edge is reached.
     <section className="sticky top-[min(0px,calc(100svh-640px))] flex min-h-[640px] h-[100svh] max-h-[900px] flex-col overflow-hidden bg-ink motion-reduce:relative motion-reduce:top-0">
       <div className="absolute inset-0">
-        <Image src={hero.image} alt="" fill priority sizes="100vw" className="object-cover" />
+        <HeroImage src={hero.image} className="object-cover" />
       </div>
       <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/50" aria-hidden="true" />
 

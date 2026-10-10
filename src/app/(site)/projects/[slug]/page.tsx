@@ -1,3 +1,4 @@
+import { HeroImage } from '@/components/shared/HeroImage';
 import React from 'react';
 import type { Metadata } from 'next';
 import Image from 'next/image';
@@ -156,7 +157,7 @@ export default async function ProjectDetailPage({ params }: Props) {
       {/* Full-screen hero with fact strip */}
       <section className="relative flex h-[100svh] min-h-[620px] max-h-[960px] flex-col overflow-clip bg-maroon">
         <div className="hero-drift absolute inset-0">
-          <Image src={project.imageUrl || '/assets/images/placeholder.webp'} alt="" fill priority sizes="100vw" className="hero-zoom object-cover" />
+          <HeroImage src={project.imageUrl || '/assets/images/placeholder.webp'} className="hero-zoom object-cover" />
         </div>
         <div className="absolute inset-0 bg-gradient-to-t from-maroon via-maroon/40 to-black/40" aria-hidden="true" />
 
