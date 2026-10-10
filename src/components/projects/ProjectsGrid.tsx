@@ -4,7 +4,7 @@ import React, { Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSearchParams } from 'next/navigation';
 import type { ProjectSummary } from '@/lib/sanity/types';
-import { categories, spaceTypes } from '@/lib/categories';
+import { services, spaceTypes } from '@/lib/categories';
 import { ProjectCard } from './ProjectCard';
 
 interface ProjectsGridProps {
@@ -26,78 +26,99 @@ const tileClass = (i: number) => {
   }
 };
 
+/** One filter button: a glass pill with a count badge; the chosen one is filled and its border carries a moving light. */
+const Chip = ({
+  label,
+  count,
+  active,
+  group,
+  onClick,
+}: {
+  label: string;
+  count: number;
+  active: boolean;
+  /** Buttons of one group share the sliding highlight */
+  group: string;
+  onClick: () => void;
+}) => (
+  <button type="button" onClick={onClick} aria-pressed={active} disabled={count === 0 && !active} className="filter-chip" data-active={active || undefined}>
+    {active && (
+      <motion.span
+        layoutId={`active-${group}`}
+        className="filter-chip-fill bg-brand-gradient"
+        transition={{ type: 'spring', stiffness: 400, damping: 32 }}
+      />
+    )}
+    <span className="relative">{label}</span>
+    <span className="filter-chip-count">{count}</span>
+  </button>
+);
+
 function ProjectsGridInner({ initialProjects }: ProjectsGridProps) {
   const searchParams = useSearchParams();
-  // Links from the Services page arrive as ?category=interior: they narrow the list to one
-  // discipline. The buttons themselves filter by kind of place (?type=retail).
-  const categoryParam = searchParams.get('category');
-  const discipline = categories.some((c) => c.value === categoryParam) ? categoryParam : null;
-  const inDiscipline = discipline ? initialProjects.filter((p) => p.category === discipline) : initialProjects;
 
-  const counts = inDiscipline.reduce<Record<string, number>>((acc, p) => {
+  // Two filters that work together: the service (?service=mep) and the kind of place (?type=retail).
+  // Links from the Services page still arrive as ?category=interior and pick that service.
+  const categoryParam = searchParams.get('category');
+  const serviceParam = searchParams.get('service') ?? services.find((sv) => sv.categories.some((c) => c === categoryParam))?.value;
+  const activeService = services.some((sv) => sv.value === serviceParam) ? serviceParam! : 'all';
+  const typeParam = searchParams.get('type');
+
+  const inService = (p: ProjectSummary, service: string) =>
+    service === 'all' || Boolean(services.find((sv) => sv.value === service)?.categories.includes(p.category));
+
+  const ofService = initialProjects.filter((p) => inService(p, activeService));
+  const typeCounts = ofService.reduce<Record<string, number>>((acc, p) => {
     if (p.spaceType) acc[p.spaceType] = (acc[p.spaceType] ?? 0) + 1;
     return acc;
   }, {});
   // Only kinds of place that have projects get a button
-  const filters = [{ label: 'All', value: 'all', count: inDiscipline.length }].concat(
-    spaceTypes.filter((t) => counts[t.value]).map((t) => ({ ...t, count: counts[t.value] }))
+  const typeFilters = [{ label: 'All', value: 'all', count: ofService.length }].concat(
+    spaceTypes.filter((t) => typeCounts[t.value]).map((t) => ({ ...t, count: typeCounts[t.value] }))
+  );
+  const activeType = typeFilters.some((t) => t.value === typeParam) ? typeParam! : 'all';
+
+  const ofType = activeType === 'all' ? initialProjects : initialProjects.filter((p) => p.spaceType === activeType);
+  const serviceFilters = [{ label: 'All', value: 'all', count: ofType.length }].concat(
+    services.map((sv) => ({ label: sv.label, value: sv.value, count: ofType.filter((p) => inService(p, sv.value)).length }))
   );
 
-  const typeParam = searchParams.get('type');
-  const activeFilter = filters.some((f) => f.value === typeParam) ? typeParam! : 'all';
-
-  const handleFilterChange = (type: string) => {
+  const setFilters = (service: string, type: string) => {
     // Native history updates useSearchParams without a server round trip or scroll jump,
     // since all projects are already loaded and filtering is client-side.
     const params = new URLSearchParams();
-    if (discipline) params.set('category', discipline);
+    if (service !== 'all') params.set('service', service);
     if (type !== 'all') params.set('type', type);
     const query = params.toString();
     window.history.pushState(null, '', query ? `/projects?${query}` : '/projects');
   };
 
-  const filteredProjects = activeFilter === 'all' ? inDiscipline : inDiscipline.filter((p) => p.spaceType === activeFilter);
+  const filteredProjects = ofService.filter((p) => activeType === 'all' || p.spaceType === activeType);
 
   return (
     <div className="w-full">
       {/* Sticky filter bar, sits just under the fixed header */}
       <div className="sticky top-20 z-20 -mx-5 mb-12 px-5 py-4 md:-mx-10 md:px-10 lg:-mx-[60px] lg:px-[60px]">
         <div className="absolute inset-0 bg-beige/85 backdrop-blur-md [mask-image:linear-gradient(to_bottom,black_70%,transparent)]" aria-hidden="true" />
-        <div className="relative flex items-center justify-between gap-6">
-          <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none]" role="group" aria-label="Filter projects by type of space">
-            {filters.map((f) => {
-              const isActive = activeFilter === f.value;
-              return (
-                <button
-                  type="button"
-                  key={f.value}
-                  onClick={() => handleFilterChange(f.value)}
-                  aria-pressed={isActive}
-                  disabled={f.count === 0 && !isActive}
-                  className={`relative shrink-0 rounded-full border px-5 py-2.5 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${
-                    isActive
-                      ? 'border-maroon text-gold'
-                      : 'border-maroon/35 bg-white/45 text-maroon shadow-sm hover:border-maroon hover:bg-white/80'
-                  }`}
-                >
-                  {isActive && (
-                    <motion.span
-                      layoutId="active-filter"
-                      className="absolute inset-0 rounded-full bg-maroon shadow-md"
-                      transition={{ type: 'spring', stiffness: 400, damping: 32 }}
-                    />
-                  )}
-                  <span className="relative flex items-center gap-2">
-                    {f.label}
-                    <span className={`text-xs ${isActive ? 'text-gold/70' : 'text-maroon/50'}`}>{f.count}</span>
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-          <p className="hidden shrink-0 text-sm text-ink/60 md:block" aria-live="polite">
-            Showing {filteredProjects.length} {filteredProjects.length === 1 ? 'project' : 'projects'}
-          </p>
+        <div className="relative flex flex-col gap-3">
+          {[
+            { name: 'Space', group: 'type', label: 'Filter projects by type of space', items: typeFilters, active: activeType, pick: (v: string) => setFilters(activeService, v) },
+            { name: 'Service', group: 'service', label: 'Filter projects by service', items: serviceFilters, active: activeService, pick: (v: string) => setFilters(v, activeType) },
+          ].map((row) => (
+            <div key={row.group} className="flex items-center gap-3">
+              <span className="w-14 shrink-0 text-[11px] font-semibold uppercase tracking-[0.18em] text-maroon/60 md:w-16 md:text-xs">{row.name}</span>
+              <div className="-mx-1 flex gap-2 overflow-x-auto px-1 py-1.5 [scrollbar-width:none]" role="group" aria-label={row.label}>
+                {row.items.map((item) => (
+                  <Chip key={item.value} label={item.label} count={item.count} active={row.active === item.value} group={row.group} onClick={() => row.pick(item.value)} />
+                ))}
+              </div>
+              {row.group === 'type' && (
+                <p className="ml-auto hidden shrink-0 text-sm text-ink/60 lg:block" aria-live="polite">
+                  Showing {filteredProjects.length} {filteredProjects.length === 1 ? 'project' : 'projects'}
+                </p>
+              )}
+            </div>
+          ))}
         </div>
       </div>
 
@@ -127,8 +148,8 @@ function ProjectsGridInner({ initialProjects }: ProjectsGridProps) {
         </motion.ul>
       ) : (
         <div className="rounded-[28px] border border-dashed border-maroon/30 py-24 text-center">
-          <p className="text-2xl text-maroon">No projects of this kind yet</p>
-          <button type="button" onClick={() => handleFilterChange('all')} className="mt-4 text-maroon underline underline-offset-4 hover:opacity-75">
+          <p className="text-2xl text-maroon">No projects match these filters yet</p>
+          <button type="button" onClick={() => setFilters('all', 'all')} className="mt-4 text-maroon underline underline-offset-4 hover:opacity-75">
             View all projects
           </button>
         </div>

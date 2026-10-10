@@ -8,6 +8,13 @@ export const categories: { label: string; value: Category }[] = [
   { label: 'Civil', value: 'civil' },
 ];
 
+/** The three services the company sells, and which disciplines each one covers */
+export const services: { label: string; value: string; categories: Category[] }[] = [
+  { label: 'Interior & Fit-out', value: 'interior', categories: ['interior'] },
+  { label: 'MEP', value: 'mep', categories: ['mechanical', 'electrical', 'plumbing'] },
+  { label: 'Civil', value: 'civil', categories: ['civil'] },
+];
+
 /** Kinds of place a project can be, in the order the filter shows them. Keep in step with the Studio list (sanity/schemaTypes/project.ts). */
 export const spaceTypes: { label: string; value: string }[] = [
   { label: 'Retail', value: 'retail' },
