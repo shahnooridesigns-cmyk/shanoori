@@ -127,7 +127,7 @@ export default async function ContactPage() {
                   rel="noopener noreferrer"
                   className="mt-6 flex items-center justify-center gap-3 rounded-full bg-maroon px-6 py-3.5 font-semibold text-white hover:bg-[#6d1a3a]"
                 >
-                  <span dir="ltr">{displayPhone}</span> {tr(locale, 'contact.openWhatsapp')}
+                  <span dir="ltr" className="whitespace-nowrap">{displayPhone}</span> {tr(locale, 'contact.openWhatsapp')}
                 </a>
               </div>
             </div>

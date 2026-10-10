@@ -209,7 +209,7 @@ export const WorkCarousel = ({ projects }: { projects: ProjectSummary[] }) => {
       </div>
 
       {count > 1 && (
-        <p className="text-sm tabular-nums text-ink/70" aria-live={paused ? 'polite' : 'off'}>
+        <p dir="ltr" className="text-sm tabular-nums text-ink/70" aria-live={paused ? 'polite' : 'off'}>
           {String(index + 1).padStart(2, '0')} / {String(count).padStart(2, '0')}
         </p>
       )}
