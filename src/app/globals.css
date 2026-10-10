@@ -700,3 +700,128 @@ html[data-sn-preload="on"] {
   background: var(--bar);
   color: var(--bar-ink);
 }
+
+/* Section labels (SectionLabel in ui.tsx): a small diamond in place of a dot. Every few seconds
+   it turns over once and gives off a faint ring, so the eye is drawn to the label without the
+   page feeling busy. Still for visitors who ask for reduced motion. */
+.label-mark {
+  position: relative;
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  flex: none;
+  border-radius: 2px;
+  rotate: 45deg;
+}
+.label-mark::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: inherit;
+  opacity: 0;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .label-mark { animation: label-mark-turn 4.5s cubic-bezier(0.65, 0, 0.35, 1) infinite; }
+  .label-mark::after { animation: label-mark-ring 4.5s ease-out infinite; }
+}
+@keyframes label-mark-turn {
+  0%, 62% { rotate: 45deg; scale: 1; }
+  78% { rotate: 225deg; scale: 1.25; }
+  100% { rotate: 225deg; scale: 1; }
+}
+@keyframes label-mark-ring {
+  0%, 74% { opacity: 0; scale: 1; }
+  78% { opacity: 0.45; scale: 1; }
+  100% { opacity: 0; scale: 2.8; }
+}
+
+/* Pill buttons (ArrowLink in ui.tsx). The button is drawn in the text colour it is given, so one
+   class works on dark and light sections. On hover the round arrow badge floods the whole pill
+   and the words switch to the contrasting colour; pressing it sinks the button slightly. */
+.btn-pill {
+  --btn-ink: var(--color-maroon); /* colour of the words once the pill is filled */
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.9rem;
+  overflow: hidden;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  padding: 0.4rem 0.4rem 0.4rem 1.35rem;
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.2;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s;
+}
+.btn-pill.text-maroon { --btn-ink: var(--color-cream); }
+/* The flood: a disc sitting under the arrow badge that grows until it covers the pill */
+.btn-pill::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  top: 50%;
+  right: 0.4rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: currentColor;
+  translate: 0 -50%;
+  scale: 1;
+  transition: scale 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.btn-pill-label {
+  transition: color 0.3s;
+}
+.btn-pill-arrow {
+  display: flex;
+  width: 2.5rem;
+  height: 2.5rem;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: var(--btn-ink);
+  transition: rotate 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.btn-pill:hover,
+.btn-pill:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 28px -14px rgba(0, 0, 0, 0.45);
+}
+.btn-pill:hover::before,
+.btn-pill:focus-visible::before {
+  scale: 18;
+}
+.btn-pill:hover .btn-pill-label,
+.btn-pill:focus-visible .btn-pill-label {
+  color: var(--btn-ink);
+}
+.btn-pill:hover .btn-pill-arrow,
+.btn-pill:focus-visible .btn-pill-arrow {
+  rotate: 45deg;
+}
+.btn-pill:active {
+  transform: translateY(0) scale(0.96);
+  transition-duration: 0.12s;
+}
+.btn-pill:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+/* Now and then the arrow gives a small nudge up and to the right, to say "this goes somewhere" */
+@media (prefers-reduced-motion: no-preference) {
+  .btn-pill-arrow svg { animation: btn-arrow-nudge 3.6s cubic-bezier(0.65, 0, 0.35, 1) infinite; }
+  .btn-pill:hover .btn-pill-arrow svg { animation: none; }
+}
+@keyframes btn-arrow-nudge {
+  0%, 70%, 100% { translate: 0 0; }
+  80% { translate: 3px -3px; }
+  90% { translate: -1px 1px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .btn-pill, .btn-pill::before, .btn-pill-arrow, .btn-pill-label { transition: none; }
+}

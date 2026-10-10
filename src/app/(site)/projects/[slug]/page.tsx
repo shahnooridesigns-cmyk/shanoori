@@ -9,7 +9,7 @@ import { resolveWhatsAppNumber } from '@/lib/constants';
 import { fetchAllProjects, fetchProjectBySlug, fetchSiteSettings } from '@/lib/sanity/fetch';
 import type { ProjectDetail } from '@/lib/sanity/types';
 import { CtaBanner } from '@/components/shared/CtaBanner';
-import { ArrowUpRight, SectionLabel } from '@/components/shared/ui';
+import { ArrowLink, SectionLabel } from '@/components/shared/ui';
 import { ProjectGallery } from '@/components/projects/ProjectGallery';
 import { ProjectCard } from '@/components/projects/ProjectCard';
 import { RiseText } from '@/components/shared/RiseText';
@@ -198,9 +198,7 @@ export default async function ProjectDetailPage({ params }: Props) {
                 message={`Hello Shah Noori, I saw your project "${project.title}" and would like to discuss something similar.`}
                 phoneNumber={phoneNumber}
               />
-              <Link href="/contact" className="tap-area mt-4 flex items-center justify-center gap-2 text-sm text-gold/90 hover:text-gold">
-                Or request a consultation <span aria-hidden="true">→</span>
-              </Link>
+              <ArrowLink href="/contact" className="mt-4 w-full justify-between text-gold">Request a consultation</ArrowLink>
             </div>
           </aside>
         </Container>
@@ -297,13 +295,9 @@ export default async function ProjectDetailPage({ params }: Props) {
                 <SectionLabel>More {discipline} Work</SectionLabel>
                 <h2 className="mt-4 text-4xl md:text-5xl font-semibold text-maroon">Related Projects</h2>
               </div>
-              <Link
-                href={`/projects?category=${project.category}`}
-                className="tap-area group flex w-fit items-center gap-2 border-b border-maroon pb-0.5 text-lg text-maroon hover:opacity-80"
-              >
+              <ArrowLink href={`/projects?category=${project.category}`} className="w-fit text-maroon">
                 View all {discipline.toLowerCase()} projects
-                <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-              </Link>
+              </ArrowLink>
             </div>
             <div className="grid auto-rows-[340px] gap-6 md:grid-cols-2 lg:grid-cols-3">
               {related.map((p) => (

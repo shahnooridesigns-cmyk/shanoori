@@ -1,7 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
-import { ArrowUpRight } from '../shared/ui';
+import { ArrowLink } from '../shared/ui';
 
 /** Division heading: eyebrow, two-tone uppercase title, intro and "Explore …" link. */
 export const DivisionHeader = ({
@@ -25,13 +24,7 @@ export const DivisionHeader = ({
       <p className="text-reveal mt-3 text-lg leading-relaxed text-ink/75">{intro}</p>
     </div>
     {href && (
-      <Link
-        href={href}
-        className="text-reveal tap-area group flex w-fit shrink-0 items-center gap-3 border-b-2 border-maroon pb-1 text-lg font-semibold text-maroon hover:opacity-80"
-      >
-        {linkLabel}
-        <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-      </Link>
+      <ArrowLink href={href} className="text-reveal w-fit shrink-0 text-maroon">{linkLabel}</ArrowLink>
     )}
   </div>
 );

@@ -1,6 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
+import { ArrowLink } from './ui';
 import { toDivisions } from '@/lib/services';
 import { fetchSharedContent } from '@/lib/sanity/fetch';
 
@@ -37,12 +37,9 @@ export const DivisionCards = async () => {
               </li>
             ))}
           </ul>
-          <Link
-            href={`/services#${d.id}`}
-            className="mt-auto flex items-center gap-2 pt-8 text-sm font-bold uppercase tracking-wider text-maroon hover:opacity-75"
-          >
-            {d.cta} <span aria-hidden="true">→</span>
-          </Link>
+          <div className="mt-auto pt-8">
+            <ArrowLink href={`/services#${d.id}`} className="text-maroon">{d.cta}</ArrowLink>
+          </div>
         </div>
       </article>
     ))}
