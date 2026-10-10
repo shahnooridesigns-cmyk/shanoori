@@ -856,12 +856,51 @@ html[data-sn-preload="on"] {
   .btn-pill, .btn-pill::before, .btn-pill-arrow, .btn-pill-label { transition: none; }
 }
 
-/* Filter buttons on the Projects page (Chip in ProjectsGrid.tsx): glass pills with a round count
-   badge. They lift on hover and sink when pressed; the chosen one is filled with the brand
-   gradient, glows a little, and a light keeps running round its border (same idea as .btn-pill). */
+/* Filters on the Projects page (ProjectsGrid.tsx): a floating maroon bar, like the header above
+   it, holding two rows of pill buttons. A button fills with gold from below on hover and sinks
+   when pressed; the chosen one is solid gold, shows the brand diamond, and a light keeps running
+   round its border (same idea as .btn-pill). The buttons arrive one after another. */
+.filter-dock {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-radius: 28px;
+  padding: 0.85rem 1.1rem;
+  box-shadow:
+    inset 0 0 0 1px rgba(228, 212, 163, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    0 26px 40px -26px rgba(60, 10, 30, 0.85);
+}
+/* A soft gold glow that drifts along the bar */
+.filter-dock::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  top: -60%;
+  left: 0;
+  width: 45%;
+  height: 220%;
+  background: radial-gradient(closest-side, rgba(228, 212, 163, 0.22), transparent);
+  pointer-events: none;
+}
+.filter-row-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: rgba(228, 212, 163, 0.85);
+}
+.filter-row-name::before {
+  content: '';
+  width: 0.38rem;
+  height: 0.38rem;
+  flex: none;
+  transform: rotate(45deg);
+  background: var(--color-gold);
+}
 .filter-chip {
   position: relative;
   isolation: isolate;
+  overflow: hidden;
   display: inline-flex;
   flex: none;
   align-items: center;
@@ -871,15 +910,23 @@ html[data-sn-preload="on"] {
   padding-inline: 1.15rem 0.55rem;
   font-size: 0.9rem;
   font-weight: 500;
-  color: var(--color-maroon);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.78), rgba(255, 255, 255, 0.4));
+  color: #f8f1e4;
+  background: rgba(255, 255, 255, 0.07);
   box-shadow:
-    inset 0 0 0 1px rgba(87, 19, 45, 0.22),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9),
-    0 6px 14px -10px rgba(60, 40, 10, 0.5);
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s, color 0.3s;
+    inset 0 0 0 1px rgba(228, 212, 163, 0.38),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s, color 0.3s;
+}
+/* The gold that rises from the bottom edge on hover */
+.filter-chip::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: linear-gradient(135deg, #f4e8c2, var(--color-gold) 60%, #cdb573);
+  clip-path: circle(0% at 50% 130%);
+  transition: clip-path 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .filter-chip-count {
   position: relative;
@@ -892,58 +939,90 @@ html[data-sn-preload="on"] {
   padding: 0 0.4rem;
   font-size: 0.72rem;
   font-weight: 600;
-  background: rgba(87, 19, 45, 0.1);
+  color: var(--color-gold);
+  background: rgba(228, 212, 163, 0.16);
   transition: background-color 0.3s, color 0.3s;
+}
+/* The brand diamond, only in the chosen button */
+.filter-chip-mark {
+  position: relative;
+  width: 0;
+  height: 0.42rem;
+  flex: none;
+  margin-inline-end: -0.6rem;
+  transform: rotate(45deg) scale(0);
+  background: var(--color-maroon);
+  transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1), margin 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.filter-chip[data-active] .filter-chip-mark {
+  width: 0.42rem;
+  margin-inline-end: 0;
+  transform: rotate(45deg) scale(1);
 }
 .filter-chip:not(:disabled):not([data-active]):hover {
   transform: translateY(-2px);
+  color: var(--color-maroon);
   box-shadow:
-    inset 0 0 0 1px rgba(87, 19, 45, 0.6),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9),
-    0 14px 22px -14px rgba(87, 19, 45, 0.7);
+    inset 0 0 0 1px rgba(228, 212, 163, 0.9),
+    0 14px 22px -14px rgba(0, 0, 0, 0.7);
 }
-.filter-chip:not(:disabled):not([data-active]):hover .filter-chip-count {
+.filter-chip:not(:disabled):not([data-active]):hover::before {
+  clip-path: circle(150% at 50% 130%);
+}
+.filter-chip:not(:disabled):not([data-active]):hover .filter-chip-count,
+.filter-chip[data-active] .filter-chip-count {
   background: var(--color-maroon);
   color: var(--color-gold);
 }
 .filter-chip:not(:disabled):active {
-  transform: scale(0.95);
+  transform: scale(0.94);
   transition-duration: 0.1s;
 }
 .filter-chip:disabled {
   cursor: not-allowed;
-  opacity: 0.4;
+  opacity: 0.38;
 }
 .filter-chip[data-active] {
-  color: var(--color-gold);
-  box-shadow: 0 12px 24px -12px rgba(87, 19, 45, 0.85);
+  color: var(--color-maroon);
+  font-weight: 600;
+  box-shadow: 0 12px 26px -12px rgba(228, 212, 163, 0.75);
 }
-.filter-chip[data-active] .filter-chip-count {
-  background: rgba(228, 212, 163, 0.2);
-}
-/* The sliding fill behind the chosen button */
+/* The sliding gold behind the chosen button */
 .filter-chip-fill {
   position: absolute;
   inset: 0;
   z-index: -1;
   border-radius: 999px;
+  background: linear-gradient(135deg, #f4e8c2, var(--color-gold) 60%, #cdb573);
 }
 .filter-chip-fill::after {
   content: '';
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  padding: 1.5px;
-  background: conic-gradient(from var(--btn-angle), transparent 0deg 240deg, var(--color-gold) 325deg, #fff 348deg, transparent 360deg);
+  padding: 2px;
+  background: conic-gradient(from var(--btn-angle), transparent 0deg 230deg, var(--color-maroon) 320deg, #fff 350deg, transparent 360deg);
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
   mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
 }
+@keyframes filter-chip-in {
+  from { opacity: 0; transform: translateY(14px) scale(0.92); }
+}
+@keyframes filter-count-pop {
+  from { transform: scale(1.5); }
+}
+@keyframes filter-dock-glow {
+  to { left: 55%; }
+}
 @media (prefers-reduced-motion: no-preference) {
+  .filter-chip { animation: filter-chip-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) backwards; animation-delay: calc(var(--i, 0) * 70ms + 150ms); }
+  .filter-chip-count { animation: filter-count-pop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1); }
   .filter-chip-fill::after { animation: btn-border-run 3.2s linear infinite; }
+  .filter-dock::before { animation: filter-dock-glow 9s ease-in-out infinite alternate; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .filter-chip { transition: none; }
+  .filter-chip, .filter-chip::before, .filter-chip-mark { transition: none; }
 }
 
 /* The Arabic site (the wrapper in SiteShell carries dir="rtl"). Layout flips by itself because

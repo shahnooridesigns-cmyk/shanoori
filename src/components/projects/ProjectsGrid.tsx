@@ -29,12 +29,13 @@ const tileClass = (i: number) => {
   }
 };
 
-/** One filter button: a glass pill with a count badge; the chosen one is filled and its border carries a moving light. */
+/** One filter button: a pill with a count badge; the chosen one is gold, shows the brand diamond, and its border carries a moving light. */
 const Chip = ({
   label,
   count,
   active,
   group,
+  order,
   onClick,
 }: {
   label: string;
@@ -42,18 +43,30 @@ const Chip = ({
   active: boolean;
   /** Buttons of one group share the sliding highlight */
   group: string;
+  /** Place in the row: the buttons arrive one after another */
+  order: number;
   onClick: () => void;
 }) => (
-  <button type="button" onClick={onClick} aria-pressed={active} disabled={count === 0 && !active} className="filter-chip" data-active={active || undefined}>
+  <button
+    type="button"
+    onClick={onClick}
+    aria-pressed={active}
+    disabled={count === 0 && !active}
+    className="filter-chip"
+    data-active={active || undefined}
+    style={{ '--i': order } as React.CSSProperties}
+  >
     {active && (
       <motion.span
         layoutId={`active-${group}`}
-        className="filter-chip-fill bg-brand-gradient"
+        className="filter-chip-fill"
         transition={{ type: 'spring', stiffness: 400, damping: 32 }}
       />
     )}
+    <span className="filter-chip-mark" aria-hidden="true" />
     <span className="relative">{label}</span>
-    <span className="filter-chip-count">{count}</span>
+    {/* A new key when the number changes, so it pops */}
+    <span key={count} className="filter-chip-count">{count}</span>
   </button>
 );
 
@@ -104,22 +117,22 @@ function ProjectsGridInner({ initialProjects }: ProjectsGridProps) {
   return (
     <div className="w-full">
       {/* Sticky filter bar, sits just under the fixed header */}
-      <div className="sticky top-20 z-20 -mx-5 mb-12 px-5 py-4 md:-mx-10 md:px-10 lg:-mx-[60px] lg:px-[60px]">
-        <div className="absolute inset-0 bg-beige/85 backdrop-blur-md [mask-image:linear-gradient(to_bottom,black_70%,transparent)]" aria-hidden="true" />
-        <div className="relative flex flex-col gap-3">
+      {/* A floating maroon bar (.filter-dock): solid, so the cards passing behind it do not show through */}
+      <div className="sticky top-24 z-20 mb-12">
+        <div className="filter-dock bg-brand-gradient flex flex-col gap-1">
           {[
             { name: t('projects.space'), group: 'type', label: t('projects.filterSpace'), items: typeFilters, active: activeType, pick: (v: string) => setFilters(activeService, v) },
             { name: t('projects.service'), group: 'service', label: t('projects.filterService'), items: serviceFilters, active: activeService, pick: (v: string) => setFilters(v, activeType) },
           ].map((row) => (
-            <div key={row.group} className="flex items-center gap-3">
-              <span className="w-14 shrink-0 text-[11px] font-semibold uppercase tracking-[0.18em] text-maroon/60 md:w-16 md:text-xs">{row.name}</span>
+            <div key={row.group} className="flex items-center gap-3 border-gold/15 [&+&]:border-t [&+&]:pt-1">
+              <span className="filter-row-name w-[4.5rem] shrink-0 text-[11px] font-semibold uppercase tracking-[0.18em] md:w-24 md:text-xs">{row.name}</span>
               <div className="-mx-1 flex gap-2 overflow-x-auto px-1 py-1.5 [scrollbar-width:none]" role="group" aria-label={row.label}>
-                {row.items.map((item) => (
-                  <Chip key={item.value} label={item.label} count={item.count} active={row.active === item.value} group={row.group} onClick={() => row.pick(item.value)} />
+                {row.items.map((item, i) => (
+                  <Chip key={item.value} label={item.label} count={item.count} active={row.active === item.value} group={row.group} order={i} onClick={() => row.pick(item.value)} />
                 ))}
               </div>
               {row.group === 'type' && (
-                <p className="ms-auto hidden shrink-0 text-sm text-ink/60 lg:block" aria-live="polite">
+                <p className="ms-auto hidden shrink-0 text-sm text-gold/80 lg:block" aria-live="polite">
                   {t('projects.showing')} {filteredProjects.length} {filteredProjects.length === 1 ? t('projects.one') : t('projects.many')}
                 </p>
               )}
