@@ -173,29 +173,55 @@ const Bow = () => (
   </svg>
 );
 
-/** Gold scissors pointing right; `closed` snaps the blades shut */
-const Scissors = ({ closed }: { closed: boolean }) => (
-  <svg viewBox="0 0 64 64" className="h-full w-full overflow-visible drop-shadow-[0_6px_10px_rgba(0,0,0,0.6)]" aria-hidden="true">
+/** Gold scissors pointing right; they snip gently while waiting, and `closed` snaps the blades shut */
+const Scissors = ({ closed, idle }: { closed: boolean; idle: boolean }) => (
+  <svg viewBox="0 0 100 100" className="h-full w-full overflow-visible drop-shadow-[0_8px_10px_rgba(0,0,0,0.65)]" aria-hidden="true">
     <defs>
-      <linearGradient id="sc-gold" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0" stopColor="#fff6dc" />
-        <stop offset="0.5" stopColor="#d9c07f" />
-        <stop offset="1" stopColor="#8a6d2f" />
+      {/* Polished gold, lit from above */}
+      <linearGradient id="sc-metal" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stopColor="#fff8e2" />
+        <stop offset="0.35" stopColor="#e9d18f" />
+        <stop offset="0.6" stopColor="#b8923f" />
+        <stop offset="1" stopColor="#6e521c" />
+      </linearGradient>
+      <linearGradient id="sc-blade" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stopColor="#c9a95a" />
+        <stop offset="0.5" stopColor="#fff6dc" />
+        <stop offset="1" stopColor="#d9c07f" />
       </linearGradient>
     </defs>
+    {/* Two halves crossing at the screw; each is one blade and the opposite handle */}
     {[-1, 1].map((dir) => (
       <motion.g
         key={dir}
-        style={{ originX: '32px', originY: '32px' }}
-        animate={{ rotate: closed ? 0 : dir * 17 }}
-        transition={{ type: 'spring', stiffness: 700, damping: 18 }}
+        style={{ originX: '56px', originY: '50px' }}
+        animate={{ rotate: closed ? 0 : idle ? [dir * 15, dir * 5, dir * 15] : dir * 15 }}
+        transition={closed ? { type: 'spring', stiffness: 900, damping: 20 } : { duration: 1.1, repeat: Infinity, ease: 'easeInOut' }}
       >
-        <path d={dir < 0 ? 'M30 30 L62 30 L60 34 L30 34 Z' : 'M30 30 L60 30 L62 34 L30 34 Z'} fill="url(#sc-gold)" stroke="#6b5222" strokeWidth="0.8" />
-        <circle cx="13" cy={dir < 0 ? 22 : 42} r="8" fill="none" stroke="url(#sc-gold)" strokeWidth="4.5" />
-        <path d={dir < 0 ? 'M31 32 L19 25' : 'M31 32 L19 39'} stroke="url(#sc-gold)" strokeWidth="4.5" strokeLinecap="round" />
+        {/* Blade: wide at the screw, tapering to a fine point, with a bright cutting edge */}
+        <path
+          d={dir < 0 ? 'M54 46 C70 44 86 45 99 49 C86 50 70 51 56 52 Z' : 'M54 54 C70 56 86 55 99 51 C86 50 70 49 56 48 Z'}
+          fill="url(#sc-blade)"
+          stroke="#7a5c22"
+          strokeWidth="0.8"
+        />
+        <path d={dir < 0 ? 'M58 50.6 C72 50.2 86 49.8 98 49.4' : 'M58 49.4 C72 49.8 86 50.2 98 50.6'} stroke="#ffffff" strokeOpacity="0.8" strokeWidth="0.8" fill="none" />
+        {/* Shank from the screw to the finger ring */}
+        <path
+          d={dir < 0 ? 'M57 52 C48 56 40 62 33 66' : 'M57 48 C48 44 40 38 33 34'}
+          stroke="url(#sc-metal)"
+          strokeWidth="6.5"
+          strokeLinecap="round"
+          fill="none"
+        />
+        {/* Finger ring */}
+        <ellipse cx="22" cy={dir < 0 ? 71 : 29} rx="13" ry="10" transform={`rotate(${dir < 0 ? -20 : 20} 22 ${dir < 0 ? 71 : 29})`} fill="none" stroke="url(#sc-metal)" strokeWidth="6" />
+        <ellipse cx="22" cy={dir < 0 ? 71 : 29} rx="13" ry="10" transform={`rotate(${dir < 0 ? -20 : 20} 22 ${dir < 0 ? 71 : 29})`} fill="none" stroke="#fff8e2" strokeOpacity="0.5" strokeWidth="1.2" />
       </motion.g>
     ))}
-    <circle cx="32" cy="32" r="3" fill="#fff6dc" stroke="#6b5222" />
+    {/* The screw */}
+    <circle cx="56" cy="50" r="4.2" fill="url(#sc-metal)" stroke="#6e521c" strokeWidth="1" />
+    <path d="M53.6 50 H58.4" stroke="#6e521c" strokeWidth="1" strokeLinecap="round" />
   </svg>
 );
 
@@ -445,12 +471,12 @@ export const RibbonCutting = () => {
       {/* The scissors pointer: the tips of the blades are the point that cuts */}
       {(hovering || snipping) && (
         <motion.div
-          className="pointer-events-none fixed left-0 top-0 z-[45] -ml-[75px] -mt-10 h-20 w-20 md:-ml-[105px] md:-mt-14 md:h-28 md:w-28"
+          className="pointer-events-none fixed left-0 top-0 z-[45] -ml-[79px] -mt-10 h-20 w-20 md:-ml-[111px] md:-mt-14 md:h-28 md:w-28"
           style={{ x: scissorsX, y: scissorsY }}
           animate={cut ? { opacity: 0, scale: 1.2 } : { opacity: 1, scale: 1 }}
           transition={{ duration: 0.4, delay: cut ? 0.5 : 0 }}
         >
-          <Scissors closed={snipping} />
+          <Scissors closed={snipping} idle={!reduceMotion} />
         </motion.div>
       )}
 
