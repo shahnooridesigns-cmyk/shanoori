@@ -6,7 +6,9 @@ import { motion, AnimatePresence, useMotionValue, useReducedMotion, useSpring } 
 /** The intro's "already seen" note (components/shared/Preloader.tsx): cleared so the intro plays */
 const INTRO_SEEN_KEY = 'sn_preloaded';
 /** How long the cut, the falling ribbon and the celebration play before the site opens */
-const OPEN_AFTER_MS = 3400;
+const OPEN_AFTER_MS = 3800;
+/** The screen fades to the intro's black this long before the site opens, so one flows into the other */
+const FADE_MS = 1000;
 /** Where the two gold posts stand, as a share of the screen width */
 const POST_LEFT = 7;
 const POST_RIGHT = 93;
@@ -282,6 +284,7 @@ export const RibbonCutting = () => {
   const [cutAt, setCutAt] = useState<number | null>(null);
   const [snipping, setSnipping] = useState(false);
   const [hovering, setHovering] = useState(false);
+  const [fading, setFading] = useState(false);
   const cut = cutAt !== null;
 
   // The scissors follow the pointer over the ribbon
@@ -296,6 +299,7 @@ export const RibbonCutting = () => {
     setSnipping(true);
     // The blades close first, then the ribbon parts
     window.setTimeout(() => setCutAt(at), reduceMotion ? 0 : 180);
+    window.setTimeout(() => setFading(true), (reduceMotion ? 1000 : OPEN_AFTER_MS) - FADE_MS);
     window.setTimeout(() => {
       try {
         sessionStorage.removeItem(INTRO_SEEN_KEY);
@@ -440,6 +444,15 @@ export const RibbonCutting = () => {
         </AnimatePresence>
         <p className="text-[10px] uppercase tracking-[0.4em] text-gold/45 md:text-xs">sncreatives.com</p>
       </div>
+
+      {/* Fade to the intro's black (bg-ink), which the home page opens on */}
+      <motion.div
+        className="pointer-events-none fixed inset-0 z-50 bg-[#0A0A0A]"
+        initial={false}
+        animate={{ opacity: fading ? 1 : 0 }}
+        transition={{ duration: FADE_MS / 1000 - 0.1, ease: 'easeInOut' }}
+        aria-hidden="true"
+      />
     </main>
   );
 };
