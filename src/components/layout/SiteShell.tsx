@@ -8,7 +8,7 @@ import { Preloader } from "@/components/shared/Preloader";
 import { PageFlood } from "@/components/shared/PageFlood";
 import { PageTransition } from "@/components/shared/PageTransition";
 import { LocaleProvider } from "@/components/shared/LocaleProvider";
-import { FALLBACK_CONTACT, resolveContact, resolveWhatsAppNumber } from "@/lib/constants";
+import { FALLBACK_CONTACT, OFFICE_LOCATION, resolveContact, resolveWhatsAppNumber } from "@/lib/constants";
 import { SHARE_IMAGE, SITE_NAME, SITE_URL } from "@/lib/seo";
 import { fetchSiteSettings } from "@/lib/sanity/fetch";
 import { dirOf, type Locale } from "@/lib/locale";
@@ -41,7 +41,14 @@ export async function SiteShell({ locale, children }: { locale: Locale; children
     description: "Interior fit-out, MEP and civil contracting company in Doha, Qatar.",
     telephone: contact.phone,
     email: contact.email,
-    address: { "@type": "PostalAddress", streetAddress: contact.address, addressLocality: "Doha", addressCountry: "QA" },
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: `${OFFICE_LOCATION.plusCode}, ${OFFICE_LOCATION.area}`,
+      addressLocality: OFFICE_LOCATION.area,
+      addressCountry: "QA",
+    },
+    geo: { "@type": "GeoCoordinates", latitude: OFFICE_LOCATION.latitude, longitude: OFFICE_LOCATION.longitude },
+    hasMap: OFFICE_LOCATION.mapsUrl,
     areaServed: { "@type": "Country", name: "Qatar" },
     knowsAbout: ["Interior fit-out", "MEP works", "Mechanical works", "Electrical works", "Plumbing", "Civil construction"],
     sameAs: [settings?.instagramUrl, settings?.facebookUrl].filter(Boolean),

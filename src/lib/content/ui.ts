@@ -24,7 +24,7 @@ const en = {
   'footer.designedBy': 'Designed by',
   'footer.developedBy': 'Developed by',
   'footer.poweredBy': 'Powered by',
-  'footer.address': 'Doha, Qatar',
+  'footer.address': 'Birkat Al Awamer, Qatar',
 
   // Section labels
   'label.about': 'About Us',
@@ -217,7 +217,7 @@ const ar: Record<UiKey, string> = {
   'footer.designedBy': 'تصميم',
   'footer.developedBy': 'تطوير',
   'footer.poweredBy': 'برعاية',
-  'footer.address': 'الدوحة، قطر',
+  'footer.address': 'بركة العوامر، قطر',
 
   'label.about': 'من نحن',
   'label.process': 'منهجيتنا',

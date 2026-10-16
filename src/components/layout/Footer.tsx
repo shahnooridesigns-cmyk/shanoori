@@ -48,7 +48,7 @@ export const Footer = async () => {
   const t = (key: UiKey) => tr(locale, key);
   const contact = resolveContact(settings);
   const { phone, email } = contact;
-  // The built-in address ("Doha, Qatar") has an Arabic form; an address typed in the Studio is shown as typed
+  // The built-in address ("Birkat Al Awamer, Qatar") has an Arabic form; an address typed in the Studio is shown as typed
   const address = settings?.address?.trim() ? contact.address : t('footer.address');
   const socials = [
     { name: 'Instagram', href: settings?.instagramUrl },

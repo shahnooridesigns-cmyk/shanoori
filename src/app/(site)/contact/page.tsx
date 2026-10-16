@@ -13,7 +13,7 @@ import { FaqSection } from '@/components/shared/FaqSection';
 import { CountUp } from '@/components/shared/CountUp';
 import { CtaBanner } from '@/components/shared/CtaBanner';
 import { BalancedGrid } from '@/components/shared/BalancedGrid';
-import { resolveContact, toTelHref } from '@/lib/constants';
+import { OFFICE_LOCATION, officeMapEmbed, resolveContact, toTelHref } from '@/lib/constants';
 import { fetchContactContent, fetchSiteSettings } from '@/lib/sanity/fetch';
 
 export const generateMetadata = (): Metadata => metaFor('contact', '/contact');
@@ -22,8 +22,7 @@ export default async function ContactPage() {
   const [settings, { hero, form, location, whatsapp: chat }] = await Promise.all([fetchSiteSettings(), fetchContactContent()]);
   const { address: storedAddress, phone, email, whatsapp } = resolveContact(settings);
   const locale = getLocale();
-  // The map is always searched with the stored address; what is shown follows the language
-  const mapsQuery = encodeURIComponent(storedAddress);
+  // The map shows the office's exact pin (OFFICE_LOCATION); the address text follows the language
   const address = settings?.address?.trim() ? storedAddress : tr(locale, 'footer.address');
   const displayPhone = `+${whatsapp.slice(0, 3)} ${whatsapp.slice(3, 7)} ${whatsapp.slice(7)}`.trim();
 
@@ -70,7 +69,7 @@ export default async function ContactPage() {
             <div className="card-reveal overflow-hidden rounded-[32px] bg-white">
               <iframe
                 title={tr(locale, 'contact.mapTitle')}
-                src={`https://www.google.com/maps?q=${mapsQuery}&output=embed`}
+                src={officeMapEmbed(locale)}
                 className="h-80 w-full border-0"
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
@@ -101,7 +100,7 @@ export default async function ContactPage() {
                 <div className="flex flex-wrap items-center justify-between gap-3 bg-cream px-8 py-4">
                   <a href={toTelHref(phone)} dir="ltr" className="tap-area text-sm text-ink/80 hover:text-ink">{phone}</a>
                   <a
-                    href={`https://www.google.com/maps/search/?api=1&query=${mapsQuery}`}
+                    href={OFFICE_LOCATION.mapsUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="rounded-full bg-maroon px-5 py-3 text-sm font-semibold text-white hover:bg-[#6d1a3a]"

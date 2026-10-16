@@ -316,7 +316,7 @@ export const contactDefaults = {
   location: {
     eyebrow: 'Operational Center & Production Plant',
     heading: 'Find Our Location',
-    text: 'Strategically located in Birkat Awamer logistics and manufacturing hub with integrated joinery workshop, MEP testing yard, and administrative engineering offices.',
+    text: 'Strategically located in the Birkat Al Awamer logistics and manufacturing hub with integrated joinery workshop, MEP testing yard, and administrative engineering offices.',
     travelTimes: [
       { place: "Hamad Int'l Airport", time: '20 Mins', via: 'Via G-Ring Expressway' },
       { place: 'West Bay & Corniche', time: '25 Mins', via: 'Via Sabah Al-Ahmad Corridor' },

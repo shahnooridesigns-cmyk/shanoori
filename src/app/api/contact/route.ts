@@ -195,7 +195,7 @@ export async function POST(request: Request) {
         `<p style="margin:0 0 12px;font-size:16px;color:#0A0A0A">Hello,</p>
          <p style="margin:0 0 12px;color:#333;line-height:1.6">Thank you for contacting Shah Noori. We have received your <strong>${e.projectType}</strong> enquiry and our team will get back to you shortly.</p>
          <p style="margin:0 0 12px;color:#333;line-height:1.6">If it's urgent, just reply to this email or message us on WhatsApp.</p>
-         <p style="margin:16px 0 0;color:#57132D;font-weight:600">SN Creatives · Shah Noori<br><span style="font-weight:400;color:#666">Doha, Qatar</span></p>`
+         <p style="margin:16px 0 0;color:#57132D;font-weight:600">SN Creatives · Shah Noori<br><span style="font-weight:400;color:#666">Birkat Al Awamer, Qatar</span></p>`
       ),
       text: `Hello,\n\nThank you for contacting Shah Noori. We have received your ${enquiry.projectType} enquiry and our team will get back to you shortly.\n\nSN Creatives · Shah Noori`,
     });
