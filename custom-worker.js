@@ -3,15 +3,20 @@
  * OpenNext builds (.open-next/worker.js) and keeps a copy of every page it has built.
  *
  * Why: building a page takes far more processing time than the free Workers plan allows per
- * request, and Cloudflare was cutting off a few requests in every hundred ("Error 1102"). A page
- * only changes when someone publishes in the Studio, so there is no need to build it again for
- * every visitor.
+ * request, and Cloudflare cuts off about one build in ten ("Error 1102"). A page only changes
+ * when someone publishes in the Studio, so there is no need to build it again for every visitor.
+ *
+ * Where copies are kept:
+ *  - in the Cloudflare data centre that served the visitor (the Cache API): fastest
+ *  - in one shared store for all data centres (the PageStore Durable Object, pages only, not
+ *    in-site navigation data): a page built anywhere is there for the first visitor of every
+ *    other data centre too, and it does not expire after a quiet day
  *
  * How pages are served:
  *  - a copy younger than FRESH_SECONDS is sent as it is
  *  - an older copy is still sent at once, and a new one is built in the background for the next
  *    visitor, so nobody waits and nobody sees an error if that build is cut off
- *  - with no copy yet, the page is built now and kept
+ *  - with no copy in either place, the page is built now and kept in both
  * So a Studio change shows on the site after about a minute, as it did before.
  *
  * Copies are kept per deployment: a new version of the site never serves pages from the old one
@@ -25,11 +30,47 @@ export { DOQueueHandler, DOShardedTagCache, BucketCachePurge } from './.open-nex
 
 /** A copy this young is served without building anything */
 const FRESH_SECONDS = 60;
-/** After this long a copy is thrown away rather than served */
+/** After this long a data centre's copy is thrown away rather than served */
 const KEEP_SECONDS = 24 * 60 * 60;
 /** How long a resized photo is kept, at Cloudflare and in the visitor's browser */
 const IMAGE_SECONDS = 7 * 24 * 60 * 60;
 const BUILT_AT = 'x-sn-built-at';
+/** Headers a kept page carries; the rest are set again when it is served */
+const KEPT_HEADERS = ['content-type', 'x-nextjs-cache', 'x-nextjs-prerender', 'link', 'x-sn-built-at'];
+
+/**
+ * The shared store of built pages (bound as PAGE_STORE in wrangler.jsonc). One instance holds
+ * the pages of the current deployment; when a new deployment writes its first page, the old
+ * deployment's pages are cleared out.
+ */
+export class PageStore {
+  constructor(state) {
+    this.storage = state.storage;
+  }
+
+  async fetch(request) {
+    const key = request.headers.get('x-sn-key');
+    const version = request.headers.get('x-sn-version');
+    if (!key || !version) return new Response('missing key', { status: 400 });
+
+    if (request.method === 'PUT') {
+      if ((await this.storage.get('version')) !== version) {
+        await this.storage.deleteAll();
+        await this.storage.put('version', version);
+      }
+      const body = await request.arrayBuffer();
+      // A value may be up to 2 MB; pages are far smaller, but never let one break the store
+      if (body.byteLength > 1_900_000) return new Response('too large', { status: 413 });
+      await this.storage.put(`page:${key}`, { body, headers: JSON.parse(request.headers.get('x-sn-headers') || '[]') });
+      return new Response('kept');
+    }
+
+    if ((await this.storage.get('version')) !== version) return new Response(null, { status: 404 });
+    const page = await this.storage.get(`page:${key}`);
+    if (!page) return new Response(null, { status: 404 });
+    return new Response(page.body, { headers: page.headers });
+  }
+}
 
 /** Pages only: not the Studio, the contact endpoint, Next's own files, or anything with a file extension */
 const isPage = (url) =>
@@ -46,8 +87,25 @@ const keyFor = (request, url, version) => {
   return new Request(key.toString(), { method: 'GET' });
 };
 
-/** Builds the page and keeps a copy; returns what the visitor should get */
-const build = async (request, env, ctx, cache, key) => {
+/** The shared store, for whole pages only (in-site navigation data stays per data centre) */
+const storeFor = (env, request) =>
+  env.PAGE_STORE && !request.headers.has('rsc') ? env.PAGE_STORE.get(env.PAGE_STORE.idFromName('pages')) : null;
+
+const storeHeaders = (key, version) => ({ 'x-sn-key': key.url, 'x-sn-version': version });
+
+/** A page from the shared store, or null; never throws */
+const fromStore = async (store, key, version) => {
+  if (!store) return null;
+  try {
+    const answer = await store.fetch('https://page-store/', { headers: storeHeaders(key, version) });
+    return answer.status === 200 ? answer : null;
+  } catch {
+    return null;
+  }
+};
+
+/** Builds the page and keeps a copy here and in the shared store; returns what the visitor should get */
+const build = async (request, env, ctx, cache, key, version) => {
   const response = await handler.fetch(request, env, ctx);
   // Only complete, ordinary pages are kept: no redirects, errors, or anything setting a cookie
   if (response.status !== 200 || response.headers.has('set-cookie') || !response.body) return response;
@@ -56,6 +114,21 @@ const build = async (request, env, ctx, cache, key) => {
   // The copy is already filed under its own name per variant (see keyFor)
   copy.headers.delete('vary');
   copy.headers.set(BUILT_AT, String(Date.now()));
+
+  const store = storeFor(env, request);
+  if (store) {
+    const forStore = copy.clone();
+    ctx.waitUntil(
+      (async () => {
+        const kept = KEPT_HEADERS.map((name) => [name, forStore.headers.get(name)]).filter(([, value]) => value !== null);
+        await store.fetch('https://page-store/', {
+          method: 'PUT',
+          headers: { ...storeHeaders(key, version), 'x-sn-headers': JSON.stringify(kept) },
+          body: await forStore.arrayBuffer(),
+        });
+      })().catch(() => {})
+    );
+  }
   ctx.waitUntil(cache.put(key, copy).catch(() => {}));
   return response;
 };
@@ -68,6 +141,9 @@ const serve = (cached, state) => {
   response.headers.set('x-sn-cache', state);
   return response;
 };
+
+/** Seconds since a kept copy was built */
+const ageOf = (copy) => (Date.now() - Number(copy.headers.get(BUILT_AT) ?? 0)) / 1000;
 
 export default {
   async fetch(request, env, ctx) {
@@ -97,15 +173,28 @@ export default {
 
       const version = env.CF_VERSION_METADATA?.id ?? 'v';
       const key = keyFor(request, url, version);
+      const refresh = () =>
+        ctx.waitUntil(build(request.clone(), env, ctx, cache, key, version).then((r) => r.body?.cancel?.()).catch(() => {}));
+
       const cached = await cache.match(key);
       if (cached) {
-        const age = (Date.now() - Number(cached.headers.get(BUILT_AT) ?? 0)) / 1000;
-        if (age < FRESH_SECONDS) return serve(cached, 'fresh');
+        if (ageOf(cached) < FRESH_SECONDS) return serve(cached, 'fresh');
         // Older: send it now, build the next one behind the visitor's back
-        ctx.waitUntil(build(request.clone(), env, ctx, cache, key).then((r) => r.body?.cancel?.()).catch(() => {}));
+        refresh();
         return serve(cached, 'refreshing');
       }
-      return await build(request, env, ctx, cache, key);
+
+      // Nothing in this data centre: the shared store may have it from another visitor
+      const stored = await fromStore(storeFor(env, request), key, version);
+      if (stored) {
+        const local = new Response(stored.clone().body, stored);
+        local.headers.set('cache-control', `public, max-age=${KEEP_SECONDS}`);
+        ctx.waitUntil(cache.put(key, local).catch(() => {}));
+        if (ageOf(stored) >= FRESH_SECONDS) refresh();
+        return serve(stored, 'shared');
+      }
+
+      return await build(request, env, ctx, cache, key, version);
     } catch (error) {
       // Whatever goes wrong with the copies, the site itself must still answer
       console.error('Page cache failed, building the page directly', error);

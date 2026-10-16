@@ -24,5 +24,21 @@
   },
   "images": {
     "binding": "IMAGES"
-  }
+  },
+  // One shared store of built pages for all Cloudflare data centres (PageStore in custom-worker.js).
+  // SQLite-backed, which the free Workers plan includes.
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "PAGE_STORE",
+        "class_name": "PageStore"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1-page-store",
+      "new_sqlite_classes": ["PageStore"]
+    }
+  ]
 }
