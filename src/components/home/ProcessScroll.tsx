@@ -8,6 +8,12 @@ import { motion, useMotionValueEvent, useReducedMotion, useScroll, useTransform,
 const FRAME_COUNT = 180;
 /** How many screens of scrolling each step lasts: more is a slower film */
 const SCREENS_PER_STEP = 1.75;
+/**
+ * Frames kept ready (unpacked and scaled to the canvas) on each side of the one showing. Drawing
+ * a frame that is only downloaded makes the browser unpack a full-HD picture in the middle of the
+ * scroll, which shows as a small stutter; ready frames draw instantly.
+ */
+const READY_AHEAD = 6;
 const frameSrc = (i: number) => `/assets/process-frames/frame-${String(i + 1).padStart(3, '0')}.webp`;
 
 export interface ProcessStep {
@@ -56,6 +62,9 @@ export const ProcessScroll = ({ steps }: { steps: ProcessStep[] }) => {
   const trackRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const framesRef = useRef<HTMLImageElement[]>([]);
+  /** Ready frames by index (see READY_AHEAD), and the ones being made ready */
+  const readyRef = useRef(new Map<number, ImageBitmap>());
+  const preparingRef = useRef(new Set<number>());
   const currentRef = useRef(0);
   const reduceMotion = useReducedMotion();
 
@@ -66,6 +75,11 @@ export const ProcessScroll = ({ steps }: { steps: ProcessStep[] }) => {
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext('2d');
     if (!canvas || !ctx) return;
+    const ready = readyRef.current.get(index);
+    if (ready) {
+      ctx.drawImage(ready, (canvas.width - ready.width) / 2, (canvas.height - ready.height) / 2);
+      return;
+    }
     let img: HTMLImageElement | undefined;
     for (let d = 0; d < FRAME_COUNT && !img; d++) {
       const candidate = framesRef.current[index - d] ?? framesRef.current[index + d];
@@ -79,6 +93,39 @@ export const ProcessScroll = ({ steps }: { steps: ProcessStep[] }) => {
     ctx.drawImage(img, (cw - w) / 2, (ch - h) / 2, w, h);
   }, []);
 
+  /** Unpack the frames around `center` ahead of time, already scaled to cover the canvas */
+  const prepare = useCallback((center: number) => {
+    const canvas = canvasRef.current;
+    if (!canvas || !canvas.width || typeof createImageBitmap !== 'function') return;
+    const ready = readyRef.current;
+    // Let go of frames that are far behind or ahead
+    for (const [i, bitmap] of ready) {
+      if (Math.abs(i - center) > READY_AHEAD + 2) {
+        bitmap.close();
+        ready.delete(i);
+      }
+    }
+    for (let i = Math.max(0, center - READY_AHEAD); i <= Math.min(FRAME_COUNT - 1, center + READY_AHEAD); i++) {
+      const img = framesRef.current[i];
+      if (ready.has(i) || preparingRef.current.has(i) || !img?.complete || !img.naturalWidth) continue;
+      const scale = Math.max(canvas.width / img.naturalWidth, canvas.height / img.naturalHeight);
+      const size = { width: canvas.width, height: canvas.height };
+      preparingRef.current.add(i);
+      createImageBitmap(img, { resizeWidth: Math.round(img.naturalWidth * scale), resizeHeight: Math.round(img.naturalHeight * scale), resizeQuality: 'high' })
+        .then((bitmap) => {
+          // Made for a canvas size that has since changed, or no longer near: not kept
+          if (canvas.width !== size.width || canvas.height !== size.height || Math.abs(i - currentRef.current) > READY_AHEAD + 2) {
+            bitmap.close();
+            return;
+          }
+          ready.set(i, bitmap);
+          if (i === currentRef.current) draw(i);
+        })
+        .catch(() => {})
+        .finally(() => preparingRef.current.delete(i));
+    }
+  }, [draw]);
+
   // Size the canvas to its box at device pixel ratio
   useEffect(() => {
     if (reduceMotion) return;
@@ -88,13 +135,17 @@ export const ProcessScroll = ({ steps }: { steps: ProcessStep[] }) => {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       canvas.width = Math.round(canvas.clientWidth * dpr);
       canvas.height = Math.round(canvas.clientHeight * dpr);
+      // Ready frames were made for the old size
+      readyRef.current.forEach((bitmap) => bitmap.close());
+      readyRef.current.clear();
       draw(currentRef.current);
+      prepare(currentRef.current);
     };
     resize();
     const observer = new ResizeObserver(resize);
     observer.observe(canvas);
     return () => observer.disconnect();
-  }, [draw, reduceMotion]);
+  }, [draw, prepare, reduceMotion]);
 
   // Load the frames in order, so scrubbing fills in progressively, but only once the visitor is
   // within a couple of screens of the section: they are several MB the rest of the page shouldn't wait on
@@ -119,21 +170,27 @@ export const ProcessScroll = ({ steps }: { steps: ProcessStep[] }) => {
       const img = new window.Image();
       img.decoding = 'async';
       img.onload = () => {
-        if (!cancelled && Math.abs(i - currentRef.current) <= 1) draw(currentRef.current);
+        if (cancelled) return;
+        if (Math.abs(i - currentRef.current) <= 1) draw(currentRef.current);
+        if (Math.abs(i - currentRef.current) <= READY_AHEAD) prepare(currentRef.current);
       };
       img.src = frameSrc(i);
       return img;
     });
+    const ready = readyRef.current;
     return () => {
       cancelled = true;
+      ready.forEach((bitmap) => bitmap.close());
+      ready.clear();
     };
-  }, [draw, near, reduceMotion]);
+  }, [draw, prepare, near, reduceMotion]);
 
   useMotionValueEvent(scrollYProgress, 'change', (p) => {
     const index = Math.min(FRAME_COUNT - 1, Math.max(0, Math.round(p * (FRAME_COUNT - 1))));
     if (index === currentRef.current) return;
     currentRef.current = index;
     requestAnimationFrame(() => draw(index));
+    prepare(index);
   });
 
   // Reduced motion: no pinning or scrubbing, just the four steps as a simple list

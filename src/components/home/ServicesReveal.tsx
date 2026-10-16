@@ -64,10 +64,12 @@ export const ServicesReveal = ({
               : { duration: 0.5, ease: [0.7, 0, 0.84, 0], delay: 0.15 }
         }
       >
-        {/* Soft brand-coloured glows for the glass service cards to sit over */}
-        <div className="absolute right-[-10%] top-[8%] h-[520px] w-[520px] rounded-full bg-rose/45 blur-[120px]" />
-        <div className="absolute right-[22%] top-[38%] h-[420px] w-[420px] rounded-full bg-gold/25 blur-[130px]" />
-        <div className="absolute bottom-[6%] right-[-6%] h-[560px] w-[560px] rounded-full bg-maroon/70 blur-[120px]" />
+        {/* Soft brand-coloured glows for the glass service cards to sit over. Drawn as fading
+            colour (not a blurred circle): the same look, but the browser does not have to redo a
+            large blur on every frame while the black backdrop sweeps in */}
+        <div className="absolute right-[calc(-10%-240px)] top-[calc(8%-240px)] h-[1000px] w-[1000px] bg-[radial-gradient(closest-side,rgb(177_49_96/0.45),rgb(177_49_96/0.45)_26%,transparent)]" />
+        <div className="absolute right-[calc(22%-260px)] top-[calc(38%-260px)] h-[940px] w-[940px] bg-[radial-gradient(closest-side,rgb(228_212_163/0.25),rgb(228_212_163/0.25)_22%,transparent)]" />
+        <div className="absolute bottom-[calc(6%-240px)] right-[calc(-6%-240px)] h-[1040px] w-[1040px] bg-[radial-gradient(closest-side,rgb(87_19_45/0.7),rgb(87_19_45/0.7)_27%,transparent)]" />
       </motion.div>
 
       <Container className="relative grid gap-16 lg:grid-cols-[1fr_1.1fr]">
